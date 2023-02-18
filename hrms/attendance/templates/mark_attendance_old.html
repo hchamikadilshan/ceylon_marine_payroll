@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Mark Attendance {% endblock%}
+
+{% block top_heading %}Attendance Management{% endblock %} {% block sub_heading %}/ Mark Attendance{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+<div class="card formss">
+    <div class="card-body row g-3">
+
+            <div class="col-md-2">
+                <label class="col-form-label" for="attendance_emp_id">Employee ID</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text" name="attendance_emp_id" id="attendance_emp_id" required>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+                <label class=" col-form-label" for="attendance_emp_name">Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_emp_name" id="attendance_emp_name" disabled required>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class=" col-form-label" for="attendance_month_year">Month/Year</label>
+                <div class="">
+                    <input onchange="getYearMonth();" class="form-control" type="month" name="attendance_month_year" id="attendance_month_year">
+                </div>
+            </div>
+    </div>
+</div>
+
+<div class="card formss">
+    <div class="card-body row g-3 " id="attendance_dates_div">
+        
+        <div class="col-md-3">
+            <label class="col-form-label" for="attendance_date">Date</label>
+        </div>
+        
+        <div class="col-md-3">
+            <label class=" col-form-label" for="attendance_day">Day</label>
+        </div>
+        
+        <div class="col-md-2">
+            <label class=" col-form-label" for="attendance_month_date">Time In</label>
+        </div>
+        <div class="col-md-2">
+            <label class=" col-form-label" for="attendance_month_date">Time Out</label>
+        </div>
+    </div>
+</div>
+</form>
+
+
+<script >
+    console.log("Workingggg");
+    //Get employee name
+    var attendance_emp_id_input = document.getElementById("attendance_emp_id");
+    var attendance_emp_name_input = document.getElementById("attendance_emp_name");
+    attendance_emp_id_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            attendance_emp_name_input.value = "";
+            attendance_emp_id = attendance_emp_id_input.value;
+
+
+            $.ajax({
+                type:'POST',
+                url: "{% url 'get_emp_name_view' %}",
+                data: {
+                    name : attendance_emp_id,
+                    csrfmiddlewaretoken :$('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    console.log("Done")
+                    console.log(response.name)
+                    attendance_emp_name_input.value = response.name
+                }
+            });
+        }
+    });
+
+    //Get Dates according to the month
+    function getYearMonth() {
+        var attendance_month_year_select = document.getElementById("attendance_month_year");
+        var attendance_month_date = attendance_month_year_select.value;
+        var attendance_month_date_split = attendance_month_date.split('-');
+        var attendance_year = attendance_month_date_split[0];
+        var attendance_month = attendance_month_date_split[1];
+        var attendance_set_date = attendance_year + "-" + attendance_month + "-01"
+
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var i = 1;
+        const date = new Date(attendance_year, attendance_month - 1, i);
+        var dates = [];
+        $("#attendance_dates_div").empty()
+        $("#attendance_dates_div").append('<div class="col-md-3"><label class= "col-form-label" for= "attendance_date" > Date</label ></div ><div class="col-md-3"><label class=" col-form-label" >Day</label></div><div class="col-md-2"><label class=" col-form-label" >Time In</label></div><div class="col-md-2"><label class=" col-form-label">Time Out</label></div>')
+        while (date.getMonth() === (parseInt(attendance_month) - 1)) {
+            dates.push(new Date(date));
+            
+            $("#attendance_dates_div").append('<div class="col-md-3"><div class=""><input  class="form-control" readonly type="date" name="attendance_date_' + i +'" id="attendance_date_'+ i +'"></div></div ><div class="col-md-3"><div class=""><input class="form-control" type="text" name="attendance_day_' + i +'" id="attendance_day_' + i +'" readonly></div></div><div class="col-md-2"><div class=""><input  class="form-control" type="text" name="attendance_time_in_' + i +'"id="attendance_time_in_' + i +'""></div></div><div class="col-md-2"><div class=""><input  class="form-control" type="text" name="attendance_time_out_' + i +'""id="attendance_time_out_' + i +'""></div></div>')
+            
+            var attendance_date_random = "attendance_date_"+ i;
+            var attendance_day_random = "attendance_day_" + i;
+            document.getElementById(attendance_date_random).defaultValue = attendance_year + "-" + attendance_month + "-" + (i < 10 ? ("0"+ i): i) ;
+            var dayName = days[date.getDay()];
+            document.getElementById(attendance_day_random).value = dayName ;
+            date.setDate(date.getDate() + 1);
+            i = i + 1
+        }
+        $("#attendance_dates_div").append('<div class="text-center"><button class= "btn btn-primary" > Submit Data</button ></div > ')
+        
+    }
+    function getAllDaysInMonth(year, month) {
+        const date = new Date(year, month, 1);
+
+        const dates = [];
+
+        while (date.getMonth() === month) {
+            dates.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+
+        return dates;
+    }
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} View Attendance by Date{% endblock%}
+
+{% block top_heading %}Attendance Management{% endblock %}
+{% block sub_heading %} View Attendance by Date{% endblock %}
+{% block sub_heading2 %} View Attendance by Date{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class=" col-form-label" for="attendance_view_date">Date</label>
+                <div class="">
+                    <input onchange="getAttendanceData();" class="form-control" type="date"
+                        name="attendance_view_date" id="attendance_view_date">
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label class=" col-form-label" for="attendance_day">Day</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_day" id="attendance_day" disabled required>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Attendance Data Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover table_custom">
+            <thead>
+                <tr>
+                    <th scope="col">Employee ID</th>
+                    <th scope="col">Employee Name</th>
+                    <th scope="col">Time In</th>
+                    <th scope="col">Time Out</th>
+                </tr>
+            </thead>
+            <tbody id="attendance_data_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
+
+<script>
+    console.log("Workingggg");
+    function getDateName() {
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var date = document.getElementById("attendance_view_date").value;
+            date = new Date(date)
+            var day = days[date.getDay()]
+            document.getElementById("attendance_day").value = day
+        }
+    //Get Attendance Data
+    function getAttendanceData() {
+        getDateName()
+        var attendance_view_date = document.getElementById("attendance_view_date").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'view_attendance_by_date_view' %}",
+            data: {
+                date: attendance_view_date,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $("#attendance_data_table").empty()
+                var i = 0;
+                while (i < response['attendance_list'].length) {
+                    console.log(response['attendance_list'][i]['employee_id'])
+                    console.log(response['attendance_list'][i]['name'])
+                    console.log(response['attendance_list'][i]['day'])
+                    console.log(response['attendance_list'][i]['in_time'])
+                    console.log(response['attendance_list'][i]['out_time'])
+
+                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td>')
+
+                    i++
+                
+            }
+        }
+        });
+    }
+
+
+</script>
+
+
+{% endblock %}

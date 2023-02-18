@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %} Employee Salary Details {% endblock%}
+
+{% block top_heading %}Attendance Management{% endblock %}
+{% block sub_heading %} Employee Salary Details{% endblock %}
+{% block sub_heading2 %} Employee Salary Details{% endblock %}
+
+{% block content %}
+<form method="POST" class=" ">
+{% csrf_token %}
+<div class="card formss">
+    <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label class="col-form-label" for="emp_id_salary">Employee ID</label>
+                <div class="">
+                    <input class="form-control" type="text" name="emp_id_salary" id="emp_id_salary">
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <label class=" col-form-label" for="emp_name_salary">Employee Name</label>
+                <div class="">
+                    <input class="form-control " type="text" name="emp_name_salary" id="emp_name_salary" disabled>
+                </div>
+            </div>
+       
+    </div>
+</div>
+<h3 class="h11">Earnings</h3>
+<div class="card formss">
+    <div class="card-body row g-3">
+        <div class="col-md-3">
+            <label class="col-form-label" for="emp_daily_payment">Daily Payment</label>
+            <div class="">
+                <input class="form-control" type="text" name="emp_daily_payment" id="emp_daily_payment" maxlength="4" minlength="3" required>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_ot_rate">OT Rate</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_ot_rate" id="emp_ot_rate" required>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_fixed_allowance">Fixed Allowance</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_fixed_allowance" id="emp_fixed_allowance">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_leave_payment">Leave Payment</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_leave_payment" id="emp_leave_payment">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_br_payment">B/R Payment</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_br_payment" id="emp_br_payment">
+            </div>
+        </div>
+
+    </div>
+</div>
+<h3 class="h11">Deductions</h3>
+<div class="card formss">
+    <div class="card-body row g-3">
+        <div class="col-md-3">
+            <label class="col-form-label" for="emp_EPF">Employee EPF(%)</label>
+            <div class="">
+                <input class="form-control" type="text" name="emp_EPF" id="emp_EPF" value="8" readonly>
+            </div>
+        </div>
+
+        <!-- <div class="col-md-3">
+            <label class=" col-form-label" for="emp_advances_limit">Advances Limit</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_advances_limit" id="emp_advances_limit">
+            </div>
+        </div> -->
+
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_room_charges">Room Charges</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_room_charges" id="emp_room_charges">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_staff_welf_contribution">Staff Welfare Contribution</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_staff_welf_contribution" id="emp_staff_welf_contribution">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_stamp_duty">Stamp Duty</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_stamp_duty" id="emp_stamp_duty">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class=" col-form-label" for="emp_api_tax">API Tax</label>
+            <div class="">
+                <input class="form-control " type="text" name="emp_api_tax" id="emp_api_tax">
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary">Save</button>
+        </div>
+
+    </div>
+</div>
+
+</form>
+
+<script>
+
+    // Get Employee Name and Data
+    var emp_salary_id_input = document.getElementById("emp_id_salary");
+    var emp_salary_name_input = document.getElementById("emp_name_salary");
+    emp_salary_id_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            emp_salary_name_input.value = "";
+            emp_id_salary = emp_salary_id_input.value;
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emp_name_view' %}",
+                data: {
+                    name: emp_id_salary,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    if (response.name === "None"){
+                        emp_salary_name_input.value = ""
+                    }else{
+                        emp_salary_name_input.value = response.name
+                    }
+                    
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emplopyee_salary_details_view' %}",
+                data: {
+                    name: emp_id_salary,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    if (response["status"] === 0){
+                        
+                    }else{
+                        document.getElementById("emp_daily_payment").value = response['daily_payment']
+                        document.getElementById("emp_ot_rate").value = response['ot_payment']
+                        document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
+                        document.getElementById("emp_leave_payment").value = response['leave_payment']
+                        document.getElementById("emp_br_payment").value = response['br_payment']
+                        // document.getElementById("emp_advances_limit").value = response['adavance']
+                        document.getElementById("emp_room_charges").value = response['room_charge']
+                        document.getElementById("emp_staff_welf_contribution").value = response['staff_welf']
+                    }
+                }
+            });
+        }
+        });
+</script>
+
+
+
+{% endblock %}

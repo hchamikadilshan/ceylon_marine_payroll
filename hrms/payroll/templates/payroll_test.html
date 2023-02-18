@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} View Attendance {% endblock%}
+
+{% block top_heading %}Payroll Management{% endblock %} {% block sub_heading %}/ Payroll Test{% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label class="col-form-label" for="attendance_view_emp_id">Employee ID</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="attendance_view_emp_id" id="attendance_view_emp_id" required>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class=" col-form-label" for="attendance_view_emp_name">Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_view_emp_name"
+                        id="attendance_view_emp_name" disabled required>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class=" col-form-label" for="attendance_view_month_year">Month/Year</label>
+                <div class="">
+                    <input onchange="getAttendanceData();" class="form-control" type="month"
+                        name="attendance_view_month_year" id="attendance_view_month_year">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Attendance Data Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover table_custom">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Day</th>
+                    <th scope="col">Time In</th>
+                    <th scope="col">Time Out</th>
+                    <th scope="col">Working Hours</th>
+                    <th scope="col">O/T Hours</th>
+                </tr>
+            </thead>
+            <tbody id="attendance_data_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
+
+<script>
+    console.log("Workingggg");
+    //Get employee name
+    var attendance_view_emp_id_input = document.getElementById("attendance_view_emp_id");
+    var attendance_view_emp_name_input = document.getElementById("attendance_view_emp_name");
+    attendance_view_emp_id_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            attendance_view_emp_name_input.value = "";
+            attendance_view_emp_id = attendance_view_emp_id_input.value;
+
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emp_name_view' %}",
+                data: {
+                    name: attendance_view_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    attendance_view_emp_name_input.value = response.name
+                }
+            });
+        }
+    });
+
+    //Get Attendance Data
+    function getAttendanceData() {
+        var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
+        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'payroll_test_view' %}",
+            data: {
+                emp_id: attendance_view_emp_id,
+                month: attendance_view_month_year,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $("#attendance_data_table").empty()
+                var i = 0;
+                while (i < response['attendance_list'].length) {
+                    console.log(response['attendance_list'][i]['employee_id'])
+                    console.log(response['attendance_list'][i]['date'])
+                    console.log(response['attendance_list'][i]['day'])
+                    console.log(response['attendance_list'][i]['in_time'])
+                    console.log(response['attendance_list'][i]['out_time'])
+
+                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
+
+                    i++
+                }
+            }
+        });
+    }
+
+
+</script>
+
+
+{% endblock %}

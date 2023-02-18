@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %} New Employee {% endblock%}
+
+{% block top_heading %}Employee Management{% endblock %}
+{% block sub_heading %} New Employee{% endblock %}
+{% block sub_heading2 %} New Employee{% endblock %}
+
+{% block content %}
+<div class="card formss" >
+    <div class="card-body">
+        <form method="POST" class="row g-3 ">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label class="col-form-label" for="emp_id">Employee ID</label>
+                <div class="">
+                    <input class="form-control" type="text" name="emp_id" id="emp_id" required>
+                </div>
+                
+            </div>
+            
+            <div class="col-md-6">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="emp_type" id="emp_type">
+                        <option value="1">Permenent/Normal</option>
+                        <option value="2">Contract/Normal</option>
+                        <option value="3">Permenent/Shift</option>
+                        <option value="4">Contract/Shift</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-12">
+                <label class=" col-form-label" for="name">Name</label>
+                <div class="">
+                    <input class="form-control " type="text" name="name" id="name" required>
+                </div>
+            </div>
+            
+            
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="epf-no">EPF No</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="epf_no" id="epf_no">
+                            </div>
+                        
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="nic_no">NIC No</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="nic_no" id="nic_no">
+                            </div>
+                            
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="appoinment_date">Appoinment Date</label>
+                            <div class="">
+                                <input class="form-control" type="date" name="appoinment_date" id="appoinment_date">
+                            </div>
+                        
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="termination_date">Termination Date</label>
+                            <div class="">
+                                <input class="form-control" type="date" name="termination_date" id="termination_date">
+                            </div>
+                            
+            </div>
+
+            <div class="col-md-12">
+                            <label class=" col-form-label" for="address">Address</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="address" id="address">
+                            </div>
+                            
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="mobile_no">Mobile No</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="mobile_no" id="mobile_no">
+                            </div>
+                            
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="email">Email</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="email" id="email">
+                            </div>
+                            
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="bank_name">Bank Name</label>
+                            <!-- <div class="">
+                                <input class="form-control" type="text" name="bank_name" id="bank_name">
+                            </div> -->
+                            <div class="">
+                                <select class="form-control" name="bank_name" id="bank_name">
+                                    <option value=7010>Bank of Ceylon</option>
+                                    <option value=7038>Standard Chartered Bank</option>
+                                    <option value=7047>Citi Bank</option>
+                                    <option value=7056>Commercial Bank PLC</option>
+                                    <option value=7074>Habib Bank Ltd</option>
+                                    <option value=7083>Hatton National Bank PLC</option>
+                                    <option value=7092>Hongkong Shanghai Bank</option>
+                                    <option value=7108>Indian Bank</option>
+                                    <option value=7117>Indian Overseas Bank</option>
+                                    <option value=7135>Peoples Bank</option>
+                                    <option value=7144>State Bank of India</option>
+                                    <option value=7162>Nations Trust Bank PLC</option>
+                                    <option value=7205>Deutsche Bank</option>
+                                    <option value=7214>National Development Bank PLC</option>
+                                    <option value=7269>MCB Bank Ltd</option>
+                                    <option value=7278>Sampath Bank PLC</option>
+                                    <option value=7287>Seylan Bank PLC</option>
+                                    <option value=7296>Public Bank</option>
+                                    <option value=7302>Union Bank of Colombo PLC</option>
+                                    <option value=7311>Pan Asia Banking Corporation PLC</option>
+                                    <option value=7384>ICICI Bank Ltd</option>
+                                    <option value=7454>DFCC Bank PLC</option>
+                                    <option value=7463>Amana Bank PLC</option>
+                                    <option value=7472>Axis Bank</option>
+                                    <option value=7481>Cargills Bank Limited</option>
+                                    <option value=7719>National Savings Bank</option>
+                                    <option value=7728>Sanasa Development Bank</option>
+                                    <option value=7737>HDFC Bank</option>
+                                    <option value=7746>Citizen Development Business Finance PLC</option>
+                                    <option value=7755>Regional Development Bank</option>
+                                    <option value=7764>State Mortgage & Investment Bank</option>
+                                    <option value=7773>LB Finance PLC</option>
+                                    <option value=7782>Senkadagala Finance PLC</option>
+                                    <option value=7807>Commercial Leasing and Finance</option>
+                                    <option value=7816>Vallibel Finance PLC</option>
+                                    <option value=7825>Central Finance PLC</option>
+                                    <option value=7834>Kanrich Finance Limited</option>
+                                    <option value=7852>Alliance Finance Company PLC</option>
+                                    <option value=7861>LOLC Finance PLC</option>
+                                    <option value=7870>Commercial Credit & Finance PLC</option>
+                                    <option value=7898>Merchant Bank of Sri Lanka & Finance PLC</option>
+                                    <option value=7904>HNB Grameen Finance Limited</option>
+                                    <option value=7913>Mercantile Investment and Finance PLC</option>
+                                    <option value=7922>People's Leasing & Finance PLC</option>
+                                    <option value=8004> Central Bank of Sri Lanka </option>
+                                </select>
+                            
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class=" col-form-label" for="bank_branch">Bank Branch Name</label>
+                <div class="">
+                    <select class="form-control" name="bank_branch" id="bank_branch">
+                        
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class=" col-form-label" for="bank_acc_name">Bank Account Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="bank_acc_name" id="bank_acc_name">
+                </div>
+            
+            </div>
+            <div class="col-md-6">
+                <label class=" col-form-label" for="bank_acc_no">Bank Account No</label>
+                <div class="">
+                    <input class="form-control" type="text" name="bank_acc_no" id="bank_acc_no">
+                </div>
+            
+            </div>
+            <div class="text-center">
+                            <button class="btn btn-primary">Create Employee</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+{% endblock %}

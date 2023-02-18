@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Mark Attendance {% endblock%}
+
+{% block top_heading %}Attendance Management{% endblock %} 
+{% block sub_heading %} Mark Attendance{% endblock %}
+{% block sub_heading2 %} Mark Attendance{% endblock %}
+
+
+{% block content %}
+<!-- <div class="alert alert-danger alert-dismissible fade show formss" role="alert" id="attendance_alert">
+    A simple danger alert—check it out!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div> -->
+<form method="POST">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label class="col-form-label" for="attendance_date">Date</label>
+                <div class="">
+                    <input data-url="" class="form-control" type="date"
+                        name="attendance_date" id="attendance_date" required onchange="getDateName();">
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <label class=" col-form-label" for="attendance_day">Day</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_day" id="attendance_day" disabled
+                        required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <legend class="col-form-label">Special Holiday</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="attendance_special_holiday" value="1" name="attendance_special_holiday">
+                    <label class="form-check-label" for="attendance_special_holiday">
+                        Check if its a Special Holiday
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card formss">
+        <div class="card-body row g-3 " id="attendance_dates_div">
+
+            <div class="col-md-2">
+                <label class="col-form-label" for="">Employee ID</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_emp_id" id="attendance_emp_id" >
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class=" col-form-label" for="">Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_emp_name" id="attendance_emp_name" readonly>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label class=" col-form-label" for="">Time In</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_time_in" id="attendance_time_in">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="">Time Out</label>
+                <div class="">
+                    <input class="form-control" type="text" name="attendance_time_out" id="attendance_time_out" >
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="">Next Day</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="attendance_next_day" name="attendance_next_day">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Table with hoverable rows -->
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Attendance Data Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover table_custom">
+            <thead>
+                <tr>
+                    <th scope="col">Employee ID</th>
+                    <th scope="col">Employee Name</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Day</th>
+                    <th scope="col">Time In</th>
+                    <th scope="col">Time Out</th>
+                    <th scope="col">Edit</th>
+                </tr>
+            </thead>
+            <tbody id="attendance_data_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
+
+
+<script>
+    
+    function getDateName() {
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var date = document.getElementById("attendance_date").value;
+            date = new Date(date)
+            var day = days[date.getDay()]
+            document.getElementById("attendance_day").value = day
+        }
+    // $("input").on("keydown", function () {
+    //         alert($(":focus").prop("id"));
+    //     })
+
+    // Get Employee Name
+    var attendance_emp_id_input = document.getElementById("attendance_emp_id");
+        var attendance_emp_name_input = document.getElementById("attendance_emp_name");
+        attendance_emp_id_input.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                attendance_emp_name_input.value = "";
+                attendance_emp_id = attendance_emp_id_input.value;
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'get_emp_name_view' %}",
+                    data: {
+                        name: attendance_emp_id,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        attendance_emp_name_input.value = response.name
+                    }
+                });
+            document.getElementById("attendance_time_in").focus();
+            }
+        });
+    // Set focus to time out
+    var attendance_emp_time_in_input = document.getElementById("attendance_time_in");
+    attendance_emp_time_in_input.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("attendance_time_out").focus();
+
+            }
+        })
+    //Add data to table and submit POST
+    var attendance_emp_time_out_input = document.getElementById("attendance_time_out");
+        attendance_emp_time_out_input.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                // event.preventDefault();
+                emp_id = document.getElementById("attendance_emp_id").value;
+                emp_name = document.getElementById("attendance_emp_name").value;
+                time_in = document.getElementById("attendance_time_in").value;
+                time_out = document.getElementById("attendance_time_out").value;
+                date = document.getElementById("attendance_date").value;
+                day= document.getElementById("attendance_day").value;
+                special_holiday = document.getElementById("attendance_special_holiday").checked;
+                next_day = document.getElementById("attendance_next_day").checked;
+
+
+                // var attendance_alert = document.getElementById("attendance_alert");
+                // $(".alert").alert('close')
+                if (day === "" || emp_id==="" || emp_name==="" || time_in==="" || time_out==="") {
+                     alert("You need to fill all the fields")
+                } else {
+                    $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '">Edit</button></td></tr> ')
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'mark_attendance_main_view' %}",
+                        data: {
+                            emp_id: emp_id,
+                            date: date,
+                            day: day,
+                            time_in: time_in,
+                            time_out: time_out,
+                            special_holiday: special_holiday,
+                            next_day: next_day,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        success: function (response) {
+                        }
+                    });
+
+
+                    document.getElementById("attendance_emp_id").value = ""
+                    document.getElementById("attendance_emp_name").value = ""
+                    document.getElementById("attendance_time_in").value = ""
+                    document.getElementById("attendance_time_out").value = ""
+
+                    document.getElementById("attendance_emp_id").focus();
+                    document.getElementById("attendance_next_day").checked = false
+                }
+            }
+
+                
+
+            }
+        );
+    
+    //Get data from the table
+        // var attendance_table = document.getElementById('attendance_data_table');
+        // var attendance_table_row_length = attendance_table.rows.length; 
+        // for (i = 0; i < attendance_table_row_length; i++) {
+        //     var attendance_table_cells = attendance_table_row_length.rows.item(i).cells;
+        //     var attendance_table_cell_length = attendance_table_cells.length;
+        //     for (var j = 0; j < attendance_table_cell_length; j++) {
+        //         console.log(attendance_table_cells.item(j).innerHTML)
+        //         /* var cellVal = oCells.item(j).innerHTML; */
+        //     }
+        // }
+</script>
+
+
+{% endblock %}
