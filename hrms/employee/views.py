@@ -4,6 +4,7 @@ from .forms import EmployeeForm
 from .models import Employee, EmployeeFinance
 from django.http import JsonResponse
 from datetime import datetime
+from django.utils.datastructures import MultiValueDictKeyError
 
 # Create your views here.
 
@@ -12,14 +13,39 @@ class AddNewEmployeeView(View):
     def get(self, request):
         return render(request, 'add_new_emp.html')
 
-    def post(self, request):
-        print("Inside employee add post")
-        emp_form = EmployeeForm(request.POST)
-        if emp_form.is_valid():
-            print("Form is valid")
-            new_emp = emp_form.save()
-        else:
-            print(emp_form.errors.as_data())
+    # def post(self, request):
+    #     print("Inside employee add post")
+    #     emp_form = EmployeeForm(request.POST)
+    #     if emp_form.is_valid():
+    #         print("Form is valid")
+    #         new_emp = emp_form.save()
+    #     else:
+    #         print(emp_form.errors.as_data())
+    #     return redirect("add_new_emp_view")
+    def post(self,request):
+
+        emp_id = request.POST['emp_id']
+        emp_type = request.POST['emp_type']
+        name = request.POST['name']
+        epf_no = request.POST['epf_no']
+        nic_no = request.POST['nic_no']
+        appoinment_date = request.POST['appoinment_date']
+        termination_date = request.POST['termination_date']
+        address = request.POST['address']
+        mobile_no = request.POST['mobile_no']
+        email = request.POST['email']
+        bank_name = request.POST['bank_name']
+        try :
+            bank_branch = request.POST['bank_branch']
+        except MultiValueDictKeyError:
+            bank_branch = ""
+        bank_acc_name = request.POST['bank_acc_name']
+        bank_acc_no = request.POST['bank_acc_no']
+
+        employee = Employee(emp_id=emp_id, name=name,
+                            epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, emp_type=emp_type, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+        employee.save()
+
         return redirect("add_new_emp_view")
 
 
