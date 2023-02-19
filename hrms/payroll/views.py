@@ -101,6 +101,12 @@ class PayRollTestView(View):
             else: 
                 
                 # Out time O/T Hours Calculation
+                if record['day'] == "Saturday":
+                    ot_hours = ot_hours + 3
+                elif record['day'] == "Sunday":
+                    ot_hours = ot_hours + 4
+                elif record['special_holiday'] == 1:
+                    ot_hours = ot_hours + 4
                 ot_hours = ot_hours +7.5
                 out_time_difference_ot_special = out_time_obj - attendance_out_time_mid_night
                 out_time_difference_ot_special_hours = out_time_difference_ot_special.total_seconds() / (60*60)
