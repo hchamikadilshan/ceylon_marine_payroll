@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} View Attendance {% endblock%}
+{% block title %} Advance Payments {% endblock%}
 
-{% block top_heading %}Payroll Management{% endblock %} {% block sub_heading %}/ Payroll Test{% endblock %}
+{% block top_heading %}Payroll Management{% endblock %}
+{% block sub_heading %} Advance Payments{% endblock %}
+{% block sub_heading2 %} Advance Payments{% endblock %}
 
 {% block content %}
 <form method="POST">
@@ -11,26 +13,26 @@
     <div class="card formss">
         <div class="card-body row g-3">
             <div class="col-md-2">
-                <label class="col-form-label" for="attendance_view_emp_id">Employee ID</label>
+                <label class="col-form-label" for="advance_payment_view_emp_id">Employee ID</label>
                 <div class="">
                     <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
-                        name="attendance_view_emp_id" id="attendance_view_emp_id" required>
+                        name="advance_payment_view_emp_id" id="advance_payment_view_emp_id" required>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <label class=" col-form-label" for="attendance_view_emp_name">Name</label>
+                <label class=" col-form-label" for="advance_payment_emp_name">Name</label>
                 <div class="">
-                    <input class="form-control" type="text" name="attendance_view_emp_name"
-                        id="attendance_view_emp_name" disabled required>
+                    <input class="form-control" type="text" name="advance_payment_emp_name"
+                        id="advance_payment_emp_name" disabled required>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <label class=" col-form-label" for="attendance_view_month_year">Month/Year</label>
+                <label class=" col-form-label" for="advance_payment_date">Date</label>
                 <div class="">
-                    <input onchange="getAttendanceData();" class="form-control" type="month"
-                        name="attendance_view_month_year" id="attendance_view_month_year">
+                    <input  class="form-control" type="date"
+                        name="advance_payment_date" id="advance_payment_date">
                 </div>
             </div>
         </div>
@@ -64,8 +66,8 @@
 <script>
     console.log("Workingggg");
     //Get employee name
-    var attendance_view_emp_id_input = document.getElementById("attendance_view_emp_id");
-    var attendance_view_emp_name_input = document.getElementById("attendance_view_emp_name");
+    var attendance_view_emp_id_input = document.getElementById("advance_payment_view_emp_id");
+    var attendance_view_emp_name_input = document.getElementById("advance_payment_emp_name");
     attendance_view_emp_id_input.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             event.preventDefault();

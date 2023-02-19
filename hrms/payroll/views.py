@@ -9,6 +9,15 @@ from datetime import  datetime
 # Create your views here.
 
 
+class AllowancesView(View):
+    def get(self,request):
+        return render(request,'allowances.html')
+
+
+class AdvancePaymentsView(View):
+    def get(self, request):
+        return render(request, 'advance_payment.html')
+
 class PayRollTestView(View):
     def get(self, request):
         return render(request, 'payroll_test.html')
@@ -21,6 +30,8 @@ class PayRollTestView(View):
         attendance_record = Attendance.objects.filter(
             employee=emp, date__month=year_month_split[1]).order_by('date').values()
         attendance_record_list = list(attendance_record)
+        total_working_hours = 0
+        total_ot_hours = 0
 
         for record in attendance_record_list:
             normal_working_hours = 9.0
@@ -143,4 +154,10 @@ class PayRollTestView(View):
                     pass
             record['ot_hours'] = ot_hours
             record['working_hours'] = normal_working_hours
-        return JsonResponse({'attendance_list': attendance_record_list}, status=200)
+            # total_working_hours = total_working_hours + normal_working_hours
+            # total_ot_hours = total_ot_hours + ot_hours
+        for record in attendance_record_list:
+            total_working_hours = total_working_hours + record['working_hours']
+            total_ot_hours = total_ot_hours + record['ot_hours']
+        print(total_working_hours, total_ot_hours)
+        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours,'total_ot_hours':total_ot_hours}, status=200)
