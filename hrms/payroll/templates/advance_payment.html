@@ -8,7 +8,7 @@
 {% block sub_heading2 %} Advance Payments{% endblock %}
 
 {% block content %}
-<form method="POST">
+<form method="POST" id ="advance_payment_form">
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
@@ -33,14 +33,14 @@
                 <label class=" col-form-label" for="advance_payment_date">Date</label>
                 <div class="">
                     <input  class="form-control" type="date"
-                        name="advance_payment_date" id="advance_payment_date">
+                        name="advance_payment_date" id="advance_payment_date" required>
                 </div>
             </div>
             <div class="col-md-2">
-                <label class="col-form-label" for="advance_payment_view_emp_id">Advance Amount</label>
+                <label class="col-form-label" for="advance_payment_amount">Advance Amount</label>
                 <div class="">
                     <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
-                        name="advance_payment_view_emp_id" id="advance_payment_view_emp_id" required>
+                        name="advance_payment_amount" id="advance_payment_amount" required>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
         <h5 class="card-title">Advance Payments</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_custom">
+        <table class="table table-hover table_bordered">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
@@ -59,7 +59,7 @@
 
                 </tr>
             </thead>
-            <tbody id="attendance_data_table">
+            <tbody id="advance_payment_table">
             </tbody>
         </table>
         <!-- End Table with hoverable rows -->
@@ -69,7 +69,7 @@
 
 
 <script>
-    console.log("Workingggg");
+    console.log("Workinggggllllll");
     //Get employee name
     var attendance_view_emp_id_input = document.getElementById("advance_payment_view_emp_id");
     var attendance_view_emp_name_input = document.getElementById("advance_payment_emp_name");
@@ -89,10 +89,40 @@
                 },
                 success: function (response) {
                     attendance_view_emp_name_input.value = response.name
+                    
                 }
             });
         }
     });
+
+    //Submit Advance Payment
+        var advance_payamount_input = document.getElementById("advance_payment_amount");
+        var advance_payment_view_emp_id_input = document.getElementById("advance_payment_view_emp_id");
+        var advance_payment_date_input = document.getElementById("advance_payment_date");
+        var advance_payment_form = document.getElementById("advance_payment_form");
+        advance_payamount_input.addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                emp_id = advance_payment_view_emp_id_input.value
+                date = advance_payment_date_input.value
+                advance_payamount_value = advance_payamount_input.value
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'advance_payments_view' %}",
+                    data: {
+                        emp_id: emp_id,
+                        date : date,
+                        amount : advance_payamount_value,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        $("#advance_payment_table").append('<tr><td>' + date + '</td><td>' + advance_payamount_value + '</td></tr> ')
+                    }
+                });
+            }
+        });
 
     //Get Attendance Data
     function getAttendanceData() {

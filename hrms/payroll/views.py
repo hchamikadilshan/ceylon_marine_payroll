@@ -5,6 +5,7 @@ from employee.models import Employee, EmployeeFinance
 from attendance.models import Attendance
 from django.db.models import Avg, Case, Count, F
 from datetime import  datetime
+from .models import SalaryAdvance,Alllowance
 
 from reportlab.pdfgen import canvas
 import io
@@ -256,6 +257,20 @@ class AllowancesView(View):
 class AdvancePaymentsView(View):
     def get(self, request):
         return render(request, 'advance_payment.html')
+    def post(self,request):
+        print("inside advance payment")
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        salary_advance = SalaryAdvance(
+            employee=emp, date=date, amount=amount, time_stamp=time_stamp)
+        salary_advance.save()
+        return  JsonResponse({})
+
+
 
 class PayRollTestView(View):
     def get(self, request):
