@@ -76,7 +76,7 @@ class GetEmployeeSalaryDetails(View):
             employee = Employee.objects.get(emp_id=emp_id)
             try:
                 employee_finance = EmployeeFinance.objects.filter(employee=employee).order_by('-submit_date').first()
-                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'fixed_allowance': employee_finance.fixed_allowance, 'leave_payment': employee_finance.leave_payment, 'br_payment': employee_finance.br_payment, 'adavance': employee_finance.advance_limit, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
+                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'fixed_allowance': employee_finance.fixed_allowance, 'leave_payment': employee_finance.leave_payment, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
             except EmployeeFinance.DoesNotExist:
                 return JsonResponse({'status': 0})
         except Employee.DoesNotExist:

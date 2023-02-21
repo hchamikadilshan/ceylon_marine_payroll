@@ -12,6 +12,7 @@
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
+            <h5 class="card-title">Make an Advance Payment</h5>
             <div class="col-md-2">
                 <label class="col-form-label" for="advance_payment_view_emp_id">Employee ID</label>
                 <div class="">
@@ -20,7 +21,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <label class=" col-form-label" for="advance_payment_emp_name">Name</label>
                 <div class="">
                     <input class="form-control" type="text" name="advance_payment_emp_name"
@@ -28,11 +29,18 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <label class=" col-form-label" for="advance_payment_date">Date</label>
                 <div class="">
                     <input  class="form-control" type="date"
                         name="advance_payment_date" id="advance_payment_date">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="col-form-label" for="advance_payment_view_emp_id">Advance Amount</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="advance_payment_view_emp_id" id="advance_payment_view_emp_id" required>
                 </div>
             </div>
         </div>
@@ -40,18 +48,15 @@
 </form>
 <div class="card formss">
     <div class="card-body ">
-        <h5 class="card-title">Attendance Data Table</h5>
+        <h5 class="card-title">Advance Payments</h5>
 
         <!-- Table with hoverable rows -->
         <table class="table table-hover table_custom">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
-                    <th scope="col">Day</th>
-                    <th scope="col">Time In</th>
-                    <th scope="col">Time Out</th>
-                    <th scope="col">Working Hours</th>
-                    <th scope="col">O/T Hours</th>
+                    <th scope="col">Payment Amount</th>
+
                 </tr>
             </thead>
             <tbody id="attendance_data_table">

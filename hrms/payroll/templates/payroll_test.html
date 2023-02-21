@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} View Attendance {% endblock%}
+{% block title %} Salary Report {% endblock%}
 
-{% block top_heading %}Payroll Management{% endblock %} {% block sub_heading %}/ Payroll Test{% endblock %}
+{% block top_heading %}Payroll Management{% endblock %}
+{% block sub_heading %} Salary Report{% endblock %}
+{% block sub_heading2 %} Salary Report{% endblock %}
 
 {% block content %}
-<form method="POST">
+<form action = "{% url 'employee_salary_pdf_view' %}" method="POST">
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
@@ -18,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <label class=" col-form-label" for="attendance_view_emp_name">Name</label>
                 <div class="">
                     <input class="form-control" type="text" name="attendance_view_emp_name"
@@ -26,22 +28,30 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class=" col-form-label" for="attendance_view_month_year">Month/Year</label>
                 <div class="">
                     <input onchange="getAttendanceData();" class="form-control" type="month"
-                        name="attendance_view_month_year" id="attendance_view_month_year">
+                        name="attendance_view_month_year" id="attendance_view_month_year" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="attendance_view_emp_name">PDF Report</label>
+                <div class="">
+                    <button id="payroll_employee_salary_pdf_generate_button" class="btn btn-primary">Download PDF</button>
+                    <!-- <a href="{% url 'employee_salary_pdf_view' %}" target="_blank" class="btn btn-primary">Download Pdf</a> -->
                 </div>
             </div>
         </div>
     </div>
 </form>
+
 <div class="card formss">
     <div class="card-body ">
         <h5 class="card-title">Attendance Data Table</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_custom">
+        <table class="table table-hover table-bordered border-dark">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
@@ -59,9 +69,41 @@
 
     </div>
 </div>
+<div class="card formss">
+    <div class="card-body " id="salary_summary_table">
+        
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
 
 
 <script>
+    // var payroll_employee_salary_pdf_generate_button = document.getElementById("payroll_employee_salary_pdf_generate_button")
+    // payroll_employee_salary_pdf_generate_button.addEventListener("click",function(event){
+    //     event.preventDefault();
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: "{% url 'payroll_test_view' %}",
+    //         data: {
+    //             status: 'pdf',
+    //             emp_id: attendance_view_emp_id,
+    //             month: attendance_view_month_year,
+    //             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+    //         },
+    //         success: function (response) {
+    //             $("#attendance_data_table").empty()
+    //             console.log(response['total_working_hours'])
+    //             console.log(response['total_ot_hours'])
+    //             var i = 0;
+    //             while (i < response['attendance_list'].length) {
+    //                 $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
+
+    //                 i++
+    //             }
+    //         }
+    //     });
+    // })
     console.log("Workingggg");
     //Get employee name
     var attendance_view_emp_id_input = document.getElementById("attendance_view_emp_id");
@@ -77,11 +119,12 @@
                 type: 'POST',
                 url: "{% url 'get_emp_name_view' %}",
                 data: {
+                    
                     name: attendance_view_emp_id,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success: function (response) {
-                    attendance_view_emp_name_input.value = response.name
+                   attendance_view_emp_name_input.value = response.name
                 }
             });
         }
@@ -91,10 +134,12 @@
     function getAttendanceData() {
         var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
         var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+        var salary_summary_table = document.getElementById("")
         $.ajax({
             type: 'POST',
             url: "{% url 'payroll_test_view' %}",
             data: {
+                status: 'view',
                 emp_id: attendance_view_emp_id,
                 month: attendance_view_month_year,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
@@ -109,6 +154,8 @@
 
                     i++
                 }
+                $("#salary_summary_table").empty()
+                $("#salary_summary_table").append('<h5 class="card-title">Salary Summary Table</h5><!-- Table with hoverable rows --><table class= "table table-hover table-bordered border-dark" ><thead><tr><th>Total Working Hours</th><td>'+ response['total_working_hours'] +'</td><th>Normal Hourly Rate</th><td>'+ response['hourly_payment_rate'] +'</td></tr><tr><th>Total OT Hours</th><td>'+ response['total_ot_hours'] +'</td><th>OT Hourly Rate</th><td>'+ response['ot_payment_rate'] +'</td></tr></thead></tbody ></table ><table class="table table-hover table-bordered border-dark"><thead><tr ><th>Basic Salary</th><td >'+ response['total_working_hours'] +' x '+ response['hourly_payment_rate'] +'</td><td class="table-secondary"> '+ response['basic_salary'] +'</td></tr><tr ><th>Total OT Payment</th><td >'+ response['total_ot_hours'] +' x '+ response['ot_payment_rate'] +'</td> <td class="table-secondary">'+ response['ot_payment'] +'</td></tr><tr ><th>Net Payment</th><td> </td><td class="table-warning"> '+ response['net_salary'] +'</td></tr></thead></tbody></table > ')
             }
         });
     }
