@@ -354,7 +354,7 @@ class PayRollTestView(View):
                         b = (out_time_difference_ot_hours % 0.5)
                         if out_time_difference_ot_hours < 0.5:
                             pass
-                        elif out_time_difference_ot_hours > 0.5:
+                        elif out_time_difference_ot_hours >= 0.5:
                             ot_hours = ot_hours + (0.5 * a) 
                 if record['day'] == "Saturday":
                     ot_hours = ot_hours + 3
