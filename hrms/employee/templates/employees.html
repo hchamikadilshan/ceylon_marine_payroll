@@ -20,6 +20,7 @@
                     <th scope="col">Emp ID</th>
                     <th scope="col">Emp Type</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Department</th>
                     <th scope="col">EPF No</th>
                     <th scope="col">NIC No</th>
                     <!-- <th scope="col">Appoinment Date</th>
@@ -39,8 +40,13 @@
                 <tr>
                     <th scope="row"></th>
                     <td>{{ employee.emp_id }}</td>
-                    <td>{{ employee.emp_type }}</td>
+                    {% if employee.emp_type == "1" %}
+                    <td>Has EPF</td>
+                    {% elif employee.emp_type == "2" %}
+                    <td>No EPF</td>
+                    {% endif %}
                     <td>{{ employee.name }}</td>
+                    <td>{{ employee.department }}</td>
                     <td>{{ employee.epf_no }}</td>
                     <td>{{ employee.nic_no }}</td>
                     <!-- <td>{{ employee.appoinement_date }}</td>
