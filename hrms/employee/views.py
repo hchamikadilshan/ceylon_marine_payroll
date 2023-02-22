@@ -27,6 +27,7 @@ class AddNewEmployeeView(View):
         emp_id = request.POST['emp_id']
         emp_type = request.POST['emp_type']
         name = request.POST['name']
+        department = request.POST['department']
         epf_no = request.POST['epf_no']
         nic_no = request.POST['nic_no']
         appoinment_date = request.POST['appoinment_date']
@@ -42,7 +43,7 @@ class AddNewEmployeeView(View):
         bank_acc_name = request.POST['bank_acc_name']
         bank_acc_no = request.POST['bank_acc_no']
 
-        employee = Employee(emp_id=emp_id, name=name,
+        employee = Employee(emp_id=emp_id, name=name, department=department,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, emp_type=emp_type, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
@@ -76,7 +77,7 @@ class GetEmployeeSalaryDetails(View):
             employee = Employee.objects.get(emp_id=emp_id)
             try:
                 employee_finance = EmployeeFinance.objects.filter(employee=employee).order_by('-submit_date').first()
-                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'fixed_allowance': employee_finance.fixed_allowance, 'leave_payment': employee_finance.leave_payment, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
+                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'leave_payment': employee_finance.leave_payment, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
             except EmployeeFinance.DoesNotExist:
                 return JsonResponse({'status': 0})
         except Employee.DoesNotExist:
@@ -91,7 +92,6 @@ class EmployeeSalaryDetailsView(View):
         emp_id = request.POST["emp_id_salary"]
         daily_payment = request.POST["emp_daily_payment"]
         ot_payment_rate = request.POST["emp_ot_rate"]
-        fixed_allowance = request.POST["emp_fixed_allowance"]
         leave_payment = request.POST["emp_leave_payment"]
         br_payment = request.POST["emp_br_payment"]
         epf = request.POST["emp_EPF"]
@@ -102,7 +102,7 @@ class EmployeeSalaryDetailsView(View):
         employee = Employee.objects.get(emp_id=emp_id)
 
         emplyee_finance_record = EmployeeFinance(
-            employee=employee, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, fixed_allowance=0 if fixed_allowance == "" else fixed_allowance, leave_payment=0 if leave_payment == "" else leave_payment, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
+            employee=employee, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, leave_payment=0 if leave_payment == "" else leave_payment, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
 
         emplyee_finance_record.save()
 

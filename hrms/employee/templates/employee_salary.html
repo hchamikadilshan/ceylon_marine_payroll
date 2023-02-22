@@ -44,13 +44,6 @@
             </div>
         </div>
         <div class="col-md-3">
-            <label class=" col-form-label" for="emp_fixed_allowance">Fixed Allowance</label>
-            <div class="">
-                <input class="form-control " type="text" name="emp_fixed_allowance" id="emp_fixed_allowance">
-            </div>
-        </div>
-
-        <div class="col-md-3">
             <label class=" col-form-label" for="emp_leave_payment">Leave Payment</label>
             <div class="">
                 <input class="form-control " type="text" name="emp_leave_payment" id="emp_leave_payment">
@@ -157,7 +150,7 @@
                     }else{
                         document.getElementById("emp_daily_payment").value = response['daily_payment']
                         document.getElementById("emp_ot_rate").value = response['ot_payment']
-                        document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
+                        // document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
                         document.getElementById("emp_leave_payment").value = response['leave_payment']
                         document.getElementById("emp_br_payment").value = response['br_payment']
                         // document.getElementById("emp_advances_limit").value = response['adavance']

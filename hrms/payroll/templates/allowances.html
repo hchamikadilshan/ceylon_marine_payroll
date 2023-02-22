@@ -4,35 +4,49 @@
 {% block title %} Allowances {% endblock%}
 
 {% block top_heading %}Payroll Management{% endblock %}
-{% block sub_heading %} Allowances{% endblock %}
-{% block sub_heading2 %} Allowances{% endblock %}
+{% block sub_heading %} Alllowances{% endblock %}
+{% block sub_heading2 %} Alllowances{% endblock %}
 
 {% block content %}
-<form method="POST">
+<form method="POST" id="allowance_form">
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
+            <h5 class="card-title">Add Allowance</h5>
             <div class="col-md-2">
-                <label class="col-form-label" for="attendance_view_emp_id">Employee ID</label>
+                <label class="col-form-label" for="allowance_view_emp_id">Employee ID</label>
                 <div class="">
                     <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
-                        name="attendance_view_emp_id" id="attendance_view_emp_id" required>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <label class=" col-form-label" for="attendance_view_emp_name">Name</label>
-                <div class="">
-                    <input class="form-control" type="text" name="attendance_view_emp_name"
-                        id="attendance_view_emp_name" disabled required>
+                        name="allowance_view_emp_id" id="allowance_view_emp_id" required>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <label class=" col-form-label" for="attendance_view_month_year">Month/Year</label>
+                <label class=" col-form-label" for="allowance_emp_name">Name</label>
                 <div class="">
-                    <input onchange="getAttendanceData();" class="form-control" type="month"
-                        name="attendance_view_month_year" id="attendance_view_month_year">
+                    <input class="form-control" type="text" name="allowance_emp_name"
+                        id="allowance_emp_name" disabled required>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label class=" col-form-label" for="allowance_date">Date</label>
+                <div class="">
+                    <input class="form-control" type="date" name="allowance_date" id="allowance_date"
+                        required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="allowance_description">Description</label>
+                <div class="">
+                    <input class="form-control" type="text" name="allowance_description" id="allowance_description" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="col-form-label" for="allowance_amount">Allowance Amount</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="allowance_amount" id="allowance_amount" required>
                 </div>
             </div>
         </div>
@@ -40,21 +54,19 @@
 </form>
 <div class="card formss">
     <div class="card-body ">
-        <h5 class="card-title">Attendance Data Table</h5>
+        <h5 class="card-title">Advance Payments</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_custom">
+        <table class="table table-hover table_bordered">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
-                    <th scope="col">Day</th>
-                    <th scope="col">Time In</th>
-                    <th scope="col">Time Out</th>
-                    <th scope="col">Working Hours</th>
-                    <th scope="col">O/T Hours</th>
+                    <th scope="col">Dascription</th>
+                    <th scope="col">Payment Amount</th>
+
                 </tr>
             </thead>
-            <tbody id="attendance_data_table">
+            <tbody id="allowance_table">
             </tbody>
         </table>
         <!-- End Table with hoverable rows -->
@@ -64,57 +76,83 @@
 
 
 <script>
-    console.log("Workingggg");
-    //Get employee name
-    var attendance_view_emp_id_input = document.getElementById("attendance_view_emp_id");
-    var attendance_view_emp_name_input = document.getElementById("attendance_view_emp_name");
-    attendance_view_emp_id_input.addEventListener("keypress", function (event) {
+    console.log("Workinggggllllll");
+    //Get employee name and Data
+    var allowance_emp_id_input = document.getElementById("allowance_view_emp_id");
+    var allowance_emp_name_input = document.getElementById("allowance_emp_name");
+    allowance_emp_id_input.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             event.preventDefault();
-            attendance_view_emp_name_input.value = "";
-            attendance_view_emp_id = attendance_view_emp_id_input.value;
+            allowance_emp_name_input.value = "";
+            allowance_emp_id = allowance_emp_id_input.value;
 
 
             $.ajax({
                 type: 'POST',
                 url: "{% url 'get_emp_name_view' %}",
                 data: {
-                    name: attendance_view_emp_id,
+                    name: allowance_emp_id,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success: function (response) {
-                    attendance_view_emp_name_input.value = response.name
+                    allowance_emp_name_input.value = response.name
+
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_allowance_data' %}",
+                data: {
+                    emp_id: allowance_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#allowance_table").empty()
+                    var i = 0;
+                    while (i < response['allowance_data_list'].length) {
+                        $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td></tr> ')
+                        i++
+                    }
                 }
             });
         }
     });
 
-    //Get Attendance Data
-    function getAttendanceData() {
-        var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
-        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'payroll_test_view' %}",
-            data: {
-                emp_id: attendance_view_emp_id,
-                month: attendance_view_month_year,
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-            },
-            success: function (response) {
-                $("#attendance_data_table").empty()
-                console.log(response['total_working_hours'])
-                console.log(response['total_ot_hours'])
-                var i = 0;
-                while (i < response['attendance_list'].length) {
-                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
+    //Submit Advance Payment
+    var allowance_input = document.getElementById("allowance_amount");
+    var allowance_view_emp_id_input = document.getElementById("allowance_view_emp_id");
+    var allowance_date_input = document.getElementById("allowance_date");
+    var allowance_description_input = document.getElementById("allowance_description");
+    allowance_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            emp_id = allowance_view_emp_id_input.value
+            date = allowance_date_input.value
+            allowance_value = allowance_input.value
+            description = allowance_description_input.value
+            console.log("dsfsdfdsfds")
 
-                    i++
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'allowances_view' %}",
+                data: {
+                    emp_id: emp_id,
+                    date: date,
+                    amount: allowance_value,
+                    description : description,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    
+                    $("#allowance_table").append('<tr><td>' + date + '</td><td>' + description + '</td><td>' + amount + '</td></tr> ')
+                        
+                    
+                    allowance_input.value = ""
+                    allowance_description_input.value = ""
                 }
-            }
-        });
-    }
-
+            });
+        }
+    });
 
 </script>
 

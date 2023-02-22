@@ -13,6 +13,72 @@
     A simple danger alert—check it out!
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div> -->
+<!-- Modal -->
+<div class="modal fade" id="edit_attendance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Attendance Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-12">
+                                <label for="inputNanme4" class="form-label">Employee ID</label>
+                                <input type="text" class="form-control" id="edit_attendance_emp_id" name="edit_attendance_emp_id" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label for="inputEmail4" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="edit_attendance_emp_name" name="edit_attendance_emp_name" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Date</label>
+                                <input type="Date" class="form-control" id="edit_attendance_date" name="edit_attendance_date" onchange="getDateNameEdit();">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Day</label>
+                                <input type="text" class="form-control" id="edit_attendance_day" name="edit_attendance_day" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Time In</label>
+                                <input type="text" class="form-control" id="edit_attendance_time_in" name="edit_attendance_time_in">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Time Out</label>
+                                <input type="text" class="form-control" id="edit_attendance_time_out" name="edit_attendance_time_out">
+                            </div>
+                            <div class="col-md-6">
+                                <legend class="col-form-label">Next Day</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_attendance_next_day" value="1"
+                                        name="edit_attendance_next_day">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <legend class="col-form-label">Special Holiday</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_attendance_special_holiday" value="1"
+                                        name="edit_attendance_special_holiday">
+                                </div>
+                            </div>
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editAttendance();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <form method="POST">
     {% csrf_token %}
     <div class="card formss">
@@ -88,7 +154,7 @@
         <h5 class="card-title">Attendance Data Table</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_custom">
+        <table class="table table-hover table_bordered">
             <thead>
                 <tr>
                     <th scope="col">Employee ID</th>
@@ -97,6 +163,8 @@
                     <th scope="col">Day</th>
                     <th scope="col">Time In</th>
                     <th scope="col">Time Out</th>
+                    <th scope="col">Next Day</th>
+                    <th scope="col">Special Holiday</th>
                     <th scope="col">Edit</th>
                 </tr>
             </thead>
@@ -112,6 +180,71 @@
 
 <script>
     
+    $('#edit_attendance_data_model').on('show.bs.modal', function (event) {
+
+            
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var emp_id = button.data('empid') 
+            var emp_name = button.data('empname') 
+            var date = button.data('date') 
+            var day = button.data('day') 
+            var next_day = button.data('nextday') 
+            var special_holiday = button.data('specialholiday') 
+            var time_in = button.data('timein') 
+            var time_out = button.data('timeout') 
+            var modal = $(this)
+
+            modal.find('#edit_attendance_emp_id').val(emp_id)
+            modal.find('#edit_attendance_emp_name').val(emp_name)
+            modal.find('#edit_attendance_date').val(date)
+            modal.find('#edit_attendance_day').val(day)
+            modal.find('#edit_attendance_time_in').val(time_in)
+            modal.find('#edit_attendance_time_out').val(time_out)
+            modal.find('#edit_attendance_next_day').prop('checked', next_day)
+            modal.find('#edit_attendance_special_holiday').prop('checked', special_holiday)
+
+            
+
+            
+        })
+    function editAttendance(){
+        console.log("sinside")
+        var emp_id = document.getElementById("edit_attendance_emp_id").value;
+        var emp_name = document.getElementById("edit_attendance_emp_name").value;
+        var date = document.getElementById("edit_attendance_date").value;
+        var day = document.getElementById("edit_attendance_day").value;
+        var next_day = document.getElementById("edit_attendance_next_day").checked;
+        var special_holiday = document.getElementById("edit_attendance_special_holiday").checked;
+        var time_in = document.getElementById("edit_attendance_time_in").value;
+        var time_out =  document.getElementById("edit_attendance_time_out").value;
+
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_attendance_view' %}",
+            data: {
+                emp_id: emp_id,
+                date: date,
+                date: date,
+                day: day,
+                next_day: next_day,
+                special_holiday: special_holiday,
+                time_in: time_in,
+                time_out: time_out,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_attendance_data_model').modal('toggle')
+            }
+        });
+    }
+    function getDateNameEdit() {
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var date = document.getElementById("edit_attendance_date").value;
+            date = new Date(date)
+            var day = days[date.getDay()]
+            document.getElementById("edit_attendance_day").value = day
+        }
     function getDateName() {
             var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             var date = document.getElementById("attendance_date").value;
@@ -169,6 +302,17 @@
                 day= document.getElementById("attendance_day").value;
                 special_holiday = document.getElementById("attendance_special_holiday").checked;
                 next_day = document.getElementById("attendance_next_day").checked;
+                if (next_day === true){
+                    next_day_value = "Yes"
+                }else {
+                    next_day_value = "No"
+                }
+                if (special_holiday === true) {
+                    special_holiday_value = "Yes"
+                } else {
+                    special_holiday_value = "No"
+                }
+
 
 
                 // var attendance_alert = document.getElementById("attendance_alert");
@@ -176,7 +320,7 @@
                 if (day === "" || emp_id==="" || emp_name==="" || time_in==="" || time_out==="") {
                      alert("You need to fill all the fields")
                 } else {
-                    $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '">Edit</button></td></tr> ')
+                    $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td>' + next_day_value + '</td><td>' + special_holiday_value + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + emp_id + '" data-empName="' + emp_name + '" data-date="' + date + '" data-day="' + day + '" data-timeIn="' + time_in + '" data-timeOut="' + time_out + '"  data-nextDay="' + next_day + '" data-specialHoliday="' + special_holiday + '">Edit</button></td></tr> ')
 
                     $.ajax({
                         type: 'POST',

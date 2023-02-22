@@ -11,9 +11,9 @@ class SalaryAdvance(models.Model):
     time_stamp = models.DateTimeField()
 
 class Alllowance(models.Model):
-    Employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.now())
     amount = models.FloatField()
-    remark = models.CharField(max_length=200, blank=True)
+    description = models.CharField(max_length=200, blank=True)
     time_stamp = models.DateTimeField()
 

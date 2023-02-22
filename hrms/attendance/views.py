@@ -52,7 +52,26 @@ class MarkAttendanceMainView(View):
     #         attendance.save()
 
     #     return redirect('mark_attendance_main_view')
+class EditAttendance(View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        day = request.POST['day']
+        in_time = request.POST['time_in']
+        out_time = request.POST['time_out']
+        special_holiday = request.POST['special_holiday']
+        next_day = request.POST['next_day']
+        emp = Employee.objects.get(emp_id=emp_id)
+        attendance = Attendance.objects.get(employee=emp,date=date)
+        attendance.date = date
+        attendance.day = day
+        attendance.in_time= in_time
+        attendance.out_time = out_time
+        attendance.special_holiday = True if special_holiday == "true" else False
+        attendance.next_day = True if next_day == "true" else False
 
+        attendance.save()
+        return JsonResponse({})
 
 class ViewAttendanceByEmployeeView(View):
     def get(self,request):

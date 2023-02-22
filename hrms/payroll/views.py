@@ -26,8 +26,10 @@ class EmployeeSalaryPdfView(View):
         attendance_record = Attendance.objects.filter(
             employee=emp, date__month=year_month_split[1]).order_by('date').values()
         attendance_record_list = list(attendance_record)
+        min_salary_amount = 16600.0
         total_working_hours = 0
         total_ot_hours = 0
+        epf = 0
 # ----------------------------------------------------------------------------------------
         # Adding Heading Data
         table_data = []
@@ -196,6 +198,46 @@ class EmployeeSalaryPdfView(View):
 
             net_salary = basic_salary + ot_payment
 
+            
+
+# Room Charges
+            room_charge = employee_finance.room_charge
+
+            net_salary = basic_salary + ot_payment - room_charge
+# Advance Payment Calculation
+            try:
+                advance_payment_data = SalaryAdvance.objects.filter(
+                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                advance_payment_data_list = list(advance_payment_data)
+                total_advance_amount = 0
+                for advance in advance_payment_data_list:
+                    total_advance_amount = total_advance_amount + \
+                        advance["amount"]
+                net_salary = net_salary - total_advance_amount
+
+            except SalaryAdvance.DoesNotExist:
+                print("Salary Advances does not exists")
+# Allowances Calculation
+            try:
+                allowance_data = Alllowance.objects.filter(
+                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                allowance_data_list = list(allowance_data)
+                total_allowance = 0
+                for allowance in allowance_data_list:
+                    total_allowance = total_allowance + allowance["amount"]
+            except Alllowance.DoesNotExist:
+                print("No Allowance")
+# EPF Calculation
+            if emp.emp_type == "1":
+                epf = epf + (min_salary_amount * 0.08)
+            elif emp.emp_type == "2":
+                pass
+            net_salary = net_salary - epf + total_allowance
+
+            room_charge = "{:.2f}".format(room_charge)
+            epf = "{:.2f}".format(epf)
+            total_advance_amount = "{:.2f}".format(total_advance_amount)
+            total_allowance = "{:.2f}".format(total_allowance)
             ot_payment = "{:.2f}".format(ot_payment)
             ot_payment_rate = "{:.2f}".format(ot_payment_rate)
             hourly_payment_rate = "{:.2f}".format(hourly_payment_rate)
@@ -206,10 +248,30 @@ class EmployeeSalaryPdfView(View):
 
 
 # -------------------------------------------------------------------------------------
-        salary_data = []
+        empty_row = ["","","","","","",""]
         salary_details_row_1 = [
-            "Basic Salary", f"{hourly_payment_rate} x {total_working_hours}", basic_salary]
-        salary_data.append(salary_details_row_1)
+            "Basic Salary", f"{hourly_payment_rate} x {total_working_hours}", "", basic_salary, ""]
+        salary_details_row_2 = [
+            "Total OT Payment", f"{ot_payment_rate} x {total_ot_hours}", "", ot_payment, ""]
+        salary_details_row_3 = [
+            "Allowance", "", "", total_allowance, "", "", ""]
+        salary_details_row_4 = [
+            "Salary Advance", "", "", f"({total_advance_amount})", "", "", ""]
+        salary_details_row_5 = [
+            "EPF", "", "", f"({epf})", "", ""]
+        salary_details_row_6 = [
+            "Room Charge", "", "", f"({room_charge})", "", ""]
+        salary_details_row_7 = [
+            "Net Payment", "", "", "", "", net_salary]
+            
+        # table_data.append(empty_row)
+        table_data.append(salary_details_row_1)
+        table_data.append(salary_details_row_2)
+        table_data.append(salary_details_row_3)
+        table_data.append(salary_details_row_4)
+        table_data.append(salary_details_row_5)
+        table_data.append(salary_details_row_6)
+        table_data.append(salary_details_row_7)
 
         buffer = io.BytesIO()
         file_name = f"{emp_id}_{year_month}_Salary_Details.pdf"
@@ -217,7 +279,7 @@ class EmployeeSalaryPdfView(View):
         pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title)
         elements = []
         attendance_table = Table(table_data)
-        salary_table = Table(salary_data)
+        # salary_table = Table(salary_data)
         attendance_table_styles = TableStyle(
             [
              ('SPAN', (0, 0), (-1, 0)),
@@ -225,25 +287,48 @@ class EmployeeSalaryPdfView(View):
              ('SPAN', (0, 1), (-1, 1)),
              ('SPAN', (3, 2), (-1, 2)),
              ('SPAN', (3, 3), (-1, 3)),
+            #  ('SPAN', (0, -8), (-1, -8)),
+             ('SPAN', (1, -7), (2,-7)),# Basic Salary Row
+             ('SPAN', (3, -7), (4, -7)),  
+             ('SPAN', (5, -7), (6, -7)),
+             ('SPAN', (1, -6), (2, -6)),  # OT Row
+             ('SPAN', (3, -6), (4, -6)),
+             ('SPAN', (5, -6), (6, -6)),
+             ('SPAN', (1, -5), (2, -5)),  # Allowance Row
+             ('SPAN', (3, -5), (4, -5)), 
+             ('SPAN', (5, -5), (6, -5)),
+             ('SPAN', (1, -4), (2, -4)),  # Salary Advance Row
+             ('SPAN', (3, -4), (4, -4)), 
+             ('SPAN', (5, -4), (6, -4)),
+             ('SPAN', (1, -3), (2, -3)),  # EPF Row
+             ('SPAN', (3, -3), (4, -3)),
+             ('SPAN', (5, -3), (6, -3)),
+             ('SPAN', (1, -2), (2, -2)),  # Room Charge Row
+             ('SPAN', (3, -2), (4, -2)),
+             ('SPAN', (5, -2), (6, -2)),
+             ('SPAN', (1, -1), (2, -1)),  # Net Payment Row
+             ('SPAN', (3, -1), (4, -1)),
+             ('SPAN', (5, -1), (6, -1)),
              ('GRID', (0, 2), (-1, 2), 1, colors.black),
              ('GRID', (0, 3), (-1, 3), 1, colors.black),
              ('BOX', (0, 4), (-1, -1), 1, colors.black),
              ('GRID', (0, 4), (-1, -1), 1, colors.black),
              ('ALIGN', (2, 4), (5, -1),'RIGHT'),
+             ('FONT', (0, 0), (-1, -1), 'Helvetica',9.5),
              
 
              ]
             
         )
-        salary_table_styles = TableStyle(
-            [
-                ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ]
-        )
+        # salary_table_styles = TableStyle(
+        #     [
+        #         ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        #     ]
+        # )
         attendance_table.setStyle(attendance_table_styles)
-        salary_table.setStyle(salary_table_styles)
+        # salary_table.setStyle(salary_table_styles)
         elements.append(attendance_table)
-        elements.append(salary_table)
+        # elements.append(salary_table)
         pdf.build(elements)
         buffer.seek(0)
         
@@ -253,6 +338,37 @@ class AllowancesView(View):
     def get(self,request):
         return render(request,'allowances.html')
 
+    def post(self,request):
+        print("inside allowance payment")
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        allowance = Alllowance(
+            employee=emp, date=date,description=description, amount=amount, time_stamp=time_stamp)
+        allowance.save()
+        return  JsonResponse({})
+
+
+class GetAllowanceData(View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id=emp_id)
+        allowance_data = Alllowance.objects.filter(
+            employee=emp).order_by('date').values()
+        allowance_data_list = list(allowance_data)
+        return JsonResponse({'allowance_data_list': allowance_data_list})
+
+class GetAdvancePaymentData(View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id=emp_id)
+        advance_payment_data = SalaryAdvance.objects.filter(employee=emp).order_by('date').values()
+        advance_payment_data_list = list(advance_payment_data)
+        return JsonResponse({'advance_payment_data_list': advance_payment_data_list})
 
 class AdvancePaymentsView(View):
     def get(self, request):
@@ -272,7 +388,7 @@ class AdvancePaymentsView(View):
 
 
 
-class PayRollTestView(View):
+class SalaryReportView(View):
     def get(self, request):
         return render(request, 'payroll_test.html')
 
@@ -284,8 +400,10 @@ class PayRollTestView(View):
         attendance_record = Attendance.objects.filter(
             employee=emp, date__month=year_month_split[1]).order_by('date').values()
         attendance_record_list = list(attendance_record)
+        min_salary_amount = 16600.0
         total_working_hours = 0
         total_ot_hours = 0
+        epf = 0
 
         for record in attendance_record_list:
             normal_working_hours = 9.0
@@ -309,7 +427,7 @@ class PayRollTestView(View):
             if record['next_day'] == 0:
                 if (in_time_obj == attendance_in_time and out_time_obj == attendance_out_time):
                     pass
-                # Deducting the punishment hours
+# Deducting the punishment hours
                 elif (in_time_obj > attendance_in_time or out_time_obj < attendance_out_time):
                     if in_time_obj > attendance_in_time:
                         in_time_difference = in_time_obj - attendance_in_time
@@ -336,7 +454,7 @@ class PayRollTestView(View):
                 else:
                     normal_working_hours = normal_working_hours - 1
                 
-                # O/T Hours Calculation
+# O/T Hours Calculation
                 if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
                     if in_time_obj < attendance_in_time :
                         in_time_difference_ot = attendance_in_time - in_time_obj
@@ -362,10 +480,10 @@ class PayRollTestView(View):
                     ot_hours = ot_hours + 4
                 elif record['special_holiday'] == 1:
                     ot_hours = ot_hours + 4
-            # Next Day Out
+# Next Day Out
             else: 
                 
-                # Out time O/T Hours Calculation
+# Out time O/T Hours Calculation
                 if record['day'] == "Saturday":
                     ot_hours = ot_hours + 3
                 elif record['day'] == "Sunday":
@@ -381,12 +499,10 @@ class PayRollTestView(View):
                         pass
                 elif out_time_difference_ot_special_hours >= 0.5:
                     ot_hours = ot_hours + (0.5 * a) 
-                # In time O/T Hours Calculation
+# In time O/T Hours Calculation
                 if (in_time_obj < attendance_in_time):
-                    print(record)
                     in_time_difference_ot = attendance_in_time - in_time_obj
                     in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
-                    print(in_time_difference_ot_hours)
                     a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
                     b = (in_time_difference_ot.total_seconds()/(60*60)) % 0.5
                     if in_time_difference_ot_hours < 0.5:
@@ -413,7 +529,7 @@ class PayRollTestView(View):
         for record in attendance_record_list:
             total_working_hours = total_working_hours + record['working_hours']
             total_ot_hours = total_ot_hours + record['ot_hours']
-
+# Advance Payment Calculation
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
@@ -423,8 +539,46 @@ class PayRollTestView(View):
             basic_salary = total_working_hours * hourly_payment_rate
             ot_payment = total_ot_hours * ot_payment_rate
 
-            net_salary = basic_salary + ot_payment
+# Room Charges
+            room_charge = employee_finance.room_charge
 
+
+            net_salary = basic_salary + ot_payment - room_charge
+            try:
+                advance_payment_data = SalaryAdvance.objects.filter(
+                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                advance_payment_data_list = list(advance_payment_data)
+                total_advance_amount = 0
+                for advance in advance_payment_data_list:
+                    total_advance_amount = total_advance_amount + advance["amount"]
+                net_salary = net_salary - total_advance_amount
+
+            except SalaryAdvance.DoesNotExist:
+                print("Salary Advances does not exists")
+# Allowances Calculation 
+            try:
+                allowance_data = Alllowance.objects.filter(
+                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                allowance_data_list = list(allowance_data)
+                total_allowance = 0
+                for allowance in allowance_data_list:
+                    total_allowance = total_allowance + allowance["amount"]
+            except Alllowance.DoesNotExist:
+                print("No Allowance")
+
+
+
+# EPF Calculation
+            if emp.emp_type == "1":
+                epf = epf + (min_salary_amount * 0.08)
+            elif emp.emp_type =="2":
+                pass
+            net_salary = net_salary - epf + total_allowance
+
+            room_charge = "{:.2f}".format(room_charge)
+            epf = "{:.2f}".format(epf)
+            total_advance_amount = "{:.2f}".format(total_advance_amount)
+            total_allowance = "{:.2f}".format(total_allowance)
             ot_payment = "{:.2f}".format(ot_payment)
             ot_payment_rate = "{:.2f}".format(ot_payment_rate)
             hourly_payment_rate = "{:.2f}".format(hourly_payment_rate)
@@ -433,5 +587,5 @@ class PayRollTestView(View):
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
 
-        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours': total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary}, status=200)
+        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours': total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge}, status=200)
         

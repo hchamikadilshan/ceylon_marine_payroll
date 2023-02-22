@@ -7,6 +7,7 @@ class Employee(models.Model):
     emp_type = models.CharField(max_length=60)
     emp_title = models.CharField(default="", max_length=50),
     name = models.CharField(max_length=100)
+    department = models.CharField(max_length=100,default="")
     epf_no = models.CharField(max_length=10)
     nic_no = models.CharField(max_length=15)
     appoinment_date = models.DateField(null=True)
@@ -24,7 +25,7 @@ class EmployeeFinance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     daily_payment = models.FloatField()
     ot_payment_rate = models.FloatField()
-    fixed_allowance = models.FloatField()
+    # fixed_allowance = models.FloatField()
     leave_payment = models.FloatField()
     br_payment = models.FloatField()
     epf = models.FloatField()

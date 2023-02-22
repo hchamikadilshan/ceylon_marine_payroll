@@ -70,7 +70,7 @@
 
 <script>
     console.log("Workinggggllllll");
-    //Get employee name
+    //Get employee name and Data
     var attendance_view_emp_id_input = document.getElementById("advance_payment_view_emp_id");
     var attendance_view_emp_name_input = document.getElementById("advance_payment_emp_name");
     attendance_view_emp_id_input.addEventListener("keypress", function (event) {
@@ -90,6 +90,22 @@
                 success: function (response) {
                     attendance_view_emp_name_input.value = response.name
                     
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_advance_payment_data' %}",
+                data: {
+                    emp_id: attendance_view_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#advance_payment_table").empty()
+                    var i = 0;
+                    while (i < response['advance_payment_data_list'].length) {
+                        $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td></tr> ')
+                        i++
+                    }
                 }
             });
         }
@@ -118,8 +134,9 @@
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
                     success: function (response) {
-                        
+
                         $("#advance_payment_table").append('<tr><td>' + date + '</td><td>' + advance_payamount_value + '</td></tr> ')
+                        advance_payamount_input.value = ""
                     }
                 });
             }
