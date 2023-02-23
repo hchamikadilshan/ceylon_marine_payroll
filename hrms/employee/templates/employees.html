@@ -18,7 +18,6 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Emp ID</th>
-                    <th scope="col">Emp Type</th>
                     <th scope="col">Name</th>
                     <th scope="col">Department</th>
                     <th scope="col">EPF No</th>
@@ -40,11 +39,11 @@
                 <tr>
                     <th scope="row"></th>
                     <td>{{ employee.emp_id }}</td>
-                    {% if employee.emp_type == "1" %}
+                    <!-- {% if employee.emp_type == "1" %}
                     <td>Has EPF</td>
                     {% elif employee.emp_type == "2" %}
                     <td>No EPF</td>
-                    {% endif %}
+                    {% endif %} -->
                     <td>{{ employee.name }}</td>
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.epf_no }}</td>

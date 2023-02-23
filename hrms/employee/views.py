@@ -7,7 +7,14 @@ from datetime import datetime
 from django.utils.datastructures import MultiValueDictKeyError
 
 # Create your views here.
-
+class AddEmployeeInAttendance(View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        name = request.POST['name']
+        
+        employee = Employee(emp_id=emp_id, name=name)
+        employee.save()
+        return JsonResponse({})
 
 class AddNewEmployeeView(View):
     def get(self, request):
@@ -24,27 +31,23 @@ class AddNewEmployeeView(View):
     #     return redirect("add_new_emp_view")
     def post(self,request):
 
-        emp_id = request.POST['emp_id']
-        emp_type = request.POST['emp_type']
-        name = request.POST['name']
-        department = request.POST['department']
-        epf_no = request.POST['epf_no']
-        nic_no = request.POST['nic_no']
-        appoinment_date = request.POST['appoinment_date']
-        termination_date = request.POST['termination_date']
-        address = request.POST['address']
-        mobile_no = request.POST['mobile_no']
-        email = request.POST['email']
-        bank_name = request.POST['bank_name']
-        try :
-            bank_branch = request.POST['bank_branch']
-        except MultiValueDictKeyError:
-            bank_branch = ""
-        bank_acc_name = request.POST['bank_acc_name']
-        bank_acc_no = request.POST['bank_acc_no']
+        emp_id = request.POST.get('emp_id')
+        name = request.POST.get('name')
+        department = request.POST.get('department',"")
+        epf_no = request.POST.get('epf_no',"")
+        nic_no = request.POST.get('nic_no',"")
+        appoinment_date = request.POST.get('appoinment_date',"")
+        termination_date = request.POST.get('termination_date',"")
+        address = request.POST.get('address',"")
+        mobile_no = request.POST.get('mobile_no',"")
+        email = request.POST.get('email',"")
+        bank_name = request.POST.get('bank_name',"")
+        bank_branch = request.POST.get('bank_branch',"")
+        bank_acc_name = request.POST.get('bank_acc_name',"")
+        bank_acc_no = request.POST.get('bank_acc_no',"")
 
         employee = Employee(emp_id=emp_id, name=name, department=department,
-                            epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, emp_type=emp_type, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+                            epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")
@@ -90,11 +93,13 @@ class EmployeeSalaryDetailsView(View):
 
     def post(self, request):
         emp_id = request.POST["emp_id_salary"]
+        epf_type = request.POST["epf_type"]
         daily_payment = request.POST["emp_daily_payment"]
         ot_payment_rate = request.POST["emp_ot_rate"]
         leave_payment = request.POST["emp_leave_payment"]
         br_payment = request.POST["emp_br_payment"]
         epf = request.POST["emp_EPF"]
+
         # advance_limit = request.POST["emp_advances_limit"]
         room_charge = request.POST["emp_room_charges"]
         staff_welf_contribution = request.POST["emp_staff_welf_contribution"]
@@ -102,7 +107,7 @@ class EmployeeSalaryDetailsView(View):
         employee = Employee.objects.get(emp_id=emp_id)
 
         emplyee_finance_record = EmployeeFinance(
-            employee=employee, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, leave_payment=0 if leave_payment == "" else leave_payment, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
+            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, leave_payment=0 if leave_payment == "" else leave_payment, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
 
         emplyee_finance_record.save()
 

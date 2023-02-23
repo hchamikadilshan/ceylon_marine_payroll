@@ -11,17 +11,27 @@
 {% csrf_token %}
 <div class="card formss">
     <div class="card-body row g-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="col-form-label" for="emp_id_salary">Employee ID</label>
                 <div class="">
                     <input class="form-control" type="text" name="emp_id_salary" id="emp_id_salary">
                 </div>
             </div>
 
-            <div class="col-md-9">
+            <div class="col-md-7">
                 <label class=" col-form-label" for="emp_name_salary">Employee Name</label>
                 <div class="">
                     <input class="form-control " type="text" name="emp_name_salary" id="emp_name_salary" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class=" col-form-label" for="epf_type">EPF Type</label>
+                <div class="">
+                    <select class="form-control" name="epf_type" id="epf_type">
+                        <option value="1">Have EPF</option>
+                        <option value="2">No EPF</option>
+            
+                    </select>
                 </div>
             </div>
        

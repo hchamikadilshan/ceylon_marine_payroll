@@ -79,6 +79,43 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="add_employee_model" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Add Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-12">
+                                <label for="inputNanme4" class="form-label">Employee ID</label>
+                                <input type="text" class="form-control" id="add_employee_emp_id"
+                                    name="add_employee_emp_id" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label for="inputEmail4" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="add_employee_emp_name"
+                                    name="add_employee_emp_name">
+                            </div>
+                        </form><!-- Vertical Form -->
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="addEmployee();" class="btn btn-primary">Add Employee</button>
+            </div>
+        </div>
+    </div>
+</div>
 <form method="POST">
     {% csrf_token %}
     <div class="card formss">
@@ -180,6 +217,32 @@
 
 <script>
     
+    $('#add_employee_model').on('show.bs.modal', function (event) {
+        var input = $(event.relatedTarget)
+        var emp_id = document.getElementById("attendance_emp_id").value
+        var modal = $(this)
+        modal.find('#add_employee_emp_id').val(emp_id)
+    })
+    function addEmployee() {
+            console.log("sinside")
+            var emp_id = document.getElementById("add_employee_emp_id").value;
+            var emp_name = document.getElementById("add_employee_emp_name").value;
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'add_new_emp_view' %}",
+                data: {
+                    emp_id: emp_id,
+                    name: emp_name,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $('#add_employee_model').modal('toggle')
+                    document.getElementById("attendance_emp_name").value = emp_name
+                    document.getElementById("attendance_time_in").focus();
+
+                }
+            });
+        }
     $('#edit_attendance_data_model').on('show.bs.modal', function (event) {
 
             
@@ -207,6 +270,7 @@
 
             
         })
+    
     function editAttendance(){
         console.log("sinside")
         var emp_id = document.getElementById("edit_attendance_emp_id").value;
@@ -274,7 +338,12 @@
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
                     success: function (response) {
-                        attendance_emp_name_input.value = response.name
+                        if (response.name === "None"){
+                            $('#add_employee_model').modal('toggle')
+                        }else{
+                            attendance_emp_name_input.value = response.name
+                        }
+                        
                     }
                 });
             document.getElementById("attendance_time_in").focus();

@@ -228,9 +228,9 @@ class EmployeeSalaryPdfView(View):
             except Alllowance.DoesNotExist:
                 print("No Allowance")
 # EPF Calculation
-            if emp.emp_type == "1":
+            if employee_finance.epf_type == "1":
                 epf = epf + (min_salary_amount * 0.08)
-            elif emp.emp_type == "2":
+            elif employee_finance.epf_type == "2":
                 pass
             net_salary = net_salary - epf + total_allowance
 
@@ -474,21 +474,21 @@ class SalaryReportView(View):
                             pass
                         elif out_time_difference_ot_hours >= 0.5:
                             ot_hours = ot_hours + (0.5 * a) 
-                if record['day'] == "Saturday":
+                if (record['day'] == "Saturday" and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 3
-                elif record['day'] == "Sunday":
+                elif (record['day'] == "Sunday" and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 4
-                elif record['special_holiday'] == 1:
+                elif (record['special_holiday'] == 1 and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 4
 # Next Day Out
             else: 
                 
 # Out time O/T Hours Calculation
-                if record['day'] == "Saturday":
+                if (record['day'] == "Saturday" ):
                     ot_hours = ot_hours + 3
-                elif record['day'] == "Sunday":
+                elif (record['day'] == "Sunday" ):
                     ot_hours = ot_hours + 4
-                elif record['special_holiday'] == 1:
+                elif (record['special_holiday'] == 1 ):
                     ot_hours = ot_hours + 4
                 ot_hours = ot_hours +7.5
                 out_time_difference_ot_special = out_time_obj - attendance_out_time_mid_night
@@ -569,9 +569,9 @@ class SalaryReportView(View):
 
 
 # EPF Calculation
-            if emp.emp_type == "1":
+            if employee_finance.epf_type == "1":
                 epf = epf + (min_salary_amount * 0.08)
-            elif emp.emp_type =="2":
+            elif employee_finance.epf_type == "2":
                 pass
             net_salary = net_salary - epf + total_allowance
 
