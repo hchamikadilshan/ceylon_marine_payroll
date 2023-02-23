@@ -317,7 +317,7 @@
 
                 // var attendance_alert = document.getElementById("attendance_alert");
                 // $(".alert").alert('close')
-                if (day === "" || emp_id==="" || emp_name==="" || time_in==="" || time_out==="") {
+                if (day === "" || emp_id==="" || emp_name==="" ) {
                      alert("You need to fill all the fields")
                 } else {
                     $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td>' + next_day_value + '</td><td>' + special_holiday_value + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + emp_id + '" data-empName="' + emp_name + '" data-date="' + date + '" data-day="' + day + '" data-timeIn="' + time_in + '" data-timeOut="' + time_out + '"  data-nextDay="' + next_day + '" data-specialHoliday="' + special_holiday + '">Edit</button></td></tr> ')
