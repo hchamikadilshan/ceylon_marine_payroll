@@ -406,6 +406,8 @@
                             if (response.response == 0){
                                 $('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Duplicate Attendance!</strong> You can only mark 1 attendance for an employee per day.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>').insertAfter("#pagetitle")
                             }else{
+                                $("#messeges_container").empty()
+                                $("#messeges_container").append('<div class="alert alert-success alert-dismissible fade show formss" role="alert"><strong>Attendance Marked!</strong>Employee -'+ emp_name +'<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
                                 $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td>' + next_day_value + '</td><td>' + special_holiday_value + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + emp_id + '" data-empName="' + emp_name + '" data-date="' + date + '" data-day="' + day + '" data-timeIn="' + time_in + '" data-timeOut="' + time_out + '"  data-nextDay="' + next_day + '" data-specialHoliday="' + special_holiday + '">Edit</button></td></tr> ')
                             }
                         }
