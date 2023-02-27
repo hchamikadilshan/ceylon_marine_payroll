@@ -8,6 +8,28 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
+class EditEmployee(LoginRequiredMixin,View):
+    def post(self,request):
+        emp_id = request.POST.get('emp_id')
+        emp_name = request.POST.get('emp_name',"")
+        department = request.POST.get('department',"")
+        epf_no = request.POST.get('epf_no',"")
+        nic_no = request.POST.get('nic_no',"")
+        mobile_no = request.POST.get('mobile_no',"")
+        email = request.POST.get('email',"")
+        address = request.POST.get('address',"")
+        print(emp_id)
+        employee = Employee.objects.get(emp_id=emp_id)
+        employee.name = emp_name
+        employee.department = department
+        employee.epf_no = epf_no
+        employee.nic_no= nic_no
+        employee.mobile_no = mobile_no
+        employee.email = email
+        employee.address = address
+        employee.save()
+        return redirect('employees_main_view')
+
 class AddEmployeeInAttendance(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):

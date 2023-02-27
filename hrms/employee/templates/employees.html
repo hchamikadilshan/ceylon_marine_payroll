@@ -7,7 +7,67 @@
 {% block sub_heading2 %} Employees{% endblock %}
 
 {% block content %}
-
+<div class="modal fade" id="edit_employee_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Attendance Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="">
+                            {% csrf_token %}
+                            <div class="col-6">
+                                <label for="inputNanme4" class="form-label">Employee ID</label>
+                                <input type="text" class="form-control" id="edit_employee_emp_id" name="edit_employee_emp_id" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">EPF No</label>
+                                <input type="text" class="form-control" id="edit_employee_epf_no" name="edit_employee_epf_no">
+                            </div>
+                            <div class="col-12">
+                                <label for="inputEmail4" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="edit_employee_emp_name" name="edit_employee_emp_name" >
+                            </div>
+                            
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">NIC No</label>
+                                <input type="text" class="form-control" id="edit_employee_nic_no" name="edit_employee_nic_no" >
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="edit_employee_department" name="edit_employee_department">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Mobile No</label>
+                                <input type="text" class="form-control" id="edit_employee_mobile_no" name="edit_employee_mobile_no">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Emai</label>
+                                <input type="email" class="form-control" id="edit_employee_email" name="edit_employee_email">
+                            </div>
+                            <div class="col-12">
+                                <label for="inputAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="edit_employee_address" name="edit_employee_address">
+                            </div>
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editEmployee();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Employee Personal Details Table</h5>
@@ -57,7 +117,8 @@
                     <td>{{ employee.bank_branch}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td> -->
-                    <td><button class="btn btn-primary" data-id ="{{ employee.emp_id }}">View/Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-department="{{ employee.department }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}">Edit</button></td>
+                    
                 </tr>
                 {% endfor %}
             </tbody>
@@ -66,5 +127,62 @@
 
     </div>
 </div>
+<script>
+    $('#edit_employee_data_model').on('show.bs.modal', function (event) {
+
+            
+var button = $(event.relatedTarget) // Button that triggered the modal
+var emp_id = button.data('empid') 
+var emp_name = button.data('empname') 
+var department = button.data('department') 
+var epf_no = button.data('epfno') 
+var nic_no = button.data('nicno') 
+var mobile_no = button.data('mobileno') 
+var email = button.data('email') 
+var address = button.data('address') 
+var modal = $(this)
+
+modal.find('#edit_employee_emp_id').val(emp_id)
+modal.find('#edit_employee_emp_name').val(emp_name)
+modal.find('#edit_employee_department').val(department)
+modal.find('#edit_employee_epf_no').val(epf_no)
+modal.find('#edit_employee_nic_no').val(nic_no)
+modal.find('#edit_employee_mobile_no').val(mobile_no)
+modal.find('#edit_employee_email').val(email)
+modal.find('#edit_employee_address').val(address)
+})
+
+function editEmployee(){
+        console.log("sinside")
+        var emp_id = document.getElementById("edit_employee_emp_id").value;
+        var emp_name = document.getElementById("edit_employee_emp_name").value;
+        var department = document.getElementById("edit_employee_department").value;
+        var epf_no = document.getElementById("edit_employee_epf_no").value;
+        var nic_no = document.getElementById("edit_employee_nic_no").value;
+        var mobile_no = document.getElementById("edit_employee_mobile_no").value;
+        var email = document.getElementById("edit_employee_email").value;
+        var address =  document.getElementById("edit_employee_address").value;
+
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_employee_view' %}",
+            data: {
+                emp_id: emp_id,
+                emp_name: emp_name,
+                department: department,
+                epf_no: epf_no,
+                nic_no: nic_no,
+                email: email,
+                mobile_no:mobile_no,
+                address :address,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_employee_data_model').modal('toggle')
+            }
+        });
+    }
+</script>
 
 {% endblock %}
