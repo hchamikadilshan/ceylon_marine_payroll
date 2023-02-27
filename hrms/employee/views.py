@@ -5,9 +5,11 @@ from .models import Employee, EmployeeFinance
 from django.http import JsonResponse
 from datetime import datetime
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class AddEmployeeInAttendance(View):
+class AddEmployeeInAttendance(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST['emp_id']
         name = request.POST['name']
@@ -16,7 +18,8 @@ class AddEmployeeInAttendance(View):
         employee.save()
         return JsonResponse({})
 
-class AddNewEmployeeView(View):
+class AddNewEmployeeView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self, request):
         return render(request, 'add_new_emp.html')
 
@@ -53,7 +56,8 @@ class AddNewEmployeeView(View):
         return redirect("add_new_emp_view")
 
 
-class EmployeesMainView(ListView):
+class EmployeesMainView(LoginRequiredMixin,ListView):
+    login_url = '/accounts/login'
     model = Employee
     template_name = 'employees.html'
 
@@ -61,7 +65,8 @@ class EmployeesMainView(ListView):
         return Employee.objects.all()
 
 
-class GetEmpNameView(View):
+class GetEmpNameView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self, request):
         emp_id = request.POST['name']
 
@@ -73,7 +78,8 @@ class GetEmpNameView(View):
         return JsonResponse({"name": employee_name}, status=200)
 
 
-class GetEmployeeSalaryDetails(View):
+class GetEmployeeSalaryDetails(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self, request):
         emp_id = request.POST['name']
         try:
@@ -87,7 +93,8 @@ class GetEmployeeSalaryDetails(View):
             return JsonResponse({'status': 0})
 
 
-class EmployeeSalaryDetailsView(View):
+class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self, request):
         return render(request, 'employee_salary.html')
 

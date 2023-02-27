@@ -4,10 +4,12 @@ from django.http import JsonResponse
 from employee.models import Employee
 from .models import Attendance
 from django.db.models import Avg, Case, Count, F
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
-class MarkAttendanceMainView(View):
+class MarkAttendanceMainView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self,request):
         return render(request,"mark_attendance.html")
     def post(self,request):
@@ -19,10 +21,17 @@ class MarkAttendanceMainView(View):
         special_holiday = request.POST['special_holiday']
         next_day = request.POST['next_day']
         emp = Employee.objects.get(emp_id=emp_id)
-        attendance = Attendance(employee=emp, date=date, day=day, in_time=in_time,
-                                out_time=out_time, special_holiday=True if special_holiday == "true" else False, next_day=True if next_day == "true" else False)
-        attendance.save()
-        return JsonResponse({})
+        attendance_record = Attendance.objects.filter(
+            employee=emp, date=date).exists()
+        if attendance_record == False:
+            attendance = Attendance(employee=emp, date=date, day=day, in_time=in_time,
+                                    out_time=out_time, special_holiday=True if special_holiday == "true" else False, next_day=True if next_day == "true" else False)
+            attendance.save() 
+            response = 1 
+        else:
+            response = 0
+
+        return JsonResponse({'response': response})
     # def post(self,request):
     #     attendance_time_in =  []
     #     attendance_time_out = []
@@ -52,7 +61,8 @@ class MarkAttendanceMainView(View):
     #         attendance.save()
 
     #     return redirect('mark_attendance_main_view')
-class EditAttendance(View):
+class EditAttendance(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST['emp_id']
         date = request.POST['date']
@@ -73,7 +83,8 @@ class EditAttendance(View):
         attendance.save()
         return JsonResponse({})
 
-class ViewAttendanceByEmployeeView(View):
+class ViewAttendanceByEmployeeView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self,request):
         return render(request,'view_attendance_by_employee.html')
     
@@ -89,7 +100,8 @@ class ViewAttendanceByEmployeeView(View):
         return JsonResponse({'attendance_list': attendance_record_list}, status=200)
 
 
-class ViewAttendanceByDateView(View):
+class ViewAttendanceByDateView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self, request):
         return render(request, 'view_attendance_by_date.html')
 

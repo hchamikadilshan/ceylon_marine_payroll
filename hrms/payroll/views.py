@@ -12,11 +12,13 @@ import io
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate,Table,TableStyle
 from reportlab.lib import colors
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 
-class EmployeeSalaryPdfView(View):
+class EmployeeSalaryPdfView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST['attendance_view_emp_id']
         year_month = request.POST["attendance_view_month_year"]
@@ -334,7 +336,8 @@ class EmployeeSalaryPdfView(View):
         
         return FileResponse(buffer, as_attachment=True, filename=file_name)
 
-class AllowancesView(View):
+class AllowancesView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self,request):
         return render(request,'allowances.html')
 
@@ -353,7 +356,8 @@ class AllowancesView(View):
         return  JsonResponse({})
 
 
-class GetAllowanceData(View):
+class GetAllowanceData(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST['emp_id']
         emp = Employee.objects.get(emp_id=emp_id)
@@ -362,7 +366,8 @@ class GetAllowanceData(View):
         allowance_data_list = list(allowance_data)
         return JsonResponse({'allowance_data_list': allowance_data_list})
 
-class GetAdvancePaymentData(View):
+class GetAdvancePaymentData(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST['emp_id']
         emp = Employee.objects.get(emp_id=emp_id)
@@ -370,7 +375,8 @@ class GetAdvancePaymentData(View):
         advance_payment_data_list = list(advance_payment_data)
         return JsonResponse({'advance_payment_data_list': advance_payment_data_list})
 
-class AdvancePaymentsView(View):
+class AdvancePaymentsView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self, request):
         return render(request, 'advance_payment.html')
     def post(self,request):
@@ -388,7 +394,8 @@ class AdvancePaymentsView(View):
 
 
 
-class SalaryReportView(View):
+class SalaryReportView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
     def get(self, request):
         return render(request, 'payroll_test.html')
 

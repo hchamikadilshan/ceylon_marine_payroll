@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-t5un1#*j*gszoi-osk-rpeca%(q0==+r1pe0ebu%p0p+0%h5^v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'https://payroll-test-dixpex.herokuapp.com/']
+ALLOWED_HOSTS = ['127.0.0.1', 'https://payroll-test-dixpex.herokuapp.com/',
+                 'https://dixpex-payroll-master.herokuapp.com/']
 
 
 # Application definition
