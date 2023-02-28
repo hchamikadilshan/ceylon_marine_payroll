@@ -8,6 +8,70 @@
 {% block sub_heading2 %} View Attendance by Employee{% endblock %}
 
 {% block content %}
+<div class="modal fade" id="edit_attendance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Attendance Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-12">
+                                <label for="inputNanme4" class="form-label">Employee ID</label>
+                                <input type="text" class="form-control" id="edit_attendance_emp_id" name="edit_attendance_emp_id" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label for="inputEmail4" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="edit_attendance_emp_name" name="edit_attendance_emp_name" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Date</label>
+                                <input type="Date" class="form-control" id="edit_attendance_date" name="edit_attendance_date" onchange="getDateNameEdit();">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Day</label>
+                                <input type="text" class="form-control" id="edit_attendance_day" name="edit_attendance_day" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Time In</label>
+                                <input type="text" class="form-control" id="edit_attendance_time_in" name="edit_attendance_time_in">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Time Out</label>
+                                <input type="text" class="form-control" id="edit_attendance_time_out" name="edit_attendance_time_out">
+                            </div>
+                            <div class="col-md-6">
+                                <legend class="col-form-label">Next Day</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_attendance_next_day" value="1"
+                                        name="edit_attendance_next_day">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <legend class="col-form-label">Special Holiday</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_attendance_special_holiday" value="1"
+                                        name="edit_attendance_special_holiday">
+                                </div>
+                            </div>
+                        </form><!-- Vertical Form -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editAttendance();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <form method="POST">
     {% csrf_token %}
     <div class="card formss">
@@ -43,20 +107,24 @@
         <h5 class="card-title">Attendance Data Table</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_custom">
+        <table class="table table-hover table_bordered">
             <thead>
                 <tr>
+                    <th scope="col">Employee ID</th>
+                    <th scope="col">Employee Name</th>
                     <th scope="col">Date</th>
                     <th scope="col">Day</th>
                     <th scope="col">Time In</th>
                     <th scope="col">Time Out</th>
+                    <th scope="col">Next Day</th>
+                    <th scope="col">Special Holiday</th>
+                    <th scope="col">Edit</th>
                 </tr>
             </thead>
             <tbody id="attendance_data_table">
             </tbody>
         </table>
         <!-- End Table with hoverable rows -->
-
     </div>
 </div>
 
@@ -86,10 +154,88 @@
             });
         }
     });
+    $('#add_employee_model').on('show.bs.modal', function (event) {
+        var input = $(event.relatedTarget)
+        var emp_id = document.getElementById("attendance_emp_id").value
+        var modal = $(this)
+        modal.find('#add_employee_emp_id').val(emp_id)
+    })
+    function addEmployee() {
+            console.log("sinside")
+            var emp_id = document.getElementById("add_employee_emp_id").value;
+            var emp_name = document.getElementById("add_employee_emp_name").value;
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'add_new_emp_view' %}",
+                data: {
+                    emp_id: emp_id,
+                    name: emp_name,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $('#add_employee_model').modal('toggle')
+                    document.getElementById("attendance_emp_name").value = emp_name
+                    document.getElementById("attendance_time_in").focus();
+                }
+            });
+        }
+    $('#edit_attendance_data_model').on('show.bs.modal', function (event) {
 
+            
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var emp_id = button.data('empid') 
+            var emp_name = button.data('empname') 
+            var date = button.data('date') 
+            var day = button.data('day') 
+            var next_day = button.data('nextday') 
+            var special_holiday = button.data('specialholiday') 
+            var time_in = button.data('timein') 
+            var time_out = button.data('timeout') 
+            var modal = $(this)
+
+            modal.find('#edit_attendance_emp_id').val(emp_id)
+            modal.find('#edit_attendance_emp_name').val(emp_name)
+            modal.find('#edit_attendance_date').val(date)
+            modal.find('#edit_attendance_day').val(day)
+            modal.find('#edit_attendance_time_in').val(time_in)
+            modal.find('#edit_attendance_time_out').val(time_out)
+            modal.find('#edit_attendance_next_day').prop('checked', next_day)
+            modal.find('#edit_attendance_special_holiday').prop('checked', special_holiday)
+        })
+    
+    function editAttendance(){
+        var emp_id = document.getElementById("edit_attendance_emp_id").value;
+        var emp_name = document.getElementById("edit_attendance_emp_name").value;
+        var date = document.getElementById("edit_attendance_date").value;
+        var day = document.getElementById("edit_attendance_day").value;
+        var next_day = document.getElementById("edit_attendance_next_day").checked;
+        var special_holiday = document.getElementById("edit_attendance_special_holiday").checked;
+        var time_in = document.getElementById("edit_attendance_time_in").value;
+        var time_out =  document.getElementById("edit_attendance_time_out").value;
+
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_attendance_view' %}",
+            data: {
+                emp_id: emp_id,
+                date: date,
+                day: day,
+                next_day: next_day,
+                special_holiday: special_holiday,
+                time_in: time_in,
+                time_out: time_out,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_attendance_data_model').modal('toggle')
+            }
+        });
+    }
     //Get Attendance Data
     function getAttendanceData() {
         var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
+        var attendance_view_emp_name = document.getElementById("attendance_view_emp_name").value;
         var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
         $.ajax({
             type: 'POST',
@@ -103,14 +249,8 @@
                 $("#attendance_data_table").empty()
                 var i = 0;
                 while (i < response['attendance_list'].length){
-                    console.log(response['attendance_list'][i]['employee_id'])
-                    console.log(response['attendance_list'][i]['date'])
-                    console.log(response['attendance_list'][i]['day'])
-                    console.log(response['attendance_list'][i]['in_time'])
-                    console.log(response['attendance_list'][i]['out_time'])
-                    
-                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td>')
-
+                    console.log(response['attendance_list'][i]['special_holiday'])
+                    $("#attendance_data_table").append('<tr><td>' + attendance_view_emp_id + '</td ><td>' + attendance_view_emp_name + '</td><td>' + response['attendance_list'][i]['date'] + '</td><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + attendance_view_emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + attendance_view_emp_id + '" data-empName="' + attendance_view_emp_name + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
                     i++
                 }
             }
