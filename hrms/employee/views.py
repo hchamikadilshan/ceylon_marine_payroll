@@ -39,6 +39,17 @@ class AddEmployeeInAttendance(LoginRequiredMixin,View):
         employee = Employee(emp_id=emp_id, name=name)
         employee.save()
         return JsonResponse({})
+class CheckEmployeeAvailability(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        print("fdsddddddddddddd")
+        emp_id = request.POST['emp_id']
+        employee_exists = Employee.objects.filter(emp_id=emp_id).exists()
+        if employee_exists == True:
+            return JsonResponse({'status':1})
+        else:
+            return JsonResponse({'status':0})
+
 
 class AddNewEmployeeView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
@@ -70,6 +81,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
+        
 
         employee = Employee(emp_id=emp_id, name=name, department=department,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)

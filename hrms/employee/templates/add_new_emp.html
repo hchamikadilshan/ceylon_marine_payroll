@@ -14,7 +14,7 @@
             <div class="col-md-6">
                 <label class="col-form-label" for="emp_id">Employee ID</label>
                 <div class="">
-                    <input class="form-control" type="text" name="emp_id" id="emp_id" required>
+                    <input class="form-control" type="text" name="emp_id" id="emp_id" required onchange="checkEmpIdAvailablity();">
                 </div>
                 
             </div>
@@ -177,6 +177,27 @@
     </div>
 </div>
 
+<script>
+    function checkEmpIdAvailablity(){
+        var emp_id = document.getElementById("emp_id").value
 
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'check_emp_id_availability' %}",
+            data: {
+                emp_id: emp_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                if (response.status == 1){
+                    $('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Employee Exists ! </strong>An employee already exists for entered employee ID <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>').insertAfter("#pagetitle")
+                }else{
+
+                }
+            }
+        });
+    }
+    
+</script>
 
 {% endblock %}
