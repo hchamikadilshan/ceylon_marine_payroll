@@ -203,6 +203,32 @@
             modal.find('#edit_attendance_special_holiday').prop('checked', special_holiday)
         })
     
+    
+    //Get Attendance Data
+    function getAttendanceData() {
+        var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
+        var attendance_view_emp_name = document.getElementById("attendance_view_emp_name").value;
+        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'view_attendance_by_employee_view' %}",
+            data: {
+                emp_id:attendance_view_emp_id,
+                month: attendance_view_month_year,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $("#attendance_data_table").empty()
+                var i = 0;
+                while (i < response['attendance_list'].length){
+                    console.log(response['attendance_list'][i]['special_holiday'])
+                    $("#attendance_data_table").append('<tr><td>' + attendance_view_emp_id + '</td ><td>' + attendance_view_emp_name + '</td><td>' + response['attendance_list'][i]['date'] + '</td><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + attendance_view_emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + attendance_view_emp_id + '" data-empName="' + attendance_view_emp_name + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
+                    i++
+                }
+            }
+        });
+    }
+    // Edit Attendance
     function editAttendance(){
         var emp_id = document.getElementById("edit_attendance_emp_id").value;
         var emp_name = document.getElementById("edit_attendance_emp_name").value;
@@ -229,30 +255,7 @@
             },
             success: function (response) {
                 $('#edit_attendance_data_model').modal('toggle')
-            }
-        });
-    }
-    //Get Attendance Data
-    function getAttendanceData() {
-        var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
-        var attendance_view_emp_name = document.getElementById("attendance_view_emp_name").value;
-        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'view_attendance_by_employee_view' %}",
-            data: {
-                emp_id:attendance_view_emp_id,
-                month: attendance_view_month_year,
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-            },
-            success: function (response) {
-                $("#attendance_data_table").empty()
-                var i = 0;
-                while (i < response['attendance_list'].length){
-                    console.log(response['attendance_list'][i]['special_holiday'])
-                    $("#attendance_data_table").append('<tr><td>' + attendance_view_emp_id + '</td ><td>' + attendance_view_emp_name + '</td><td>' + response['attendance_list'][i]['date'] + '</td><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + attendance_view_emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + attendance_view_emp_id + '" data-empName="' + attendance_view_emp_name + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
-                    i++
-                }
+                getAttendanceData()
             }
         });
     }
