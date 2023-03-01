@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SalaryReportView, AdvancePaymentsView, AllowancesView, EmployeeSalaryPdfView, GetAllowanceData,GetAdvancePaymentData
+from .views import SalaryReportView, AdvancePaymentsView, AllowancesView, EmployeeSalaryPdfView, GetAllowanceData,GetAdvancePaymentData,EditAllowance
 
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     path('get_allowance_data', GetAllowanceData.as_view(),
          name="get_allowance_data"),
     path('alllowances', AllowancesView.as_view(), name="allowances_view"),
+    path('edit_allowance', EditAllowance.as_view(), name="edit_allowance"),
     path("employee_salary_pdf",EmployeeSalaryPdfView.as_view(),name="employee_salary_pdf_view")
 ]

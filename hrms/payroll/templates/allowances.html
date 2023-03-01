@@ -8,6 +8,54 @@
 {% block sub_heading2 %} Alllowances{% endblock %}
 
 {% block content %}
+<div class="modal fade" id="edit_allowance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Allowance Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Date</label>
+                                <input type="Date" class="form-control" id="edit_allowance_date" name="edit_allowance_date">
+                            </div>
+                            <div class="col-12">
+                                <label for="inputPassword4" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="edit_allowance_description" name="edit_attendance_time_in">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Payment Amount</label>
+                                <input type="text" class="form-control" id="edit_allowance_payment_amount" name="edit_attendance_time_out">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Allowance tatus</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="edit_allowance_status" >
+                                    <label class="form-check-label" for="edit_allowance_payment_amount">Click to cancel or activate payment</label>
+                                  </div>
+                            </div>
+                            
+                            
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editAllowance();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <form method="POST" id="allowance_form">
     {% csrf_token %}
     <div class="card formss">
@@ -54,7 +102,7 @@
 </form>
 <div class="card formss">
     <div class="card-body ">
-        <h5 class="card-title">Advance Payments</h5>
+        <h5 class="card-title">Allowances</h5>
 
         <!-- Table with hoverable rows -->
         <table class="table table-hover table_bordered">
@@ -63,6 +111,8 @@
                     <th scope="col">Date</th>
                     <th scope="col">Dascription</th>
                     <th scope="col">Payment Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Edit</th>
 
                 </tr>
             </thead>
@@ -76,6 +126,23 @@
 
 
 <script>
+    $('#edit_allowance_data_model').on('show.bs.modal', function (event) {
+
+            
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var date = button.data('date') 
+            var description = button.data('description') 
+            var amount = button.data('amount') 
+            var status = button.data('status') 
+            var id = button.data('id') 
+            var modal = $(this)
+
+            modal.find('#edit_allowance_date').val(date)
+            modal.find('#edit_allowance_description').val(description)
+            modal.find('#edit_allowance_description').data('id',id)
+            modal.find('#edit_allowance_payment_amount').val(amount)
+            modal.find('#edit_allowance_status').prop('checked', status)
+        })
     console.log("Workinggggllllll");
     //Get employee name and Data
     var allowance_emp_id_input = document.getElementById("allowance_view_emp_id");
@@ -110,15 +177,67 @@
                     $("#allowance_table").empty()
                     var i = 0;
                     while (i < response['allowance_data_list'].length) {
-                        $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td></tr> ')
+                        if(response["allowance_data_list"][i]['status'] === true){
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=true data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=false data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        
                         i++
                     }
                 }
             });
         }
     });
+    function editAllowance(){
+        var emp_id = document.getElementById("allowance_view_emp_id").value;
+        var date = document.getElementById("edit_allowance_date").value;
+        var description = document.getElementById("edit_allowance_description").value;
+        var amount = document.getElementById("edit_allowance_payment_amount").value;
+        var status = document.getElementById("edit_allowance_status").checked;
+        var id = $('#edit_allowance_description').data('id')
+        console.log(id)
+       
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_allowance' %}",
+            data: {
+                id:id,
+                emp_id:emp_id,
+                date: date,
+                description: description,
+                amount: amount,
+                status: status,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_allowance_data_model').modal('toggle')
+                $.ajax({
+                type: 'POST',
+                url: "{% url 'get_allowance_data' %}",
+                data: {
+                    emp_id: allowance_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#allowance_table").empty()
+                    var i = 0;
+                    while (i < response['allowance_data_list'].length) {
+                        if(response["allowance_data_list"][i]['status'] === true){
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=true data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=false data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        
+                        i++
+                    }
+                }
+            });
+            }
+        });
+    }
 
-    //Submit Advance Payment
+    //Submit Allowance Payment
     var allowance_input = document.getElementById("allowance_amount");
     var allowance_view_emp_id_input = document.getElementById("allowance_view_emp_id");
     var allowance_date_input = document.getElementById("allowance_date");

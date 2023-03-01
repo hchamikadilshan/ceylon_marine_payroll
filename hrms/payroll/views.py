@@ -222,7 +222,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
 # Allowances Calculation
             try:
                 allowance_data = Alllowance.objects.filter(
-                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                    employee=emp, date__month=year_month_split[1],status =True).order_by('date').values()
                 allowance_data_list = list(allowance_data)
                 total_allowance = 0
                 for allowance in allowance_data_list:
@@ -365,7 +365,26 @@ class GetAllowanceData(LoginRequiredMixin,View):
             employee=emp).order_by('date').values()
         allowance_data_list = list(allowance_data)
         return JsonResponse({'allowance_data_list': allowance_data_list})
+class EditAllowance(LoginRequiredMixin,View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        status = request.POST['status']
+        id = request.POST["id"]
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
 
+        allowance_record = Alllowance.objects.get(
+            employee=emp, id=id)
+        allowance_record.date = date
+        allowance_record.amount=amount
+        allowance_record.description=description
+        allowance_record.status= (True if status == "true" else False)
+        allowance_record.time_stamp = time_stamp
+        allowance_record.save()
+        return JsonResponse({})
 class GetAdvancePaymentData(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):
@@ -565,7 +584,7 @@ class SalaryReportView(LoginRequiredMixin,View):
 # Allowances Calculation 
             try:
                 allowance_data = Alllowance.objects.filter(
-                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                    employee=emp, date__month=year_month_split[1],status =True).order_by('date').values()
                 allowance_data_list = list(allowance_data)
                 total_allowance = 0
                 for allowance in allowance_data_list:

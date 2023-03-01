@@ -16,4 +16,5 @@ class Alllowance(models.Model):
     amount = models.FloatField()
     description = models.CharField(max_length=200, blank=True)
     time_stamp = models.DateTimeField()
+    status = models.BooleanField(default=True)
 
