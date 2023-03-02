@@ -145,6 +145,10 @@
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
+                if (response.error === "no employee finance data"){
+                    $("#messeges_container").empty()
+                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>No Attendance Salary Details </strong>You need to enter Salaray Details to calculate Employee Salary<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+                }
                 $("#attendance_data_table").empty()
                 console.log(response['total_working_hours'])
                 console.log(response['total_ot_hours'])

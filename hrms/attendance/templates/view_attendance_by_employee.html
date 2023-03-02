@@ -107,11 +107,11 @@
         <h5 class="card-title">Attendance Data Table</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_bordered">
+        <table class="table table-hover table-bordered border-dark">
             <thead>
                 <tr>
-                    <th scope="col">Employee ID</th>
-                    <th scope="col">Employee Name</th>
+                    <!-- <th scope="col">Employee ID</th>
+                    <th scope="col">Employee Name</th> -->
                     <th scope="col">Date</th>
                     <th scope="col">Day</th>
                     <th scope="col">Time In</th>
@@ -221,8 +221,17 @@
                 $("#attendance_data_table").empty()
                 var i = 0;
                 while (i < response['attendance_list'].length){
-                    console.log(response['attendance_list'][i]['special_holiday'])
-                    $("#attendance_data_table").append('<tr><td>' + attendance_view_emp_id + '</td ><td>' + attendance_view_emp_name + '</td><td>' + response['attendance_list'][i]['date'] + '</td><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + attendance_view_emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + attendance_view_emp_id + '" data-empName="' + attendance_view_emp_name + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
+                    if (response['attendance_list'][i]['special_holiday'] == true){
+                        special_holiday = "Yes"
+                    }else{
+                        special_holiday = "No"
+                    }
+                    if (response['attendance_list'][i]['next_day'] == true){
+                        next_day = "Yes"
+                    }else{
+                        next_day = "No"
+                    }
+                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + next_day + '</td><td>' + special_holiday + '</td><td><button class="btn btn-primary" data-id="' + attendance_view_emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + attendance_view_emp_id + '" data-empName="' + attendance_view_emp_name + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
                     i++
                 }
             }

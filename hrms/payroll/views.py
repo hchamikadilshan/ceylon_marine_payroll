@@ -192,9 +192,13 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            daily_payment_rate = employee_finance.daily_payment
+            if employee_finance is not None:
+                daily_payment_rate = employee_finance.daily_payment
+                ot_payment_rate = employee_finance.ot_payment_rate
+            else:
+                return JsonResponse({})
             hourly_payment_rate = daily_payment_rate/8
-            ot_payment_rate = employee_finance.ot_payment_rate
+            
             basic_salary = total_working_hours * hourly_payment_rate
             ot_payment = total_ot_hours * ot_payment_rate
 
@@ -559,16 +563,20 @@ class SalaryReportView(LoginRequiredMixin,View):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            daily_payment_rate = employee_finance.daily_payment
+            if employee_finance is not None:
+                daily_payment_rate = employee_finance.daily_payment
+                ot_payment_rate = employee_finance.ot_payment_rate
+                room_charge = employee_finance.room_charge
+            else:
+                return JsonResponse({'error':"no employee finance data"})
+            # daily_payment_rate = employee_finance.daily_payment
             hourly_payment_rate = daily_payment_rate/8
-            ot_payment_rate = employee_finance.ot_payment_rate
+            # ot_payment_rate = employee_finance.ot_payment_rate
             basic_salary = total_working_hours * hourly_payment_rate
             ot_payment = total_ot_hours * ot_payment_rate
 
 # Room Charges
-            room_charge = employee_finance.room_charge
-
-
+            
             net_salary = basic_salary + ot_payment - room_charge
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
