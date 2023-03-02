@@ -67,7 +67,9 @@
             </div>
             <div class="modal-footer">
                 <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="deleteAttendance();"  class="btn btn-danger">Delete</button>
                 <button onclick="editAttendance();"  class="btn btn-primary">Save changes</button>
+                
             </div>
         </div>
     </div>
@@ -161,7 +163,6 @@
         modal.find('#add_employee_emp_id').val(emp_id)
     })
     function addEmployee() {
-            console.log("sinside")
             var emp_id = document.getElementById("add_employee_emp_id").value;
             var emp_name = document.getElementById("add_employee_emp_name").value;
             $.ajax({
@@ -203,7 +204,7 @@
             modal.find('#edit_attendance_special_holiday').prop('checked', special_holiday)
         })
     
-    
+   
     //Get Attendance Data
     function getAttendanceData() {
         var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
@@ -237,6 +238,24 @@
             }
         });
     }
+    // Delete Attendance
+    function deleteAttendance(){
+        var emp_id = document.getElementById("edit_attendance_emp_id").value;
+        var date = document.getElementById("edit_attendance_date").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'delete_attendance' %}",
+            data: {
+                emp_id: emp_id,
+                date: date,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_attendance_data_model').modal('toggle')
+                getAttendanceData()
+            }
+        });
+}
     // Edit Attendance
     function editAttendance(){
         var emp_id = document.getElementById("edit_attendance_emp_id").value;

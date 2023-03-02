@@ -61,6 +61,15 @@ class MarkAttendanceMainView(LoginRequiredMixin,View):
     #         attendance.save()
 
     #     return redirect('mark_attendance_main_view')
+class DeleteAttendance(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        emp = Employee.objects.get(emp_id=emp_id)
+        Attendance.objects.filter(employee=emp,date=date).delete()
+        return JsonResponse({})
+    
 class EditAttendance(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):

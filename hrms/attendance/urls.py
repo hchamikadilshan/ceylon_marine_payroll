@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import MarkAttendanceMainView, ViewAttendanceByDateView, ViewAttendanceByEmployeeView,EditAttendance
+from .views import MarkAttendanceMainView, ViewAttendanceByDateView, ViewAttendanceByEmployeeView,EditAttendance,DeleteAttendance
 
 
 urlpatterns = [
+    path('delete_attendance', DeleteAttendance.as_view(), name="delete_attendance"),
     path('mark_attendance', MarkAttendanceMainView.as_view(), name="mark_attendance_main_view"),
     path('edit_attendance', EditAttendance.as_view(),
          name="edit_attendance_view"),
