@@ -120,7 +120,7 @@ class GetEmployeeSalaryDetails(LoginRequiredMixin,View):
             employee = Employee.objects.get(emp_id=emp_id)
             try:
                 employee_finance = EmployeeFinance.objects.filter(employee=employee).order_by('-submit_date').first()
-                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'leave_payment': employee_finance.leave_payment, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
+                return JsonResponse({'status': 1, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'leave_payment': employee_finance.basic_salary, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution})
             except EmployeeFinance.DoesNotExist:
                 return JsonResponse({'status': 0})
         except Employee.DoesNotExist:
@@ -137,7 +137,7 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         epf_type = request.POST["epf_type"]
         daily_payment = request.POST["emp_daily_payment"]
         ot_payment_rate = request.POST["emp_ot_rate"]
-        leave_payment = request.POST["emp_leave_payment"]
+        basic_salary = request.POST["emp_basic_salary"]
         br_payment = request.POST["emp_br_payment"]
         epf = request.POST["emp_EPF"]
 
@@ -148,7 +148,7 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         employee = Employee.objects.get(emp_id=emp_id)
 
         emplyee_finance_record = EmployeeFinance(
-            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, leave_payment=0 if leave_payment == "" else leave_payment, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
+            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
 
         emplyee_finance_record.save()
 
