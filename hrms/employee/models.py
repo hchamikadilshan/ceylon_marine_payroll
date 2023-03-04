@@ -26,7 +26,7 @@ class EmployeeFinance(models.Model):
     ot_payment_rate = models.FloatField()
     epf_type = models.CharField(max_length=2,default="1")
     # fixed_allowance = models.FloatField()
-    basic_salary = models.FloatField()
+    basic_salary = models.FloatField(default=0)
     br_payment = models.FloatField()
     epf = models.FloatField()
     # advance_limit = models.FloatField()

@@ -504,11 +504,11 @@ class SalaryReportView(LoginRequiredMixin,View):
                             pass
                         elif out_time_difference_ot_hours >= 0.5:
                             ot_hours = ot_hours + (0.5 * a) 
-                if (record['day'] == "Saturday" and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60))):
                     ot_hours = ot_hours + 3
-                elif (record['day'] == "Sunday" and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60))):
                     ot_hours = ot_hours + 4
-                elif (record['special_holiday'] == 1 and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60))):
                     ot_hours = ot_hours + 4
 # Next Day Out
             else: 
@@ -567,6 +567,8 @@ class SalaryReportView(LoginRequiredMixin,View):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
                 room_charge = employee_finance.room_charge
+                fixed_basic_salary = employee_finance.basic_salary
+                br_payment = employee_finance.br_payment
             else:
                 return JsonResponse({'error':"no employee finance data"})
             # daily_payment_rate = employee_finance.daily_payment
@@ -578,6 +580,7 @@ class SalaryReportView(LoginRequiredMixin,View):
 # Room Charges
             
             net_salary = basic_salary + ot_payment - room_charge
+            fixed_allowance = basic_salary - fixed_basic_salary - br_payment
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
                     employee=emp, date__month=year_month_split[1]).order_by('date').values()
@@ -609,17 +612,20 @@ class SalaryReportView(LoginRequiredMixin,View):
                 pass
             net_salary = net_salary - epf + total_allowance
 
-            room_charge = "{:.2f}".format(room_charge)
-            epf = "{:.2f}".format(epf)
-            total_advance_amount = "{:.2f}".format(total_advance_amount)
-            total_allowance = "{:.2f}".format(total_allowance)
-            ot_payment = "{:.2f}".format(ot_payment)
-            ot_payment_rate = "{:.2f}".format(ot_payment_rate)
-            hourly_payment_rate = "{:.2f}".format(hourly_payment_rate)
-            basic_salary = "{:.2f}".format(basic_salary)
-            net_salary = "{:.2f}".format(net_salary)
+            fixed_allowance = "{:>9.2f}".format(fixed_allowance)
+            br_payment = "{:>9.2f}".format(br_payment)
+            fixed_basic_salary = "{:>9.2f}".format(fixed_basic_salary)
+            room_charge = "{:>9.2f}".format(room_charge)
+            epf = "{:>9.2f}".format(epf)
+            total_advance_amount = "{:>9.2f}".format(total_advance_amount)
+            total_allowance = "{:>9.2f}".format(total_allowance)
+            ot_payment = "{:>9.2f}".format(ot_payment)
+            ot_payment_rate = "{:>9.2f}".format(ot_payment_rate)
+            hourly_payment_rate = "{:>9.2f}".format(hourly_payment_rate)
+            basic_salary = "{:>9.2f}".format(basic_salary)
+            net_salary = "{:>9.2f}".format(net_salary)
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
 
-        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours': total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge}, status=200)
+        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours': total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'fixed_allowance':fixed_allowance}, status=200)
         
