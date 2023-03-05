@@ -6,6 +6,11 @@
 {% block sub_heading %} Employees{% endblock %}
 {% block sub_heading2 %} Employees{% endblock %}
 
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
 {% block content %}
 <div class="modal fade" id="edit_employee_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true">

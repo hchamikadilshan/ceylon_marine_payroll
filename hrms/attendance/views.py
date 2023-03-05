@@ -11,7 +11,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class MarkAttendanceMainView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
-        return render(request,"mark_attendance.html")
+        user = request.user
+        return render(request,"mark_attendance.html",context={'user':user})
     def post(self,request):
         emp_id = request.POST['emp_id']
         date = request.POST['date']
@@ -95,7 +96,8 @@ class EditAttendance(LoginRequiredMixin,View):
 class ViewAttendanceByEmployeeView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
-        return render(request,'view_attendance_by_employee.html')
+        user = request.user
+        return render(request,'view_attendance_by_employee.html',context={'user':user})
     
     def post(self,request):
         emp_id = request.POST['emp_id']
@@ -112,7 +114,8 @@ class ViewAttendanceByEmployeeView(LoginRequiredMixin,View):
 class ViewAttendanceByDateView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
-        return render(request, 'view_attendance_by_date.html')
+        user = request.user
+        return render(request, 'view_attendance_by_date.html',context={'user':user})
 
     def post(self, request):
         date = request.POST["date"]

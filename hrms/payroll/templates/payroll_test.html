@@ -7,6 +7,11 @@
 {% block sub_heading %} Salary Report{% endblock %}
 {% block sub_heading2 %} Salary Report{% endblock %}
 
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
 {% block content %}
 <form action = "{% url 'employee_salary_pdf_view' %}" method="POST">
     {% csrf_token %}

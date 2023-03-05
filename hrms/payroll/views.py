@@ -343,7 +343,8 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
 class AllowancesView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
-        return render(request,'allowances.html')
+        user = request.user
+        return render(request,'allowances.html',context={'user':user})
 
     def post(self,request):
         print("inside allowance payment")
@@ -401,7 +402,8 @@ class GetAdvancePaymentData(LoginRequiredMixin,View):
 class AdvancePaymentsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
-        return render(request, 'advance_payment.html')
+        user = request.user
+        return render(request, 'advance_payment.html',context={'user':user})
     def post(self,request):
         print("inside advance payment")
         emp_id = request.POST['emp_id']
@@ -420,7 +422,8 @@ class AdvancePaymentsView(LoginRequiredMixin,View):
 class SalaryReportView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
-        return render(request, 'payroll_test.html')
+        user = request.user
+        return render(request, 'payroll_test.html',context={'user':user})
 
     def post(self, request):
         emp_id = request.POST['emp_id']

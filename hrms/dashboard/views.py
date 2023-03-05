@@ -8,11 +8,10 @@ from employee.models import Employee
 class DashboardMainView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
+        user = request.user
 # Total Employee Count
         employee_record = Employee.objects.filter(active_status=True)
         employee_record_list = list(employee_record)
         active_employees = len(employee_record_list)
 # Total Salary 
-
-
-        return render (request,"dashboard.html",context={'no_of_employees':active_employees})
+        return render (request,"dashboard.html",context={'no_of_employees':active_employees,'user':user})

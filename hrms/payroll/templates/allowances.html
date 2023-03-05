@@ -7,6 +7,11 @@
 {% block sub_heading %} Alllowances{% endblock %}
 {% block sub_heading2 %} Alllowances{% endblock %}
 
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
 {% block content %}
 <div class="modal fade" id="edit_allowance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true">

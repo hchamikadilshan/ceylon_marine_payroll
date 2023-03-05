@@ -5,6 +5,11 @@
 
 {% block top_heading %}Attendance Management{% endblock %} {% block sub_heading %}/ Mark Attendance{% endblock %}
 
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
 {% block content %}
 <form method="POST">
     {% csrf_token %}

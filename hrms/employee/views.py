@@ -54,7 +54,8 @@ class CheckEmployeeAvailability(LoginRequiredMixin,View):
 class AddNewEmployeeView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
-        return render(request, 'add_new_emp.html')
+        user = request.user
+        return render(request, 'add_new_emp.html',context={'user':user})
 
     # def post(self, request):
     #     print("Inside employee add post")
@@ -130,7 +131,8 @@ class GetEmployeeSalaryDetails(LoginRequiredMixin,View):
 class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
-        return render(request, 'employee_salary.html')
+        user = request.user
+        return render(request, 'employee_salary.html',context={'user':user})
 
     def post(self, request):
         emp_id = request.POST["emp_id_salary"]

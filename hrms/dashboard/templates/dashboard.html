@@ -4,6 +4,11 @@
 
 {% block top_heading %}Dashboard{% endblock %} 
 
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
  
 {% block content %}
 <section class="section dashboard">
