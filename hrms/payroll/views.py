@@ -22,7 +22,6 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
     def post(self,request):
         emp_id = request.POST['attendance_view_emp_id']
         year_month = request.POST["attendance_view_month_year"]
-
         year_month_split = year_month.split('-')
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
@@ -32,23 +31,22 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         total_working_hours = 0
         total_ot_hours = 0
         epf = 0
+        attendance_allowance = 0
 # ----------------------------------------------------------------------------------------
         # Adding Heading Data
         table_data = []
         document_heading_1 = ['Attendance Report']
         document_heading_2 = [""]
-        document_heading_3 = ["Emp ID :",emp_id,"Emp Name :","H C D Hapuarachchi"]
-        document_heading_4 = ["Month :",emp_id,"Department :","H C D Hapuarachchi"]
+        document_heading_3 = ["Emp ID :",emp_id,"Emp Name :",emp.name]
+        document_heading_4 = ["Month :",year_month,"Department :",emp.department]
         table_heading = ['Date', 'Day', 'In Time',
                          'Out Time', 'Working Hours', 'OT Hours','Remarks']
-        table_data.append(document_heading_1)
-        table_data.append(document_heading_2)
         table_data.append(document_heading_3)
         table_data.append(document_heading_4)
         table_data.append(table_heading)
 # --------------------------------------------------------------------------------------- 
         for record in attendance_record_list:
-
+        
             normal_working_hours = 9.0
             ot_hours = 0
             date = str(record['date']).split('-')
@@ -70,7 +68,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
             if record['next_day'] == 0:
                 if (in_time_obj == attendance_in_time and out_time_obj == attendance_out_time):
                     pass
-                # Deducting the punishment hours
+# Deducting the punishment hours
                 elif (in_time_obj > attendance_in_time or out_time_obj < attendance_out_time):
                     if in_time_obj > attendance_in_time:
                         in_time_difference = in_time_obj - attendance_in_time
@@ -96,10 +94,10 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                     pass
                 else:
                     normal_working_hours = normal_working_hours - 1
-
-                # O/T Hours Calculation
+                
+# O/T Hours Calculation
                 if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
-                    if in_time_obj < attendance_in_time:
+                    if in_time_obj < attendance_in_time :
                         in_time_difference_ot = attendance_in_time - in_time_obj
                         in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                         a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
@@ -107,7 +105,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                         if in_time_difference_ot_hours < 0.5:
                             pass
                         elif in_time_difference_ot_hours >= 0.5:
-                            ot_hours = ot_hours + (0.5 * a)
+                            ot_hours = ot_hours + (0.5 * a) 
                     if out_time_obj > attendance_out_time:
                         out_time_difference_ot = out_time_obj - attendance_out_time
                         out_time_difference_ot_hours = out_time_difference_ot.total_seconds()/(60*60)
@@ -115,47 +113,44 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                         b = (out_time_difference_ot_hours % 0.5)
                         if out_time_difference_ot_hours < 0.5:
                             pass
-                        elif out_time_difference_ot_hours > 0.5:
-                            ot_hours = ot_hours + (0.5 * a)
-                if record['day'] == "Saturday":
+                        elif out_time_difference_ot_hours >= 0.5:
+                            ot_hours = ot_hours + (0.5 * a) 
+                if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8)):
                     ot_hours = ot_hours + 3
-                elif record['day'] == "Sunday":
+                elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8)):
                     ot_hours = ot_hours + 4
-                elif record['special_holiday'] == 1:
+                elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8)):
                     ot_hours = ot_hours + 4
-            # Next Day Out
-            else:
-
-                # Out time O/T Hours Calculation
-                if record['day'] == "Saturday":
+# Next Day Out
+            else: 
+                
+# Out time O/T Hours Calculation
+                if (record['day'] == "Saturday" ):
                     ot_hours = ot_hours + 3
-                elif record['day'] == "Sunday":
+                elif (record['day'] == "Sunday" ):
                     ot_hours = ot_hours + 4
-                elif record['special_holiday'] == 1:
+                elif (record['special_holiday'] == 1 ):
                     ot_hours = ot_hours + 4
-                ot_hours = ot_hours + 7.5
+                ot_hours = ot_hours +7.5
                 out_time_difference_ot_special = out_time_obj - attendance_out_time_mid_night
-                out_time_difference_ot_special_hours = out_time_difference_ot_special.total_seconds() / \
-                    (60*60)
+                out_time_difference_ot_special_hours = out_time_difference_ot_special.total_seconds() / (60*60)
                 a = (out_time_difference_ot_special_hours//0.5)
                 b = (out_time_difference_ot_special_hours % 0.5)
                 if out_time_difference_ot_special_hours < 0.5:
-                    pass
+                        pass
                 elif out_time_difference_ot_special_hours >= 0.5:
-                    ot_hours = ot_hours + (0.5 * a)
-                # In time O/T Hours Calculation
+                    ot_hours = ot_hours + (0.5 * a) 
+# In time O/T Hours Calculation
                 if (in_time_obj < attendance_in_time):
-                    print(record)
                     in_time_difference_ot = attendance_in_time - in_time_obj
                     in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
-                    print(in_time_difference_ot_hours)
                     a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
                     b = (in_time_difference_ot.total_seconds()/(60*60)) % 0.5
                     if in_time_difference_ot_hours < 0.5:
                         pass
                     elif in_time_difference_ot_hours >= 0.5:
                         ot_hours = ot_hours + (0.5 * a)
-                elif (in_time_obj > attendance_in_time):
+                elif (in_time_obj > attendance_in_time ):
                     in_time_difference = in_time_obj - attendance_in_time
                     in_time_difference_hours = in_time_difference.total_seconds()/(60*60)
                     a = (in_time_difference.total_seconds()/(60*60))//0.5
@@ -163,8 +158,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                     if in_time_difference_hours <= 0.5:
                         normal_working_hours = normal_working_hours - 0.5
                     elif in_time_difference_hours > 0.5:
-                        normal_working_hours = normal_working_hours - \
-                            (0.5 * a) - (0.5 if b != 0 else 0)
+                        normal_working_hours = normal_working_hours - (0.5 * a) - (0.5 if b != 0 else 0)
                 if in_time_obj < attendance_out_time_noon:
                     normal_working_hours = normal_working_hours - 1
                 else:
@@ -188,42 +182,40 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         for record in attendance_record_list:
             total_working_hours = total_working_hours + record['working_hours']
             total_ot_hours = total_ot_hours + record['ot_hours']
-        
+# Advance Payment Calculation
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
             if employee_finance is not None:
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
+                room_charge = employee_finance.room_charge
+                fixed_basic_salary = employee_finance.basic_salary
+                br_payment = employee_finance.br_payment
             else:
-                return JsonResponse({})
+                return JsonResponse({'error':"no employee finance data"})
+            # daily_payment_rate = employee_finance.daily_payment
             hourly_payment_rate = daily_payment_rate/8
-            
+            # ot_payment_rate = employee_finance.ot_payment_rate
             basic_salary = total_working_hours * hourly_payment_rate
             ot_payment = total_ot_hours * ot_payment_rate
 
-            net_salary = basic_salary + ot_payment
-
-            
-
 # Room Charges
-            room_charge = employee_finance.room_charge
-
+            
             net_salary = basic_salary + ot_payment - room_charge
-# Advance Payment Calculation
+            fixed_allowance = basic_salary - fixed_basic_salary - br_payment
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
                     employee=emp, date__month=year_month_split[1]).order_by('date').values()
                 advance_payment_data_list = list(advance_payment_data)
                 total_advance_amount = 0
                 for advance in advance_payment_data_list:
-                    total_advance_amount = total_advance_amount + \
-                        advance["amount"]
+                    total_advance_amount = total_advance_amount + advance["amount"]
                 net_salary = net_salary - total_advance_amount
 
             except SalaryAdvance.DoesNotExist:
                 print("Salary Advances does not exists")
-# Allowances Calculation
+# Allowances Calculation 
             try:
                 allowance_data = Alllowance.objects.filter(
                     employee=emp, date__month=year_month_split[1],status =True).order_by('date').values()
@@ -233,6 +225,9 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                     total_allowance = total_allowance + allowance["amount"]
             except Alllowance.DoesNotExist:
                 print("No Allowance")
+
+
+
 # EPF Calculation
             if employee_finance.epf_type == "1":
                 epf = epf + (min_salary_amount * 0.08)
@@ -240,37 +235,61 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                 pass
             net_salary = net_salary - epf + total_allowance
 
-            room_charge = "{:.2f}".format(room_charge)
-            epf = "{:.2f}".format(epf)
-            total_advance_amount = "{:.2f}".format(total_advance_amount)
-            total_allowance = "{:.2f}".format(total_allowance)
-            ot_payment = "{:.2f}".format(ot_payment)
-            ot_payment_rate = "{:.2f}".format(ot_payment_rate)
-            hourly_payment_rate = "{:.2f}".format(hourly_payment_rate)
-            basic_salary = "{:.2f}".format(basic_salary)
-            net_salary = "{:.2f}".format(net_salary)
+            
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
+# Calculating Attendance Allowance
+        if len(attendance_record_list) >= 26:
+            attendance_allowance = attendance_allowance + 1000
+        if len(attendance_record_list) > 26:
+            attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
+# Formating Values
+        total_payments = fixed_basic_salary + br_payment + fixed_allowance + total_allowance + ot_payment 
+        total_deductions = total_advance_amount + room_charge + epf
+
+        total_deductions = "{:>9.2f}".format(total_deductions)
+        total_payments = "{:>9.2f}".format(total_payments)
+        attendance_allowance = "{:>9.2f}".format(attendance_allowance)
+        fixed_allowance = "{:>9.2f}".format(fixed_allowance)
+        br_payment = "{:>9.2f}".format(br_payment)
+        fixed_basic_salary = "{:>9.2f}".format(fixed_basic_salary)
+        room_charge = "{:>9.2f}".format(room_charge)
+        epf = "{:>9.2f}".format(epf)
+        total_advance_amount = "{:>9.2f}".format(total_advance_amount)
+        total_allowance = "{:>9.2f}".format(total_allowance)
+        ot_payment = "{:>9.2f}".format(ot_payment)
+        ot_payment_rate = "{:>9.2f}".format(ot_payment_rate)
+        hourly_payment_rate = "{:>9.2f}".format(hourly_payment_rate)
+        basic_salary = "{:>9.2f}".format(basic_salary)
+        net_salary = "{:>9.2f}".format(net_salary) 
 
 
 # -------------------------------------------------------------------------------------
         empty_row = ["","","","","","",""]
+        
         salary_details_row_1 = [
-            "Basic Salary", f"{hourly_payment_rate} x {total_working_hours}", "", basic_salary, ""]
+            "Basic Salary", fixed_basic_salary,"","","",  "", ""]
         salary_details_row_2 = [
-            "Total OT Payment", f"{ot_payment_rate} x {total_ot_hours}", "", ot_payment, ""]
+            "B-R Payment", br_payment,"","", "", "", ""]
         salary_details_row_3 = [
-            "Allowance", "", "", total_allowance, "", "", ""]
+            "Fixed Allowance", fixed_allowance,"","", "", "", ""]
         salary_details_row_4 = [
-            "Salary Advance", "", "", f"({total_advance_amount})", "", "", ""]
+            "Total OT Payment",ot_payment,"","", "", "", ""]
         salary_details_row_5 = [
-            "EPF", "", "", f"({epf})", "", ""]
+            "Attendance Allowance",f"{attendance_allowance}","","", "", "", ""]
         salary_details_row_6 = [
-            "Room Charge", "", "", f"({room_charge})", "", ""]
+            "Allowance", total_allowance,"","", "", total_payments]
         salary_details_row_7 = [
+            "Salary Advance", f"({total_advance_amount})", "","","" ,"", ""]
+        salary_details_row_8 = [
+            "EPF", f"({epf})","","","","",""]
+        salary_details_row_9 = [
+            "Room Charge",f"({room_charge})","","", "",f"({total_deductions})" ]
+        salary_details_row_10 = [
             "Net Payment", "", "", "", "", net_salary]
             
         # table_data.append(empty_row)
+        
         table_data.append(salary_details_row_1)
         table_data.append(salary_details_row_2)
         table_data.append(salary_details_row_3)
@@ -278,6 +297,9 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         table_data.append(salary_details_row_5)
         table_data.append(salary_details_row_6)
         table_data.append(salary_details_row_7)
+        table_data.append(salary_details_row_8)
+        table_data.append(salary_details_row_9)
+        table_data.append(salary_details_row_10)
 
         buffer = io.BytesIO()
         file_name = f"{emp_id}_{year_month}_Salary_Details.pdf"
@@ -288,41 +310,38 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         # salary_table = Table(salary_data)
         attendance_table_styles = TableStyle(
             [
-             ('SPAN', (0, 0), (-1, 0)),
-             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-             ('SPAN', (0, 1), (-1, 1)),
-             ('SPAN', (3, 2), (-1, 2)),
-             ('SPAN', (3, 3), (-1, 3)),
-            #  ('SPAN', (0, -8), (-1, -8)),
-             ('SPAN', (1, -7), (2,-7)),# Basic Salary Row
-             ('SPAN', (3, -7), (4, -7)),  
+            #  ('SPAN', (0, 0), (-1, 0)),
+            #  ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            #  ('SPAN', (0, 0), (-1, 0)),
+             ('SPAN', (3, 0), (-1, 0)),
+             ('SPAN', (3, 1), (-1, 1)),
+             ('SPAN', (1, -10), (4, -10)),  # Basic Salary Row
+             ('SPAN', (5, -10), (6, -10)),
+             ('SPAN', (1, -9), (4, -9)),  # Basic Salary Row
+             ('SPAN', (5, -9), (6, -9)),
+             ('SPAN', (1, -8), (4, -8)),  # B-R Row
+             ('SPAN', (5, -8), (6, -8)),
+             ('SPAN', (1, -7), (4, -7)),  # Fixed Allowance Row
              ('SPAN', (5, -7), (6, -7)),
-             ('SPAN', (1, -6), (2, -6)),  # OT Row
-             ('SPAN', (3, -6), (4, -6)),
+             ('SPAN', (1, -6), (4, -6)),  # OT Row
              ('SPAN', (5, -6), (6, -6)),
-             ('SPAN', (1, -5), (2, -5)),  # Allowance Row
-             ('SPAN', (3, -5), (4, -5)), 
+             ('SPAN', (1, -5), (4, -5)),  # EPF Row
              ('SPAN', (5, -5), (6, -5)),
-             ('SPAN', (1, -4), (2, -4)),  # Salary Advance Row
-             ('SPAN', (3, -4), (4, -4)), 
+             ('SPAN', (1, -4), (4, -4)),  # Room Charge Row
              ('SPAN', (5, -4), (6, -4)),
-             ('SPAN', (1, -3), (2, -3)),  # EPF Row
-             ('SPAN', (3, -3), (4, -3)),
+             ('SPAN', (1, -3), (4, -3)),  # Net Payment Row
              ('SPAN', (5, -3), (6, -3)),
-             ('SPAN', (1, -2), (2, -2)),  # Room Charge Row
-             ('SPAN', (3, -2), (4, -2)),
+             ('SPAN', (1, -2), (4, -2)),  # Net Payment Row
              ('SPAN', (5, -2), (6, -2)),
-             ('SPAN', (1, -1), (2, -1)),  # Net Payment Row
-             ('SPAN', (3, -1), (4, -1)),
+             ('SPAN', (1, -1), (4, -1)),  # Net Payment Row
              ('SPAN', (5, -1), (6, -1)),
-             ('GRID', (0, 2), (-1, 2), 1, colors.black),
-             ('GRID', (0, 3), (-1, 3), 1, colors.black),
+             ('GRID', (0, 0), (-1, -1), 1, colors.black),
+             ('GRID', (0, 1), (-1, 1), 1, colors.black),
              ('BOX', (0, 4), (-1, -1), 1, colors.black),
              ('GRID', (0, 4), (-1, -1), 1, colors.black),
              ('ALIGN', (2, 4), (5, -1),'RIGHT'),
-             ('FONT', (0, 0), (-1, -1), 'Helvetica',9.5),
-             
-
+             ('ALIGN', (1, -10), (-1, -1),'RIGHT'),
+             ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
              ]
             
         )
