@@ -2,8 +2,14 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.views.generic import View
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
+class MyAccountDetailsView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        print(request.user,request.user.email)
+        return render(request,'my_account.html')
 class MainView(View):
     def get(self,request):
         if not request.user.is_authenticated:

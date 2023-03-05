@@ -132,7 +132,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#employee-management-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Employee Management</span><i
+          <i class="bi bi-people"></i><span>Employee Management</span><i
             class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="employee-management-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
@@ -156,7 +156,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#attendance-management-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Attendance Management</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-calendar3"></i><span>Attendance Management</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="attendance-management-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -179,7 +179,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#payroll-management-nav" data-bs-toggle="collapse" href="">
-          <i class="bi bi-menu-button-wide"></i><span>Payroll Management</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-currency-dollar"></i><span>Payroll Management</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="payroll-management-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -199,6 +199,24 @@
           </li>
         </ul>
       </li><!-- End Employee Management Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#user-management-nav" data-bs-toggle="collapse" href="">
+          <i class="bi bi-person-circle"></i><span>User Management</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="user-management-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'my_account_view' %}">
+              <i class="bi bi-circle"></i><span>My Account</span>
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <i class="bi bi-circle"></i><span>Create New User</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End User Management Nav -->
 
       
       <li class="nav-item">
