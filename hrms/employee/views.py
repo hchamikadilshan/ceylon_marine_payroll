@@ -12,13 +12,13 @@ class EditEmployee(LoginRequiredMixin,View):
     def post(self,request):
         emp_id = request.POST.get('emp_id')
         emp_name = request.POST.get('emp_name',"")
+        emp_type = request.POST['emp_type']
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
         nic_no = request.POST.get('nic_no',"")
         mobile_no = request.POST.get('mobile_no',"")
         email = request.POST.get('email',"")
         address = request.POST.get('address',"")
-        print(emp_id)
         employee = Employee.objects.get(emp_id=emp_id)
         employee.name = emp_name
         employee.department = department
@@ -27,6 +27,7 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.mobile_no = mobile_no
         employee.email = email
         employee.address = address
+        employee.emp_type =emp_type
         employee.save()
         return redirect('employees_main_view')
 
@@ -69,6 +70,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
     def post(self,request):
 
         emp_id = request.POST.get('emp_id')
+        emp_type = request.POST('emp_type')
         name = request.POST.get('name')
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
@@ -84,20 +86,28 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         bank_acc_no = request.POST.get('bank_acc_no',"")
         
 
-        employee = Employee(emp_id=emp_id, name=name, department=department,
+        employee = Employee(emp_id=emp_id, name=name, department=department,emp_type=emp_type,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")
 
 
-class EmployeesMainView(LoginRequiredMixin,ListView):
-    login_url = '/accounts/login'
-    model = Employee
-    template_name = 'employees.html'
+# class EmployeesMainView(LoginRequiredMixin,ListView):
+#     login_url = '/accounts/login'
+#     model = Employee
+#     template_name = 'employees.html'
 
-    def get_queryset(self):
-        return Employee.objects.all()
+#     def get_queryset(self):
+#         return Employee.objects.all()
+class EmployeesMainView(LoginRequiredMixin,View):
+    def get(self,request):
+        employee_list = Employee.objects.all()
+        return render(request,'employees.html',context={'employee_list':employee_list})
+    def post(self,request):
+        employees = Employee.objects.all().values()
+        employees_list = list(employees)
+        return JsonResponse({'employees_list':employees_list})
 
 
 class GetEmpNameView(LoginRequiredMixin,View):

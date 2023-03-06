@@ -36,11 +36,19 @@
                                 <label for="inputPassword4" class="form-label">EPF No</label>
                                 <input type="text" class="form-control" id="edit_employee_epf_no" name="edit_employee_epf_no">
                             </div>
-                            <div class="col-12">
+                            <div class="col-6">
                                 <label for="inputEmail4" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="edit_employee_emp_name" name="edit_employee_emp_name" >
                             </div>
-                            
+                            <div class="col-6">
+                                <label class=" col-form-label" for="edit_emp_type">Employee Type</label>
+                                <div class="">
+                                    <select class="form-control" name="edit_emp_type" id="edit_emp_type">
+                                        <option value=0>Normal Employee</option>
+                                        <option value=1>Shift Employee</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-6">
                                 <label for="inputAddress" class="form-label">NIC No</label>
                                 <input type="text" class="form-control" id="edit_employee_nic_no" name="edit_employee_nic_no" >
@@ -84,6 +92,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Emp ID</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Department</th>
                     <th scope="col">EPF No</th>
                     <th scope="col">NIC No</th>
@@ -99,17 +108,17 @@
                     <th scope="col">View</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id ="employee_data_table">
                 {% for employee in employee_list %}
                 <tr>
                     <th scope="row"></th>
                     <td>{{ employee.emp_id }}</td>
-                    <!-- {% if employee.emp_type == "1" %}
-                    <td>Has EPF</td>
-                    {% elif employee.emp_type == "2" %}
-                    <td>No EPF</td>
-                    {% endif %} -->
                     <td>{{ employee.name }}</td>
+                    {% if employee.emp_type == 0 %}
+                    <td>Normal Employee</td>
+                    {% elif employee.emp_type == 1 %}
+                    <td>Shift Employee</td>
+                    {% endif %}
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.epf_no }}</td>
                     <td>{{ employee.nic_no }}</td>
@@ -122,7 +131,7 @@
                     <td>{{ employee.bank_branch}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td> -->
-                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-department="{{ employee.department }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}">Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.department }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}">Edit</button></td>
                     
                 </tr>
                 {% endfor %}
@@ -138,6 +147,7 @@
             
 var button = $(event.relatedTarget) // Button that triggered the modal
 var emp_id = button.data('empid') 
+var emp_type = button.data('emptype') 
 var emp_name = button.data('empname') 
 var department = button.data('department') 
 var epf_no = button.data('epfno') 
@@ -147,8 +157,10 @@ var email = button.data('email')
 var address = button.data('address') 
 var modal = $(this)
 
+
 modal.find('#edit_employee_emp_id').val(emp_id)
 modal.find('#edit_employee_emp_name').val(emp_name)
+modal.find('#edit_emp_type').val(emp_type)
 modal.find('#edit_employee_department').val(department)
 modal.find('#edit_employee_epf_no').val(epf_no)
 modal.find('#edit_employee_nic_no').val(nic_no)
@@ -161,6 +173,7 @@ function editEmployee(){
         console.log("sinside")
         var emp_id = document.getElementById("edit_employee_emp_id").value;
         var emp_name = document.getElementById("edit_employee_emp_name").value;
+        var emp_type = document.getElementById("edit_emp_type").value;
         var department = document.getElementById("edit_employee_department").value;
         var epf_no = document.getElementById("edit_employee_epf_no").value;
         var nic_no = document.getElementById("edit_employee_nic_no").value;
@@ -176,6 +189,7 @@ function editEmployee(){
                 emp_id: emp_id,
                 emp_name: emp_name,
                 department: department,
+                emp_type:emp_type,
                 epf_no: epf_no,
                 nic_no: nic_no,
                 email: email,
@@ -185,8 +199,32 @@ function editEmployee(){
             },
             success: function (response) {
                 $('#edit_employee_data_model').modal('toggle')
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'employees_main_view' %}",
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        $("#employee_data_table").empty()
+                        var i = 0;
+                        while (i < response['employees_list'].length) {
+                            if(response['employees_list'][i]['emp_type'] === 0){
+                                emp_type = "Normal Employee"
+                            }else{
+                                emp_type = "Shift Employee"
+                            }
+                            $("#employee_data_table").append('<tr><th scope="row"></th><td>' + response['employees_list'][i]['emp_id'] + '</td ><td>' + response['employees_list'][i]['name'] + '</td><td>' + emp_type + '</td><td>' + response['employees_list'][i]['department'] + '</td><td>' + response['employees_list'][i]['epf_no'] + '</td><td>' + response['employees_list'][i]['nic_no'] + '</td><td>' + response['employees_list'][i]['address'] + '</td><td>' + response['employees_list'][i]['mobile_no'] + '</td><td>' + response['employees_list'][i]['email'] + '</td><td><button class="btn btn-primary" data-id="' + response['employees_list'][i]['emp_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="' + response['employees_list'][i]['emp_id'] + '" data-empName="' + response['employees_list'][i]['name'] + '" data-empType="' + response['employees_list'][i]['emp_type'] + '" data-department="' + response['employees_list'][i]['department'] + '" data-epfNo="' + response['employees_list'][i]['epf_no'] + '" data-nicNo="' + response['employees_list'][i]['nic_no'] + '" data-address="' + response['employees_list'][i]['address'] + '"  data-mobileNo="' + response['employees_list'][i]['mobile_no'] + '" data-email="' + response['employees_list'][i]['email'] + '">Edit</button></td></tr> ')
+
+                            i++
+                
             }
-        });
+                    }
+                });
+            }
+
+            }
+        );
     }
 </script>
 

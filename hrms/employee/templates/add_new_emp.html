@@ -16,7 +16,7 @@
     <div class="card-body">
         <form method="POST" class="row g-3 ">
             {% csrf_token %}
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label class="col-form-label" for="emp_id">Employee ID</label>
                 <div class="">
                     <input class="form-control" type="text" name="emp_id" id="emp_id" required onchange="checkEmpIdAvailablity();">
@@ -24,16 +24,21 @@
                 
             </div>
             
-            
-            
-
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <label class=" col-form-label" for="department">Department</label>
                 <div class="">
                     <input class="form-control " type="text" name="department" id="department" >
                 </div>
             </div>
-
+            <div class="col-md-4">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="emp_type" id="emp_type">
+                        <option value=0>Normal Employee</option>
+                        <option value=1>Shift Employee</option>
+                    </select>
+                </div>
+            </div>
             <div class="col-md-12">
                 <label class=" col-form-label" for="name">Name</label>
                 <div class="">

@@ -16,6 +16,11 @@ class CreateNewUserView(LoginRequiredMixin,View):
         last_name = request.POST['last_name']
         username= request.POST['username']
         email = request.POST['email']
+# class CheckUserAvailability(LoginRequiredMixin,View):
+#     def post(self,request):
+#         username = request.POST['username']
+#         user_availability = User.objects
+#         return JsonResponse({})
 class MyAccountDetailsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):

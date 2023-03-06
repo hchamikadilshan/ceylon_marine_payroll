@@ -5,6 +5,7 @@ from django.db import models
 class Employee(models.Model):
     emp_id = models.CharField(max_length=10,primary_key=True)
     emp_title = models.CharField(default="", max_length=50),
+    emp_type = models.IntegerField(default=0)
     name = models.CharField(max_length=100)
     department = models.CharField(max_length=100,default="")
     epf_no = models.CharField(max_length=10, default="")
