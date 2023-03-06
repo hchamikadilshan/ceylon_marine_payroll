@@ -6,6 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 
 # Create your views here.
+class CreateNewUserView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'create_new_user.html' ,context={'user':user})
 class MyAccountDetailsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):

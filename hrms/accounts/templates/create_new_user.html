@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %} New User {% endblock%}
+
+{% block top_heading %}Account Management{% endblock %}
+{% block sub_heading %} New User{% endblock %}
+{% block sub_heading2 %} New User{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+<div class="card formss" >
+    <div class="card-body">
+        <form method="POST" class="row g-3 ">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label class="col-form-label" for="emp_id">First Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="first_name" id="first_name" required onchange="checkEmpIdAvailablity();">
+                </div>
+                
+            </div>
+            <div class="col-md-6">
+                <label class=" col-form-label" for="department">Last Name</label>
+                <div class="">
+                    <input class="form-control " type="text" name="last_name" id="last_name" >
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class=" col-form-label" for="name">User Name</label>
+                <div class="">
+                    <input class="form-control " type="text" name="username" id="username" required>
+                </div>
+            </div>
+            
+            
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="epf-no">Email</label>
+                            <div class="">
+                                <input class="form-control" type="email" name="email" id="email">
+                            </div>
+                        
+            </div>
+
+            <div class="col-md-6">
+                            <label class=" col-form-label" for="nic_no">Password</label>
+                            <div class="">
+                                <input class="form-control" type="text" name="password" id="password">
+                            </div>
+                            
+            </div>
+            <div class="col-md-6">
+                <label class=" col-form-label" for="nic_no">Re-Type Password</label>
+                <div class="">
+                    <input class="form-control" type="text" name="password2" id="password2">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function checkEmpIdAvailablity(){
+        var emp_id = document.getElementById("emp_id").value
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'check_emp_id_availability' %}",
+            data: {
+                emp_id: emp_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                if (response.status == 1){
+                    $("#messeges_container").empty()
+                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Employee Exists ! </strong>An employee already exists for entered employee ID <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+                }else{
+
+                }
+            }
+        });
+    }
+    
+</script>
+
+{% endblock %}

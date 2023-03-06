@@ -220,12 +220,6 @@
                 $("#attendance_data_table").empty()
                 var i = 0;
                 while (i < response['attendance_list'].length) {
-                    console.log(response['attendance_list'][i]['employee_id'])
-                    console.log(response['attendance_list'][i]['name'])
-                    console.log(response['attendance_list'][i]['day'])
-                    console.log(response['attendance_list'][i]['in_time'])
-                    console.log(response['attendance_list'][i]['out_time'])
-
                     // $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td>')
                     
                     $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + response['attendance_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + response['attendance_list'][i]['employee_id'] + '" data-empName="' + response['attendance_list'][i]['name'] + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
