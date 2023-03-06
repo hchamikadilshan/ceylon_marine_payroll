@@ -268,15 +268,34 @@
                 },
                 success: function (response) {
                     
-                    $("#allowance_table").append('<tr><td>' + date + '</td><td>' + description + '</td><td>' + amount + '</td></tr> ')
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'get_allowance_data' %}",
+                        data: {
+                            emp_id: allowance_emp_id,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#allowance_table").empty()
+                    var i = 0;
+                    while (i < response['allowance_data_list'].length) {
+                        if(response["allowance_data_list"][i]['status'] === true){
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=true data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#allowance_table").append('<tr><td>' + response["allowance_data_list"][i]['date'] + '</td><td>' + response["allowance_data_list"][i]['description'] + '</td><td>' + response["allowance_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_allowance_data_model" data-date="' + response["allowance_data_list"][i]['date'] + '" data-description="' + response["allowance_data_list"][i]['description'] + '" data-amount="' + response["allowance_data_list"][i]['amount'] + '" data-status=false data-id="' + response["allowance_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
                         
-                    
+                        i++
+                    }
                     allowance_input.value = ""
                     allowance_description_input.value = ""
                 }
             });
-        }
-    });
+            }
+                })}})
+          
+        
+ 
 
 </script>
 
