@@ -44,10 +44,15 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
         <img src="{% static 'assets/img/logo.png' %}" alt="">
-        <span class="d-none d-lg-block">NiceAdmin</span>
+        <span class="d-none d-lg-block">Payroll Master</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
+    <div class="search-bar align-items-center">
+      <div class="d-flex align-items-center" method="POST" action="#">
+        <span class="d-none d-lg-block">Ceylon Marine Services Holding Pvt Ltd</span>
+      </div>
+    </div><!-- End Company Name -->
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
@@ -180,6 +185,11 @@
           <li>
             <a href="{% url 'payroll_test_view' %}">
               <i class="bi bi-circle"></i><span>Salary Report</span>
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <i class="bi bi-circle"></i><span>Pay Slips</span>
             </a>
           </li>
         </ul>

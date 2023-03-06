@@ -11,6 +11,11 @@ class CreateNewUserView(LoginRequiredMixin,View):
     def get(self,request):
         user = request.user
         return render(request,'create_new_user.html' ,context={'user':user})
+    def post(self,request):
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username= request.POST['username']
+        email = request.POST['email']
 class MyAccountDetailsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):

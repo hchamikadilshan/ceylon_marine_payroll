@@ -33,7 +33,7 @@
             <div class="col-md-6">
                 <label class=" col-form-label" for="name">User Name</label>
                 <div class="">
-                    <input class="form-control " type="text" name="username" id="username" required>
+                    <input onchange="checkUserAvailability();" class="form-control " type="text" name="username" id="username" required>
                 </div>
             </div>
             
@@ -59,25 +59,28 @@
                     <input class="form-control" type="text" name="password2" id="password2">
                 </div>
             </div>
+            <div class="text-center">
+                <button class="btn btn-primary">Create</button>
+            </div>
         </form>
     </div>
 </div>
 
 <script>
-    function checkEmpIdAvailablity(){
-        var emp_id = document.getElementById("emp_id").value
+    function checkUserAvailability(){
+        var username = document.getElementById("username").value
 
         $.ajax({
             type: 'POST',
-            url: "{% url 'check_emp_id_availability' %}",
+            url: "{% url 'check_username_availability' %}",
             data: {
-                emp_id: emp_id,
+                username: username,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
                 if (response.status == 1){
                     $("#messeges_container").empty()
-                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Employee Exists ! </strong>An employee already exists for entered employee ID <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Username Exists ! </strong>Entered username already exists. Please enter another username <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
                 }else{
 
                 }
