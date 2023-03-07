@@ -80,6 +80,7 @@
             <div class="modal-footer">
                 <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                 <button onclick="editAttendance();" class="btn btn-primary">Save changes</button>
+                <button onclick="deleteAttendance();"  class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -132,6 +133,23 @@
 
 
 <script>
+    function deleteAttendance(){
+        var emp_id = document.getElementById("edit_attendance_emp_id").value;
+        var date = document.getElementById("edit_attendance_date").value;
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'delete_attendance' %}",
+            data: {
+                emp_id: emp_id,
+                date: date,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_attendance_data_model').modal('toggle')
+                getAttendanceData()
+            }
+        });
+}
     $('#edit_attendance_data_model').on('show.bs.modal', function (event) {
 
 
