@@ -19,6 +19,11 @@ class EditEmployee(LoginRequiredMixin,View):
         mobile_no = request.POST.get('mobile_no',"")
         email = request.POST.get('email',"")
         address = request.POST.get('address',"")
+        bank_name = request.POST.get('bank_name',"")
+        bank_branch = request.POST.get('bank_branch',"")
+        bank_acc_name = request.POST.get('bank_acc_name',"")
+        bank_acc_no = request.POST.get('bank_acc_no',"")
+
         employee = Employee.objects.get(emp_id=emp_id)
         employee.name = emp_name
         employee.department = department
@@ -28,6 +33,10 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.email = email
         employee.address = address
         employee.emp_type =emp_type
+        employee.bank_acc_name = bank_acc_name
+        employee.bank_acc_no = bank_acc_no
+        employee.bank_name = bank_name
+        employee.bank_branch = bank_branch
         employee.save()
         return redirect('employees_main_view')
 

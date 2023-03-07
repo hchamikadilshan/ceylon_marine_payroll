@@ -69,6 +69,83 @@
                                 <label for="inputAddress" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="edit_employee_address" name="edit_employee_address">
                             </div>
+                            <div class="col-md-6">
+                                <label class=" col-form-label" for="bank_name">Bank Name</label>
+                                <!-- <div class="">
+                                    <input class="form-control" type="text" name="bank_name" id="bank_name">
+                                </div> -->
+                                <div class="">
+                                    <select class="form-control" name="bank_name" id="bank_name">
+                                        <option value=7010>Bank of Ceylon</option>
+                                        <option value=7038>Standard Chartered Bank</option>
+                                        <option value=7047>Citi Bank</option>
+                                        <option value=7056>Commercial Bank PLC</option>
+                                        <option value=7074>Habib Bank Ltd</option>
+                                        <option value=7083>Hatton National Bank PLC</option>
+                                        <option value=7092>Hongkong Shanghai Bank</option>
+                                        <option value=7108>Indian Bank</option>
+                                        <option value=7117>Indian Overseas Bank</option>
+                                        <option value=7135>Peoples Bank</option>
+                                        <option value=7144>State Bank of India</option>
+                                        <option value=7162>Nations Trust Bank PLC</option>
+                                        <option value=7205>Deutsche Bank</option>
+                                        <option value=7214>National Development Bank PLC</option>
+                                        <option value=7269>MCB Bank Ltd</option>
+                                        <option value=7278>Sampath Bank PLC</option>
+                                        <option value=7287>Seylan Bank PLC</option>
+                                        <option value=7296>Public Bank</option>
+                                        <option value=7302>Union Bank of Colombo PLC</option>
+                                        <option value=7311>Pan Asia Banking Corporation PLC</option>
+                                        <option value=7384>ICICI Bank Ltd</option>
+                                        <option value=7454>DFCC Bank PLC</option>
+                                        <option value=7463>Amana Bank PLC</option>
+                                        <option value=7472>Axis Bank</option>
+                                        <option value=7481>Cargills Bank Limited</option>
+                                        <option value=7719>National Savings Bank</option>
+                                        <option value=7728>Sanasa Development Bank</option>
+                                        <option value=7737>HDFC Bank</option>
+                                        <option value=7746>Citizen Development Business Finance PLC</option>
+                                        <option value=7755>Regional Development Bank</option>
+                                        <option value=7764>State Mortgage & Investment Bank</option>
+                                        <option value=7773>LB Finance PLC</option>
+                                        <option value=7782>Senkadagala Finance PLC</option>
+                                        <option value=7807>Commercial Leasing and Finance</option>
+                                        <option value=7816>Vallibel Finance PLC</option>
+                                        <option value=7825>Central Finance PLC</option>
+                                        <option value=7834>Kanrich Finance Limited</option>
+                                        <option value=7852>Alliance Finance Company PLC</option>
+                                        <option value=7861>LOLC Finance PLC</option>
+                                        <option value=7870>Commercial Credit & Finance PLC</option>
+                                        <option value=7898>Merchant Bank of Sri Lanka & Finance PLC</option>
+                                        <option value=7904>HNB Grameen Finance Limited</option>
+                                        <option value=7913>Mercantile Investment and Finance PLC</option>
+                                        <option value=7922>People's Leasing & Finance PLC</option>
+                                        <option value=8004> Central Bank of Sri Lanka </option>
+                                    </select>     
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class=" col-form-label" for="bank_branch">Bank Branch Name</label>
+                    <div class="">
+                        <select class="form-control" name="bank_branch" id="bank_branch">
+                            
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class=" col-form-label" for="bank_acc_name">Bank Account Name</label>
+                    <div class="">
+                        <input class="form-control" type="text" name="bank_acc_name" id="bank_acc_name">
+                    </div>
+                
+                </div>
+                <div class="col-md-6">
+                    <label class=" col-form-label" for="bank_acc_no">Bank Account No</label>
+                    <div class="">
+                        <input class="form-control" type="text" name="bank_acc_no" id="bank_acc_no">
+                    </div>
+                
+                </div>
                         </form><!-- Vertical Form -->
                 
                     </div>
@@ -81,12 +158,12 @@
         </div>
     </div>
 </div>
-<div class="card">
+<div class="card overflow-auto">
     <div class="card-body">
         <h5 class="card-title">Employee Personal Details Table</h5>
 
         <!-- Table with hoverable rows -->
-        <table class="table table-hover table_bordered border-dark">
+        <table class="table table-hover table-bordered ">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -101,10 +178,10 @@
                     <th scope="col">Address</th>
                     <th scope="col">Mobile No</th>
                     <th scope="col">Email</th>
-                    <!-- <th scope="col">Bank Name</th>
+                    <th scope="col">Bank Name</th>
                     <th scope="col">Bank Branch</th>
                     <th scope="col">Bank Account Name</th>
-                    <th scope="col">Bank Account No</th> -->
+                    <th scope="col">Bank Account No</th>
                     <th scope="col">View</th>
                 </tr>
             </thead>
@@ -127,10 +204,10 @@
                     <td>{{ employee.address}}</td>
                     <td>{{ employee.mobile_no }}</td>
                     <td>{{ employee.email }}</td>
-                    <!-- <td>{{ employee.bank_name}}</td>
+                    <td>{{ employee.bank_name}}</td>
                     <td>{{ employee.bank_branch}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
-                    <td>{{ employee.bank_acc_no }}</td> -->
+                    <td>{{ employee.bank_acc_no }}</td>
                     <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.department }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}">Edit</button></td>
                     
                 </tr>
@@ -180,6 +257,10 @@ function editEmployee(){
         var mobile_no = document.getElementById("edit_employee_mobile_no").value;
         var email = document.getElementById("edit_employee_email").value;
         var address =  document.getElementById("edit_employee_address").value;
+        var bank_acc_name = document.getElementById("bank_acc_name").value;
+        var bank_acc_no = document.getElementById("bank_acc_no").value;
+        var bank_name = document.getElementById("bank_name").value;
+        var bank_branch = document.getElementById("bank_branch").value;
 
 
         $.ajax({
@@ -195,6 +276,10 @@ function editEmployee(){
                 email: email,
                 mobile_no:mobile_no,
                 address :address,
+                bank_acc_name:bank_acc_name,
+                bank_acc_no:bank_acc_no,
+                bank_name:bank_name,
+                bank_branch:bank_branch,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
