@@ -9,6 +9,7 @@ class SalaryAdvance(models.Model):
     date = models.DateField(default=datetime.now())
     amount= models.FloatField()
     time_stamp = models.DateTimeField()
+    status = models.BooleanField(default=True)
 
 class Alllowance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

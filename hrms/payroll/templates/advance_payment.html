@@ -13,6 +13,50 @@
 {% block username %}{{user.username}} {% endblock %}
 
 {% block content %}
+<div class="modal fade" id="edit_advance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Advance Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" >
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Date</label>
+                                <input type="Date" class="form-control" id="edit_advance_date" name="edit_advance_date">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Advance Amount</label>
+                                <input type="text" class="form-control" id="edit_advance_payment_amount" name="edit_advance_payment_amount">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Advance</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="edit_advance_status" name="edit_advance_status">
+                                    <label class="form-check-label" for="edit_advance_status">Click to cancel or activate payment</label>
+                                  </div>
+                            </div>
+                            
+                            
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editAdvance();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <form method="POST" id ="advance_payment_form">
     {% csrf_token %}
     <div class="card formss">
@@ -61,6 +105,8 @@
                 <tr>
                     <th scope="col">Date</th>
                     <th scope="col">Payment Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Edit</th>
 
                 </tr>
             </thead>
@@ -74,7 +120,20 @@
 
 
 <script>
-    console.log("Workinggggllllll");
+// Advance Payment Edit Model
+    $('#edit_advance_data_model').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var date = button.data('date')  
+        var amount = button.data('amount') 
+        var status = button.data('status') 
+        var id = button.data('id') 
+        var modal = $(this)
+
+        modal.find('#edit_advance_date').val(date)
+        modal.find('#edit_advance_status').data('id',id)
+        modal.find('#edit_advance_payment_amount').val(amount)
+        modal.find('#edit_advance_status').prop('checked', status)
+        })
     //Get employee name and Data
     var attendance_view_emp_id_input = document.getElementById("advance_payment_view_emp_id");
     var attendance_view_emp_name_input = document.getElementById("advance_payment_emp_name");
@@ -108,7 +167,11 @@
                     $("#advance_payment_table").empty()
                     var i = 0;
                     while (i < response['advance_payment_data_list'].length) {
-                        $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td></tr> ')
+                        if(response["advance_payment_data_list"][i]['status'] === true){
+                            $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=true data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=false data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
                         i++
                     }
                 }
@@ -140,39 +203,102 @@
                     },
                     success: function (response) {
 
-                        $("#advance_payment_table").append('<tr><td>' + date + '</td><td>' + advance_payamount_value + '</td></tr> ')
+                        $.ajax({
+                            type: 'POST',
+                            url: "{% url 'get_advance_payment_data' %}",
+                            data: {
+                                emp_id: attendance_view_emp_id,
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                            },
+                            success: function (response) {
+                                $("#advance_payment_table").empty()
+                                var i = 0;
+                                while (i < response['advance_payment_data_list'].length) {
+                                    if(response["advance_payment_data_list"][i]['status'] === true){
+                                        $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=true data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                                    }else{
+                                        $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=false data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                                    }
+                                    i++
+                                }
+                            }
+                        });
                         advance_payamount_input.value = ""
                     }
                 });
             }
         });
 
-    //Get Attendance Data
-    function getAttendanceData() {
-        var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
-        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+    // //Get Attendance Data
+    // function getAttendanceData() {
+    //     var attendance_view_emp_id = document.getElementById("attendance_view_emp_id").value;
+    //     var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: "{% url 'payroll_test_view' %}",
+    //         data: {
+    //             emp_id: attendance_view_emp_id,
+    //             month: attendance_view_month_year,
+    //             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+    //         },
+    //         success: function (response) {
+    //             $("#attendance_data_table").empty()
+    //             console.log(response['total_working_hours'])
+    //             console.log(response['total_ot_hours'])
+    //             var i = 0;
+    //             while (i < response['attendance_list'].length) {
+    //                 $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
+
+    //                 i++
+    //             }
+    //         }
+    //     });
+    // }
+// Edit Advance Payment
+function editAdvance(){
+        var emp_id = document.getElementById("advance_payment_view_emp_id").value;
+        var date = document.getElementById("edit_advance_date").value;
+        var amount = document.getElementById("edit_advance_payment_amount").value;
+        var status = document.getElementById("edit_advance_status").checked;
+        var id = $('#edit_advance_status').data('id')
+        console.log(id)
+       
         $.ajax({
             type: 'POST',
-            url: "{% url 'payroll_test_view' %}",
+            url: "{% url 'edit_advance' %}",
             data: {
-                emp_id: attendance_view_emp_id,
-                month: attendance_view_month_year,
+                id:id,
+                emp_id:emp_id,
+                date: date,
+                amount: amount,
+                status: status,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
-                $("#attendance_data_table").empty()
-                console.log(response['total_working_hours'])
-                console.log(response['total_ot_hours'])
-                var i = 0;
-                while (i < response['attendance_list'].length) {
-                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
-
-                    i++
+                $('#edit_advance_data_model').modal('toggle')
+                $.ajax({
+                type: 'POST',
+                url: "{% url 'get_advance_payment_data' %}",
+                data: {
+                    emp_id: emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#advance_payment_table").empty()
+                    var i = 0;
+                    while (i < response['advance_payment_data_list'].length) {
+                        if(response["advance_payment_data_list"][i]['status'] === true){
+                            $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=true data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#advance_payment_table").append('<tr><td>' + response["advance_payment_data_list"][i]['date'] + '</td><td>' + response["advance_payment_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_advance_data_model" data-date="' + response["advance_payment_data_list"][i]['date'] + '" data-description="' + response["advance_payment_data_list"][i]['description'] + '" data-amount="' + response["advance_payment_data_list"][i]['amount'] + '" data-status=false data-id="' + response["advance_payment_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        i++
+                    }
                 }
+            });
             }
         });
     }
-
 
 </script>
 

@@ -417,7 +417,25 @@ class GetAdvancePaymentData(LoginRequiredMixin,View):
         advance_payment_data = SalaryAdvance.objects.filter(employee=emp).order_by('date').values()
         advance_payment_data_list = list(advance_payment_data)
         return JsonResponse({'advance_payment_data_list': advance_payment_data_list})
+class EditAdvancePayment(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        status = request.POST['status']
+        id = request.POST["id"]
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
 
+        advance_record = SalaryAdvance.objects.get(
+            employee=emp, id=id)
+        advance_record.date = date
+        advance_record.amount=amount
+        advance_record.status= (True if status == "true" else False)
+        advance_record.time_stamp = time_stamp
+        advance_record.save()
+        return JsonResponse({})
 class AdvancePaymentsView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
