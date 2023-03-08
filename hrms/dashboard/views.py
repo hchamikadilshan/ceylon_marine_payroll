@@ -10,8 +10,12 @@ class DashboardMainView(LoginRequiredMixin,View):
     def get(self,request):
         user = request.user
 # Total Employee Count
-        employee_record = Employee.objects.filter(active_status=True)
-        employee_record_list = list(employee_record)
-        active_employees = len(employee_record_list)
+        normal_employee_record = Employee.objects.filter(active_status=True,emp_type=0)
+        normal_employee_record_list = list(normal_employee_record)
+        normal_active_employees = len(normal_employee_record_list)
+
+        shift_employee_record = Employee.objects.filter(active_status=True,emp_type=1)
+        shift_employee_record_list = list(shift_employee_record)
+        shift_active_employees = len(shift_employee_record_list)
 # Total Salary 
-        return render (request,"dashboard.html",context={'no_of_employees':active_employees,'user':user})
+        return render (request,"dashboard.html",context={'no_of_normal_employees':normal_active_employees,'no_of_shift_employees':shift_active_employees,'user':user})

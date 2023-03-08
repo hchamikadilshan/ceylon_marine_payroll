@@ -12,6 +12,7 @@ import io
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate,Table,TableStyle
 from reportlab.lib import colors
+from reportlab.pdfgen import canvas
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -304,7 +305,8 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         buffer = io.BytesIO()
         file_name = f"{emp_id}_{year_month}_Salary_Details.pdf"
         title = f"{emp_id}_{year_month}_Salary_Details"
-        pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title)
+        
+        pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
         elements = []
         attendance_table = Table(table_data)
         # salary_table = Table(salary_data)
@@ -341,7 +343,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
              ('GRID', (0, 4), (-1, -1), 1, colors.black),
              ('ALIGN', (2, 4), (5, -1),'RIGHT'),
              ('ALIGN', (1, -10), (-1, -1),'RIGHT'),
-             ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
+             ('FONT', (0, 0), (-1, -1), 'Helvetica',12),
              ]
             
         )
@@ -356,6 +358,8 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         # elements.append(salary_table)
         pdf.build(elements)
         buffer.seek(0)
+
+        pdf1= canvas.Canvas(buffer,pagesize = A4)
         
         return FileResponse(buffer, as_attachment=True, filename=file_name)
 
