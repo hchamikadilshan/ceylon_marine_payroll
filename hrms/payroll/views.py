@@ -362,117 +362,13 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         pdf1= canvas.Canvas(buffer,pagesize = A4)
         
         return FileResponse(buffer, as_attachment=True, filename=file_name)
+def get_final_salary_details(emp_id="",month="",emp_type=""):
+# Getting Details of one employee one month
+    if emp_id != "" and month != "":
 
-class AllowancesView(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def get(self,request):
-        user = request.user
-        return render(request,'allowances.html',context={'user':user})
-
-    def post(self,request):
-        print("inside allowance payment")
-        emp_id = request.POST['emp_id']
-        date = request.POST['date']
-        amount = request.POST['amount']
-        description = request.POST['description']
-        emp = Employee.objects.get(emp_id=emp_id)
-        time_stamp = datetime.now()
-
-        allowance = Alllowance(
-            employee=emp, date=date,description=description, amount=amount, time_stamp=time_stamp)
-        allowance.save()
-        return  JsonResponse({})
-
-
-class GetAllowanceData(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def post(self,request):
-        emp_id = request.POST['emp_id']
-        emp = Employee.objects.get(emp_id=emp_id)
-        allowance_data = Alllowance.objects.filter(
-            employee=emp).order_by('date').values()
-        allowance_data_list = list(allowance_data)
-        return JsonResponse({'allowance_data_list': allowance_data_list})
-class EditAllowance(LoginRequiredMixin,View):
-    def post(self,request):
-        emp_id = request.POST['emp_id']
-        date = request.POST['date']
-        amount = request.POST['amount']
-        description = request.POST['description']
-        status = request.POST['status']
-        id = request.POST["id"]
-        emp = Employee.objects.get(emp_id=emp_id)
-        time_stamp = datetime.now()
-
-        allowance_record = Alllowance.objects.get(
-            employee=emp, id=id)
-        allowance_record.date = date
-        allowance_record.amount=amount
-        allowance_record.description=description
-        allowance_record.status= (True if status == "true" else False)
-        allowance_record.time_stamp = time_stamp
-        allowance_record.save()
-        return JsonResponse({})
-class GetAdvancePaymentData(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def post(self,request):
-        emp_id = request.POST['emp_id']
-        emp = Employee.objects.get(emp_id=emp_id)
-        advance_payment_data = SalaryAdvance.objects.filter(employee=emp).order_by('date').values()
-        advance_payment_data_list = list(advance_payment_data)
-        return JsonResponse({'advance_payment_data_list': advance_payment_data_list})
-class EditAdvancePayment(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def post(self,request):
-        emp_id = request.POST['emp_id']
-        date = request.POST['date']
-        amount = request.POST['amount']
-        status = request.POST['status']
-        id = request.POST["id"]
-        emp = Employee.objects.get(emp_id=emp_id)
-        time_stamp = datetime.now()
-
-        advance_record = SalaryAdvance.objects.get(
-            employee=emp, id=id)
-        advance_record.date = date
-        advance_record.amount=amount
-        advance_record.status= (True if status == "true" else False)
-        advance_record.time_stamp = time_stamp
-        advance_record.save()
-        return JsonResponse({})
-class AdvancePaymentsView(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def get(self, request):
-        user = request.user
-        return render(request, 'advance_payment.html',context={'user':user})
-    def post(self,request):
-        print("inside advance payment")
-        emp_id = request.POST['emp_id']
-        date = request.POST['date']
-        amount = request.POST['amount']
-        emp = Employee.objects.get(emp_id=emp_id)
-        time_stamp = datetime.now()
-
-        salary_advance = SalaryAdvance(
-            employee=emp, date=date, amount=amount, time_stamp=time_stamp)
-        salary_advance.save()
-        return  JsonResponse({})
-
-
-
-class SalaryReportView(LoginRequiredMixin,View):
-    login_url = '/accounts/login'
-    def get(self, request):
-        user = request.user
-        return render(request, 'payroll_test.html',context={'user':user})
-
-    def post(self, request):
-        emp_id = request.POST['emp_id']
-        year_month = request.POST["month"]
-        year_month_split = year_month.split('-')
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
-            employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                employee=emp,date__month=month).order_by('date').values()
         attendance_record_list = list(attendance_record)
         min_salary_amount = 16600.0
         total_working_hours = 0
@@ -617,7 +513,8 @@ class SalaryReportView(LoginRequiredMixin,View):
                 fixed_basic_salary = employee_finance.basic_salary
                 br_payment = employee_finance.br_payment
             else:
-                return JsonResponse({'error':"no employee finance data"})
+                return "employee_finance_details_error"
+                # return JsonResponse({'error':"no employee finance data"})
             # daily_payment_rate = employee_finance.daily_payment
             hourly_payment_rate = daily_payment_rate/8
             # ot_payment_rate = employee_finance.ot_payment_rate
@@ -630,7 +527,7 @@ class SalaryReportView(LoginRequiredMixin,View):
             fixed_allowance = basic_salary - fixed_basic_salary - br_payment
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
-                    employee=emp, date__month=year_month_split[1]).order_by('date').values()
+                    employee=emp, date__month=month).order_by('date').values()
                 advance_payment_data_list = list(advance_payment_data)
                 total_advance_amount = 0
                 for advance in advance_payment_data_list:
@@ -642,7 +539,7 @@ class SalaryReportView(LoginRequiredMixin,View):
 # Allowances Calculation 
             try:
                 allowance_data = Alllowance.objects.filter(
-                    employee=emp, date__month=year_month_split[1],status =True).order_by('date').values()
+                    employee=emp, date__month=month,status =True).order_by('date').values()
                 allowance_data_list = list(allowance_data)
                 total_allowance = 0
                 for allowance in allowance_data_list:
@@ -667,20 +564,182 @@ class SalaryReportView(LoginRequiredMixin,View):
             attendance_allowance = attendance_allowance + 1000
         if len(attendance_record_list) > 26:
             attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
-# Formating Values
-        attendance_allowance = "{:>9.2f}".format(attendance_allowance)
-        fixed_allowance = "{:>9.2f}".format(fixed_allowance)
-        br_payment = "{:>9.2f}".format(br_payment)
-        fixed_basic_salary = "{:>9.2f}".format(fixed_basic_salary)
-        room_charge = "{:>9.2f}".format(room_charge)
-        epf = "{:>9.2f}".format(epf)
-        total_advance_amount = "{:>9.2f}".format(total_advance_amount)
-        total_allowance = "{:>9.2f}".format(total_allowance)
-        ot_payment = "{:>9.2f}".format(ot_payment)
-        ot_payment_rate = "{:>9.2f}".format(ot_payment_rate)
-        hourly_payment_rate = "{:>9.2f}".format(hourly_payment_rate)
-        basic_salary = "{:>9.2f}".format(basic_salary)
-        net_salary = "{:>9.2f}".format(net_salary)
 
-        return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours': total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'fixed_allowance':fixed_allowance,'attendance_allowance':attendance_allowance}, status=200)
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours]
+    elif (emp_id =="" and emp_type =="" and month !=""):
+        attendance_record = Attendance.objects.filter(date__month=month).order_by('date')
+        employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+        employees_list = list(employees)
+        for employee in employees_list:
+            emp_id = employee["emp_id"]
+        return
+class PayslipInfo(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        # Employee ID and Month
+        if request.POST["type"] == "id_month":
+            emp_id = request.POST["emp_id"]
+            year_month = request.POST["month"]
+            year_month_split = year_month.split('-')
+            try :
+                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                return JsonResponse({})
+            except ValueError:
+                return JsonResponse({"error":"attendance_record_error"})
+        elif request.POST["type"] == "month":
+            year_month = request.POST["month"]
+            year_month_split = year_month.split('-')
+            employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+            employees_list = list(employees)
+            payslips_record = []
+            for employee in employees_list:
+                emp_id = employee["emp_id"]
+                print(emp_id)
+                try :
+                    response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":0})
+                except ValueError:
+                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":1})
+            print(payslips_record)
+            return JsonResponse({"data":payslips_record})
+            
+class PayslipPdfView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        get_final_salary_details(emp_id="A07176",month="02")
+        return render (request,'payslips.html',context={'users':user})
+    def post(self,request):
+        return JsonResponse({})
+
+class AllowancesView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'allowances.html',context={'user':user})
+
+    def post(self,request):
+        print("inside allowance payment")
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        allowance = Alllowance(
+            employee=emp, date=date,description=description, amount=amount, time_stamp=time_stamp)
+        allowance.save()
+        return  JsonResponse({})
+
+
+class GetAllowanceData(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id=emp_id)
+        allowance_data = Alllowance.objects.filter(
+            employee=emp).order_by('date').values()
+        allowance_data_list = list(allowance_data)
+        return JsonResponse({'allowance_data_list': allowance_data_list})
+class EditAllowance(LoginRequiredMixin,View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        status = request.POST['status']
+        id = request.POST["id"]
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        allowance_record = Alllowance.objects.get(
+            employee=emp, id=id)
+        allowance_record.date = date
+        allowance_record.amount=amount
+        allowance_record.description=description
+        allowance_record.status= (True if status == "true" else False)
+        allowance_record.time_stamp = time_stamp
+        allowance_record.save()
+        return JsonResponse({})
+class GetAdvancePaymentData(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id=emp_id)
+        advance_payment_data = SalaryAdvance.objects.filter(employee=emp).order_by('date').values()
+        advance_payment_data_list = list(advance_payment_data)
+        return JsonResponse({'advance_payment_data_list': advance_payment_data_list})
+class EditAdvancePayment(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        status = request.POST['status']
+        id = request.POST["id"]
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        advance_record = SalaryAdvance.objects.get(
+            employee=emp, id=id)
+        advance_record.date = date
+        advance_record.amount=amount
+        advance_record.status= (True if status == "true" else False)
+        advance_record.time_stamp = time_stamp
+        advance_record.save()
+        return JsonResponse({})
+class AdvancePaymentsView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self, request):
+        user = request.user
+        return render(request, 'advance_payment.html',context={'user':user})
+    def post(self,request):
+        print("inside advance payment")
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        salary_advance = SalaryAdvance(
+            employee=emp, date=date, amount=amount, time_stamp=time_stamp)
+        salary_advance.save()
+        return  JsonResponse({})
+
+
+
+class SalaryReportView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self, request):
+        user = request.user
+        return render(request, 'payroll_test.html',context={'user':user})
+
+    def post(self, request):
+        emp_id = request.POST['emp_id']
+        year_month = request.POST["month"]
+        year_month_split = year_month.split('-')
+
+        
+# Formating Values
+        response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+        if response == "employee_finance_details_error":
+            return JsonResponse({'error':"no employee finance data"})
+        else:
+
+            attendance_allowance = "{:>9.2f}".format(response[0])
+            fixed_allowance = "{:>9.2f}".format(response[1])
+            br_payment = "{:>9.2f}".format(response[2])
+            fixed_basic_salary = "{:>9.2f}".format(response[3])
+            room_charge = "{:>9.2f}".format(response[4])
+            epf = "{:>9.2f}".format(response[5])
+            total_advance_amount = "{:>9.2f}".format(response[6])
+            total_allowance = "{:>9.2f}".format(response[7])
+            ot_payment = "{:>9.2f}".format(response[8])
+            ot_payment_rate = "{:>9.2f}".format(response[9])
+            hourly_payment_rate = "{:>9.2f}".format(response[10])
+            basic_salary = "{:>9.2f}".format(response[11])
+            net_salary = "{:>9.2f}".format(response[12])
+
+            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'fixed_allowance':fixed_allowance,'attendance_allowance':attendance_allowance}, status=200)
         

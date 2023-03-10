@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Pay Slips {% endblock%}
+
+{% block top_heading %}Payroll Management{% endblock %}
+{% block sub_heading %} Pay Slips{% endblock %}
+{% block sub_heading2 %} Pay Slips{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label class="col-form-label" for="payslip_emp_id">Employee ID</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="payslip_emp_id" id="payslip_emp_id" >
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class=" col-form-label" for="payslip_emp_name">Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="payslip_emp_name"
+                        id="payslip_emp_name" disabled >
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="payslip_month">Month/Year</label>
+                <div class="">
+                    <input class="form-control" type="month"
+                        name="payslip_month" id="payslip_month" >
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="payslip_emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="payslip_emp_type" id="payslip_emp_type">
+                        <option value=0>Normal Employee</option>
+                        <option value=1>Shift Employee</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class=" col-form-label" for="payslip_emp_name">Filter</label>
+                <div class="">
+                    <button onclick="cliclFilterButton();" id="payroll_filter_button" class="btn btn-primary">Filter</button>
+                    <!-- <a href="{% url 'employee_salary_pdf_view' %}" target="_blank" class="btn btn-primary">Download Pdf</a> -->
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class=" col-form-label" for="payslip_emp_name">Download</label>
+                <div class="">
+                    <button id="payroll_employee_salary_pdf_generate_button" class="btn btn-success">Download Payslips</button>
+                    <!-- <a href="{% url 'employee_salary_pdf_view' %}" target="_blank" class="btn btn-primary">Download Pdf</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Payslip Data Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Employee ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Month</th>
+                    <th scope="col">Payslip Status</th>
+                    <th scope="col">Error</th>
+                    <th scope="col">Download</th>
+                </tr>
+            </thead>
+            <tbody id="payslip_info_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
+
+<script>
+    document.getElementById("payroll_filter_button").addEventListener("click", function(event){
+            event.preventDefault()
+            });
+    // Click Filter Button 
+    function cliclFilterButton(){
+        console.log("inside filter button")
+        var emp_id = document.getElementById("payslip_emp_id").value;
+        var month = document.getElementById("payslip_month").value;
+        var emp_type = document.getElementById("payslip_emp_type").value;
+        var emp_name = document.getElementById("payslip_emp_name").value;
+        console.log(emp_id,month,emp_type)
+        if (month != "" && emp_type === "0"){
+            console.log("inside filter button month")
+            $.ajax({
+                    type: 'POST',
+                    url: "{% url 'get_payslip_info' %}",
+                    data: {
+                        month:month,
+                        type:"month",
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        $("#payslip_info_table").empty()
+                        console.log(response["data"])
+                        var i = 0;
+                        while (i < response["data"].length) {
+                            console.log(i)
+                            if (response["data"][i]["status"] === 1){
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            }else if(response["data"][i]["status"] === 0){
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success">Download</button></td></tr> ')
+                            }
+                            i++
+                        }
+                        
+                        
+                    }
+                });
+        }else if (emp_id !== "" && month !== "" && emp_type === "0"){
+            console.log("inside filter button empID_month")
+            $.ajax({
+                    type: 'POST',
+                    url: "{% url 'get_payslip_info' %}",
+                    data: {
+                        
+                        emp_id: emp_id,
+                        month:month,
+                        type:"id_month",
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        $("#payslip_info_table").empty()
+                        if (response["error"] === "attendance_record_error"){
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                        }else{
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success">Download</button></td></tr> ')
+                        }
+                        
+                    }
+                });
+        }
+    }
+    //Get employee name and Data
+    var payslip_emp_id_input = document.getElementById("payslip_emp_id");
+    var payslip_emp_name_input = document.getElementById("payslip_emp_name");
+    payslip_emp_id_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            payslip_emp_name_input.value = "";
+            payslip_emp_id = payslip_emp_id_input.value;
+
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emp_name_view' %}",
+                data: {
+                    
+                    name: payslip_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                   payslip_emp_name_input.value = response.name
+
+                   $.ajax({
+                        type: 'POST',
+                        url: "{% url 'get_emp_name_view' %}",
+                        data: {
+                            
+                            name: payslip_emp_id,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        },
+                        success: function (response) {
+                        payslip_emp_name_input.value = response.name
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    //Get Attendance Data
+    function getAttendanceData() {
+        var payslip_emp_id = document.getElementById("payslip_emp_id").value;
+        var attendance_view_month_year = document.getElementById("attendance_view_month_year").value;
+        var salary_summary_table = document.getElementById("")
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'payroll_test_view' %}",
+            data: {
+                status: 'view',
+                emp_id: payslip_emp_id,
+                month: attendance_view_month_year,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                if (response.error === "no employee finance data"){
+                    $("#messeges_container").empty()
+                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>No Attendance Salary Details </strong>You need to enter Salaray Details to calculate Employee Salary<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+                }
+                $("#attendance_data_table").empty()
+                console.log(response['total_working_hours'])
+                console.log(response['total_ot_hours'])
+                var i = 0;
+                while (i < response['attendance_list'].length) {
+                    $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['date'] + '</td ><td>' + response['attendance_list'][i]['day'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['working_hours'] + '</td><td>' + response['attendance_list'][i]['ot_hours'] + '</td>')
+
+                    i++
+                }
+                $("#salary_summary_table").empty()
+                $("#salary_summary_table").append('<h5 class="card-title">Salary Summary Table</h5><!-- Table with hoverable rows --><table class= "table table-hover table-bordered border-dark" ><thead><tr><th>Total Working Hours</th><td>'+ response['total_working_hours'] +'</td><th>Normal Hourly Rate</th><td>'+ response['hourly_payment_rate'] +'</td></tr><tr><th>Total OT Hours</th><td>'+ response['total_ot_hours'] +'</td><th>OT Hourly Rate</th><td>'+ response['ot_payment_rate'] +'</td></tr></thead></tbody ></table ><table class="table table-hover table-bordered border-dark"><thead><tr ><th>Hourly Payment</th><td >'+ response['total_working_hours'] +' x '+ response['hourly_payment_rate'] +'</td><td class="table-secondary"> '+ response['basic_salary'] +'</td></tr><tr ><th>Total OT Payment</th><td >'+ response['total_ot_hours'] +' x '+ response['ot_payment_rate'] +'</td> <td class="table-secondary">'+ response['ot_payment'] +'</td></tr></thead></tbody></table ><table class="table table-hover table-bordered border-dark"><tr><th>Basic Salary</th><td class="table-secondary text-end">   '+ response['fixed_basic_salary'] +'</td></tr><tr><th>OT Payment</th><td class="table-secondary text-end" >   '+ response['ot_payment'] +'</td></tr><tr><th>B-R Payment</th><td class="table-secondary text-end">   '+ response['br_payment'] +'</td></tr><tr><th>Fixed Allowance</th><td class="table-secondary text-end">   '+ response['fixed_allowance'] +'</td></tr><tr><th>Attendance Allowance</th><td class="table-secondary text-end">   '+ response['attendance_allowance'] +'</td></tr><tr><th>Allowances</th><td class="table-secondary text-end">   '+ response['total_allowance'] +'</td></tr><tr><th>Salary Advance</th><td class="table-danger text-end">  '+ response['total_advance_amount'] +'</td></tr><tr ><th>EPF</th><td class="table-danger text-end">   '+ response['epf'] +'</td></tr><tr ><th>Room Charge</th><td class="table-danger text-end">    '+ response['room_charge'] +'</td></tr><tr ><th>Net Payment</th><td class="table-warning text-end"> '+ response['net_salary'] +'</td></tr></thead></tbody></table > ')
+            }
+        });
+    }
+
+
+</script>
+
+
+{% endblock %}
