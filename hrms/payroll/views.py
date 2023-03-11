@@ -581,8 +581,10 @@ class PayslipInfo(LoginRequiredMixin,View):
             emp_id = request.POST["emp_id"]
             year_month = request.POST["month"]
             year_month_split = year_month.split('-')
+            payslips_record = []
             try :
                 response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
                 return JsonResponse({})
             except ValueError:
                 return JsonResponse({"error":"attendance_record_error"})
@@ -594,13 +596,11 @@ class PayslipInfo(LoginRequiredMixin,View):
             payslips_record = []
             for employee in employees_list:
                 emp_id = employee["emp_id"]
-                print(emp_id)
                 try :
                     response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":0})
+                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
                 except (ValueError,IndexError):
-                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":1})
-            print(payslips_record)
+                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":1})
             return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "id":
             # year_month = request.POST["month"]

@@ -120,9 +120,9 @@
                         while (i < response["data"].length) {
                             console.log(i)
                             if (response["data"][i]["status"] === 1){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 0){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success">Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip();" id="download_one_payslip_button">Download</button></td></tr> ')
                             }
                             i++
                         }
@@ -175,6 +175,17 @@
                 });
         }
     }
+    function downloadOnePayslip(){
+
+    }
+    $('#download_one_payslip_button').on('click', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var emp_id = button.data('date')  
+        var month = button.data('amount') 
+        console.log(emp_id,month)
+
+        
+        })
     //Get employee name and Data
     var payslip_emp_id_input = document.getElementById("payslip_emp_id");
     var payslip_emp_name_input = document.getElementById("payslip_emp_name");
