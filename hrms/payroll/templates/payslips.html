@@ -103,7 +103,7 @@
         var emp_type = document.getElementById("payslip_emp_type").value;
         var emp_name = document.getElementById("payslip_emp_name").value;
         console.log(emp_id,month,emp_type)
-        if (month != "" && emp_type === "0"){
+        if (emp_id !== "" && month != "" && emp_type === "0"){
             console.log("inside filter button month")
             $.ajax({
                     type: 'POST',
