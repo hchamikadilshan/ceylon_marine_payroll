@@ -152,6 +152,27 @@
                         
                     }
                 });
+        }else if (emp_id !== "" && month === "" && emp_type === "0"){
+            console.log("inside filter button empID")
+            $.ajax({
+                    type: 'POST',
+                    url: "{% url 'get_payslip_info' %}",
+                    data: {
+                        
+                        emp_id: emp_id,
+                        type:"id",
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    },
+                    success: function (response) {
+                        $("#payslip_info_table").empty()
+                        if (response["error"] === "attendance_record_error"){
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                        }else{
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success">Download</button></td></tr> ')
+                        }
+                        
+                    }
+                });
         }
     }
     //Get employee name and Data

@@ -598,10 +598,26 @@ class PayslipInfo(LoginRequiredMixin,View):
                 try :
                     response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                     payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":0})
-                except ValueError:
+                except (ValueError,IndexError):
                     payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":1})
             print(payslips_record)
             return JsonResponse({"data":payslips_record})
+        elif request.POST["type"] == "id":
+            # year_month = request.POST["month"]
+            # year_month_split = year_month.split('-')
+            # employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+            # employees_list = list(employees)
+            # payslips_record = []
+            # for employee in employees_list:
+            #     emp_id = employee["emp_id"]
+            #     print(emp_id)
+            #     try :
+            #         response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+            #         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":0})
+            #     except (ValueError,IndexError):
+            #         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"status":1})
+            # print(payslips_record)
+            return JsonResponse({})
             
 class PayslipPdfView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
