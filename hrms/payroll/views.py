@@ -909,7 +909,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table = Table(table_data)
                             table_style = TableStyle([
                                 # ("GRID",(0,0),(-1,-1),1,colors.black),
-                                ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
+                                ('FONT', (0, 0), (-1, -1), 'Helvetica',6.5),
                                 ('BOLD', (0, 0), (-1, -1)),
 
                                 ('SPAN', (0, 0), (-1, 0)), # Company Name Row
