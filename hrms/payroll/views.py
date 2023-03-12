@@ -565,8 +565,10 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             attendance_allowance = attendance_allowance + 1000
         if len(attendance_record_list) > 26:
             attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
-
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours]
+# Adding Employee Basic Details
+        employee = Employee.objects.get(emp_id=emp_id)
+        
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,employee.name,employee.department,employee.epf_no]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -627,146 +629,323 @@ class PayslipPdfView(LoginRequiredMixin,View):
         emp_id = request.POST["emp_id"]
         year_month = request.POST["month"]
         year_month_split = year_month.split('-')
-        response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-        emp = Employee.objects.get(emp_id=emp_id)
+        pdf_type = request.POST["type"]
+        if pdf_type == "single":
+            response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+            emp = Employee.objects.get(emp_id=emp_id)
 
-        # attendance_allowance = "{:>9.2f}".format(response[0])
-        # fixed_allowance = "{:>9.2f}".format(response[1])
-        # br_payment = "{:>9.2f}".format(response[2])
-        # fixed_basic_salary = "{:>9.2f}".format(response[3])
-        # room_charge = "{:>9.2f}".format(response[4])
-        # epf = "{:>9.2f}".format(response[5])
-        # total_advance_amount = "{:>9.2f}".format(response[6])
-        # total_allowance = "{:>9.2f}".format(response[7])
-        # ot_payment = "{:>9.2f}".format(response[8])
-        # ot_payment_rate = "{:>9.2f}".format(response[9])
-        # hourly_payment_rate = "{:>9.2f}".format(response[10])
-        # basic_salary = "{:>9.2f}".format(response[11])
-        # net_salary = "{:>9.2f}".format(response[12])
+            # attendance_allowance = "{:>9.2f}".format(response[0])
+            # fixed_allowance = "{:>9.2f}".format(response[1])
+            # br_payment = "{:>9.2f}".format(response[2])
+            # fixed_basic_salary = "{:>9.2f}".format(response[3])
+            # room_charge = "{:>9.2f}".format(response[4])
+            # epf = "{:>9.2f}".format(response[5])
+            # total_advance_amount = "{:>9.2f}".format(response[6])
+            # total_allowance = "{:>9.2f}".format(response[7])
+            # ot_payment = "{:>9.2f}".format(response[8])
+            # ot_payment_rate = "{:>9.2f}".format(response[9])
+            # hourly_payment_rate = "{:>9.2f}".format(response[10])
+            # basic_salary = "{:>9.2f}".format(response[11])
+            # net_salary = "{:>9.2f}".format(response[12])
 
-        buffer = io.BytesIO()
+            buffer = io.BytesIO()
 
-        pdf = canvas.Canvas(buffer,pagesize = landscape(A4))
-        # pdf = canvas.Canvas(filename="test.pdf",pagesize = landscape(A4))
+            pdf = canvas.Canvas(buffer,pagesize = landscape(A4))
+            # pdf = canvas.Canvas(filename="test.pdf",pagesize = landscape(A4))
 
-        flow_obj = []
+            flow_obj = []
 
-        company_name = "Ceylon Marine Services Holdings (Pvt)Ltd"
-        month = year_month
-        employee_name = emp.name
-        department = emp.department
-        epf_no = emp.epf_no
-        employee_no =emp_id
+            company_name = "Ceylon Marine Services Holdings (Pvt)Ltd"
+            month = year_month
+            employee_name = emp.name
+            department = emp.department
+            epf_no = emp.epf_no
+            employee_no =emp_id
 
-        basic_salary =response[3]
-        br_payment=response[2]
-        fixed_allowance = response[1]
-        gross_salary = basic_salary+ br_payment +fixed_allowance
-        ot_payment = response[8]
-        ot_payment_rate = response[9]
-        ot_hours=71
-        total_earning = 40000
-        epf=response[5]
-        salary_advance = response[6]
-        room_charge = response[4]
-        total_deduction = response[12] + salary_advance + room_charge
-        net_payment=response[12]
+            basic_salary =response[3]
+            br_payment=response[2]
+            fixed_allowance = response[1]
+            gross_salary = basic_salary+ br_payment +fixed_allowance
+            ot_payment = response[8]
+            ot_payment_rate = response[9]
+            ot_hours=71
+            total_earning = 40000
+            epf=response[5]
+            salary_advance = response[6]
+            room_charge = response[4]
+            total_deduction = response[12] + salary_advance + room_charge
+            net_payment=response[12]
 
-        table_data = []
-        # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
-        row1 = [company_name]
-        row2 = [month]
-        empty_row1 = [""]
-        row3 = ["Employee Name :","",employee_name,""]
-        row4 = ["Department","",department,""]
-        row5 = ["Employee No:","",employee_no]
-        row6 = ["E.P.F No","",epf_no]
-        empty_row5 = [""]
-        row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
-        row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
-        row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
-        row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
-        empty_row2 = [""]
-        row11 = ["Additions","","",""]
-        row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-        row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
-        row14 = ["Total Earning","","",f"{total_earning:.2f}"]
-        empty_row3 = [""]
-        row15 = ["Deductions","","",""]
-        row16 = ["EPF 8%","",f"{epf:.2f}",""]
-        row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
-        row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
-        row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
-        empty_row4 = [""]
-        row20 = ["Net Payment","","",f"{net_payment:.2f}"]
+            table_data = []
+            # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
+            row1 = [company_name]
+            row2 = [month]
+            empty_row1 = [""]
+            row3 = ["Employee Name :","",employee_name,""]
+            row4 = ["Department","",department,""]
+            row5 = ["Employee No:","",employee_no]
+            row6 = ["E.P.F No","",epf_no]
+            empty_row5 = [""]
+            row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
+            row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
+            row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
+            row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
+            empty_row2 = [""]
+            row11 = ["Additions","","",""]
+            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
+            row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
+            row14 = ["Total Earning","","",f"{total_earning:.2f}"]
+            empty_row3 = [""]
+            row15 = ["Deductions","","",""]
+            row16 = ["EPF 8%","",f"{epf:.2f}",""]
+            row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
+            row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
+            row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
+            empty_row4 = [""]
+            row20 = ["Net Payment","","",f"{net_payment:.2f}"]
 
-        table_data.append(row1)
-        table_data.append(row2)
-        table_data.append(empty_row1)
-        table_data.append(row3)
-        table_data.append(row4)
-        table_data.append(row5)
-        table_data.append(row6)
-        table_data.append(empty_row5)
+            table_data.append(row1)
+            table_data.append(row2)
+            table_data.append(empty_row1)
+            table_data.append(row3)
+            table_data.append(row4)
+            table_data.append(row5)
+            table_data.append(row6)
+            table_data.append(empty_row5)
 
-        table_data.append(row7)
-        table_data.append(row8)
-        table_data.append(row9)
-        table_data.append(row10)
-        table_data.append(empty_row2)
-        table_data.append(row11)
-        table_data.append(row12)
-        table_data.append(row13)
-        table_data.append(row14)
-        table_data.append(empty_row3)
-        table_data.append(row15)
-        table_data.append(row16)
-        table_data.append(row17)
-        table_data.append(row18)
-        table_data.append(row19)
-        table_data.append(empty_row4)
-        table_data.append(row20)
-
-
-
-        table = Table(table_data)
-        table_style = TableStyle([
-            # ("GRID",(0,0),(-1,-1),1,colors.black),
-            ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
-            ('BOLD', (0, 0), (-1, -1)),
-
-            ('SPAN', (0, 0), (-1, 0)), # Company Name Row
-            ('SPAN', (0, 1), (-1,1 )), # Month Row
-            ('SPAN', (0, 3), (1,3 )), # Name Column 
-            ('SPAN', (2, 3), (3,3 )), # Department Column 
-            ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
-            ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
-            ('ALIGN', (0, 0), (-1, 1),'CENTER'),
-            ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
-            ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
-            ('LINEBELOW', (0, 18), (0, 18),1,colors.black),
-            ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-            ('LINEBELOW', (2, 15), (3, 15),1,colors.black),
-            ('LINEBELOW', (2, 21), (3, 21),1,colors.black),
-            ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
-            ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
+            table_data.append(row7)
+            table_data.append(row8)
+            table_data.append(row9)
+            table_data.append(row10)
+            table_data.append(empty_row2)
+            table_data.append(row11)
+            table_data.append(row12)
+            table_data.append(row13)
+            table_data.append(row14)
+            table_data.append(empty_row3)
+            table_data.append(row15)
+            table_data.append(row16)
+            table_data.append(row17)
+            table_data.append(row18)
+            table_data.append(row19)
+            table_data.append(empty_row4)
+            table_data.append(row20)
 
 
-        ])
-        table.setStyle(table_style)
-        flow_obj.append(table)
-        frame1 = Frame(0.35*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-        frame2 = Frame(7.68*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-        frame3 = Frame(15.01*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-        frame4 = Frame(22.34*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-        frame1.addFromList(flow_obj,pdf)
-        frame2.addFromList(flow_obj,pdf)
-        frame3.addFromList(flow_obj,pdf)
-        frame4.addFromList(flow_obj,pdf)
-        pdf.save()
-        buffer.seek(0)
-        print("Endd")
-        return FileResponse(buffer, as_attachment=True, filename="test.pdf")
+
+            table = Table(table_data)
+            table_style = TableStyle([
+                # ("GRID",(0,0),(-1,-1),1,colors.black),
+                ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
+                ('BOLD', (0, 0), (-1, -1)),
+
+                ('SPAN', (0, 0), (-1, 0)), # Company Name Row
+                ('SPAN', (0, 1), (-1,1 )), # Month Row
+                ('SPAN', (0, 3), (1,3 )), # Name Column 
+                ('SPAN', (2, 3), (3,3 )), # Department Column 
+                ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
+                ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
+                ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+                ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
+                ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
+                ('LINEBELOW', (0, 18), (0, 18),1,colors.black),
+                ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+                ('LINEBELOW', (2, 15), (3, 15),1,colors.black),
+                ('LINEBELOW', (2, 21), (3, 21),1,colors.black),
+                ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
+                ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
+
+
+            ])
+            table.setStyle(table_style)
+            flow_obj.append(table)
+            frame1 = Frame(0.35*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+            frame2 = Frame(7.68*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+            frame3 = Frame(15.01*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+            frame4 = Frame(22.34*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+            frame1.addFromList(flow_obj,pdf)
+            frame2.addFromList(flow_obj,pdf)
+            frame3.addFromList(flow_obj,pdf)
+            frame4.addFromList(flow_obj,pdf)
+            pdf.save()
+            buffer.seek(0)
+            print("Endd")
+            return FileResponse(buffer, as_attachment=True, filename=f"{emp_id}-{employee_name}-{month}-payslip.pdf")
+        elif pdf_type == "multiple":
+            print("inside multiple")
+            print(emp_id)
+            if emp_id == "":
+                print("inside")
+                employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+                employees_list = list(employees)
+                payslips_record = []
+                for employee in employees_list:
+                    emp_id = employee["emp_id"]
+                    
+                    try :
+                        response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                        if response == "employee_finance_details_error":
+                            pass
+                        else:
+                            payslips_record.append(response)
+                    except (ValueError,IndexError):
+                        pass
+                buffer = io.BytesIO()
+                pdf = canvas.Canvas(buffer,pagesize = landscape(A4))
+                # pdf = canvas.Canvas(filename="testtttt.pdf",pagesize = landscape(A4))
+                company_name = "Ceylon Marine Services Holdings (Pvt)Ltd"
+                month = year_month
+                
+                frames = [(0.35,0.5,7,20),(7.68,0.5,7,20),(15.01,0.5,7,20),(22.34,0.5,7,20)]
+
+                # Calculating No of Pages
+                data_length = len(payslips_record)
+                frame_names = [f"frame{i}"for i in range(len(payslips_record))]
+                no_pages = 0
+                if data_length == 4:
+                    no_pages = 1
+                elif data_length < 4:
+                    no_pages = 1
+                elif data_length > 4:
+                    no_pages = (data_length // 4) + 1
+
+                i = 0
+                k=0
+                j=0
+                frame_list = []
+                for frame in frame_names:
+                    if i <= no_pages:
+                        if j < 4:
+                            frame_list.append(Frame(frames[j][0]*cm,frames[j][1]*cm,frames[j][2]*cm,frames[j][3]*cm,showBoundary=1))
+                            j += 1
+                            
+                            if j == 4:
+                                j=0
+                                i += 1  
+                            print(j)
+                            
+
+                    k += 1  
+                i = 0
+                k=0
+                j=0
+                flow_obj = []
+                for response in payslips_record:
+                    employee_name = epf_no = response[-3]
+                    department = epf_no = response[-2]
+                    epf_no = response[-1]
+                    employee_no ="A03611"
+                    basic_salary =response[3]
+                    br_payment=response[2]
+                    fixed_allowance = response[1]
+                    gross_salary = basic_salary+ br_payment +fixed_allowance
+                    ot_payment = response[8]
+                    ot_payment_rate = response[9]
+                    ot_hours=epf_no = response[-4]
+                    total_earning = 40000
+                    epf=response[5]
+                    salary_advance = response[6]
+                    room_charge = response[4]
+                    total_deduction = response[12] + salary_advance + room_charge
+                    net_payment=response[12]
+                    if i <= no_pages:
+                        if j < 4:
+                            table_data = []
+                            row1 = [company_name]
+                            row2 = [month]
+                            empty_row1 = [""]
+                            row3 = ["Employee Name :","",employee_name,""]
+                            row4 = ["Department","",department,""]
+                            row5 = ["Employee No:","",employee_no]
+                            row6 = ["E.P.F No","",epf_no]
+                            empty_row5 = [""]
+                            row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
+                            row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
+                            row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
+                            row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
+                            empty_row2 = [""]
+                            row11 = ["Additions","","",""]
+                            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
+                            row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
+                            row14 = ["Total Earning","","",f"{total_earning:.2f}"]
+                            empty_row3 = [""]
+                            row15 = ["Deductions","","",""]
+                            row16 = ["EPF 8%","",f"{epf:.2f}",""]
+                            row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
+                            row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
+                            row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
+                            empty_row4 = [""]
+                            row20 = ["Net Payment","","",f"{net_payment:.2f}"]
+
+                            table_data.append(row1)
+                            table_data.append(row2)
+                            table_data.append(empty_row1)
+                            table_data.append(row3)
+                            table_data.append(row4)
+                            table_data.append(row5)
+                            table_data.append(row6)
+                            table_data.append(empty_row5)
+
+                            table_data.append(row7)
+                            table_data.append(row8)
+                            table_data.append(row9)
+                            table_data.append(row10)
+                            table_data.append(empty_row2)
+                            table_data.append(row11)
+                            table_data.append(row12)
+                            table_data.append(row13)
+                            table_data.append(row14)
+                            table_data.append(empty_row3)
+                            table_data.append(row15)
+                            table_data.append(row16)
+                            table_data.append(row17)
+                            table_data.append(row18)
+                            table_data.append(row19)
+                            table_data.append(empty_row4)
+                            table_data.append(row20)
+
+
+
+                            table = Table(table_data)
+                            table_style = TableStyle([
+                                # ("GRID",(0,0),(-1,-1),1,colors.black),
+                                ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
+                                ('BOLD', (0, 0), (-1, -1)),
+
+                                ('SPAN', (0, 0), (-1, 0)), # Company Name Row
+                                ('SPAN', (0, 1), (-1,1 )), # Month Row
+                                ('SPAN', (0, 3), (1,3 )), # Name Column 
+                                ('SPAN', (2, 3), (3,3 )), # Department Column 
+                                ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
+                                ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
+                                ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+                                ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
+                                ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
+                                ('LINEBELOW', (0, 18), (0, 18),1,colors.black),
+                                ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+                                ('LINEBELOW', (2, 15), (3, 15),1,colors.black),
+                                ('LINEBELOW', (2, 21), (3, 21),1,colors.black),
+                                ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
+                                ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
+
+
+                            ])
+                            table.setStyle(table_style)
+                            flow_obj.append(table)
+                            print(j)
+                            frame_list[k].addFromList(flow_obj,pdf)
+                            j += 1
+                            if j == 4:
+                                flow_obj = []
+                                j=0
+                                i += 1  
+                                pdf.showPage()    
+                    k += 1
+                pdf.save()
+                buffer.seek(0)   
+                print("end")
+                return FileResponse(buffer, as_attachment=True, filename=f"payslip.pdf")
+            
 
 class AllowancesView(LoginRequiredMixin,View):
     login_url = '/accounts/login'

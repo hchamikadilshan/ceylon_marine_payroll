@@ -58,7 +58,7 @@
             <div class="col-md-1">
                 <label class=" col-form-label" for="payslip_emp_name">Download</label>
                 <div class="">
-                    <button id="payroll_employee_salary_pdf_generate_button" class="btn btn-success">Download Payslips</button>
+                    <button onclick="downloadMuliplePaylips();" id="payroll_employee_salary_pdf_generate_button" class="btn btn-success">Download Payslips</button>
                     <!-- <a href="{% url 'employee_salary_pdf_view' %}" target="_blank" class="btn btn-primary">Download Pdf</a> -->
                 </div>
             </div>
@@ -95,6 +95,9 @@
     document.getElementById("payroll_filter_button").addEventListener("click", function(event){
             event.preventDefault()
             });
+    document.getElementById("payroll_employee_salary_pdf_generate_button").addEventListener("click", function(event){
+    event.preventDefault()
+    });
     // Click Filter Button 
     function cliclFilterButton(){
         console.log("inside filter button")
@@ -179,6 +182,7 @@
 
         var month = button.getAttribute("data-month")
         var emp_id = button.getAttribute("data-empID")
+
             function sendData(data) {
                 console.log('Sending data');
 
@@ -204,7 +208,7 @@
                         a = document.createElement('a');
                         a.href = window.URL.createObjectURL(XHR.response);
                         // Give filename you wish to download
-                        a.download = "test.pdf";
+                        a.download = emp_id + month;
                         a.style.display = 'none';
                         document.body.appendChild(a);
                         a.click();
@@ -225,7 +229,60 @@
                 // Finally, send our data.
                 XHR.send(urlEncodedData);
                 }
-            sendData({ emp_id: emp_id,month:month,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() });
+            sendData({ emp_id: emp_id,month:month,type:"single",csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() });
+    }
+    //Download Multiple PDF
+    function downloadMuliplePaylips(button){
+
+    var month = document.getElementById("payslip_month").value
+    var emp_id = document.getElementById("payslip_emp_id").value
+        function sendData(data) {
+            console.log('Sending data');
+
+            const XHR = new XMLHttpRequest();
+
+            const urlEncodedDataPairs = [];
+
+            // Turn the data object into an array of URL-encoded key/value pairs.
+            for (const [name, value] of Object.entries(data)) {
+                urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+            }
+
+            // Combine the pairs into a single string and replace all %-encoded spaces to
+            // the '+' character; matches the behavior of browser form submissions.
+            const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+
+            // Define what happens on successful data submission
+            XHR.addEventListener('load', (event) => {
+                // alert('Yeah! Data sent and response loaded.');
+                var a;
+                if (XHR.readyState === 4 && XHR.status === 200) {
+                    // Trick for making downloadable link
+                    a = document.createElement('a');
+                    a.href = window.URL.createObjectURL(XHR.response);
+                    // Give filename you wish to download
+                    a.download = "Pay-Slip-" + month;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                }
+            });
+            // Define what happens in case of an error
+            XHR.addEventListener('error', (event) => {
+                alert('Oops! Something went wrong.');
+            });
+
+            // Set up our request
+            XHR.open('POST', "{% url 'pay_slip_pdf_view' %}");
+
+            // Add the required HTTP header for form data POST requests
+            XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            XHR.responseType = 'blob';
+
+            // Finally, send our data.
+            XHR.send(urlEncodedData);
+            }
+        sendData({ emp_id: emp_id,month:month,type:"multiple",csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() });
     }
     //Get employee name and Data
     var payslip_emp_id_input = document.getElementById("payslip_emp_id");
