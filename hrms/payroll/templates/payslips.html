@@ -102,7 +102,6 @@
         var month = document.getElementById("payslip_month").value;
         var emp_type = document.getElementById("payslip_emp_type").value;
         var emp_name = document.getElementById("payslip_emp_name").value;
-        console.log(emp_id,month,emp_type)
         if (emp_id === "" && month != "" && emp_type === "0"){
             console.log("inside filter button month")
             $.ajax({
@@ -115,14 +114,14 @@
                     },
                     success: function (response) {
                         $("#payslip_info_table").empty()
-                        console.log(response["data"])
                         var i = 0;
                         while (i < response["data"].length) {
-                            console.log(i)
                             if (response["data"][i]["status"] === 1){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 0){
                                 $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip(this);" >Download</button></td></tr> ')
+                            }else if(response["data"][i]["status"] === 2){
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Finance Details</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }
                             i++
                         }
@@ -177,7 +176,7 @@
     }
     //Download Single PDF
     function downloadOnePayslip(button){
-        var download_button = document.getElementById("download_one_payslip_button")
+
         var month = button.getAttribute("data-month")
         var emp_id = button.getAttribute("data-empID")
             function sendData(data) {

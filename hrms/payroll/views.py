@@ -567,13 +567,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
 
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours]
-    elif (emp_id =="" and emp_type =="" and month !=""):
-        attendance_record = Attendance.objects.filter(date__month=month).order_by('date')
-        employees = Employee.objects.filter(emp_type=0,active_status=True).values()
-        employees_list = list(employees)
-        for employee in employees_list:
-            emp_id = employee["emp_id"]
-        return
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -589,6 +582,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             payslips_record = []
             try :
                 response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                print(response)
                 payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
                 return JsonResponse({"data":payslips_record})
             except ValueError:
@@ -603,7 +597,10 @@ class PayslipInfo(LoginRequiredMixin,View):
                 emp_id = employee["emp_id"]
                 try :
                     response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
+                    if response == "employee_finance_details_error":
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":2})
+                    else:
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
                 except (ValueError,IndexError):
                     payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":1})
             return JsonResponse({"data":payslips_record})
