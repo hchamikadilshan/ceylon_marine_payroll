@@ -122,7 +122,7 @@
                             if (response["data"][i]["status"] === 1){
                                 $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 0){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip();" id="download_one_payslip_button">Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip(this);" >Download</button></td></tr> ')
                             }
                             i++
                         }
@@ -145,9 +145,9 @@
                     success: function (response) {
                         $("#payslip_info_table").empty()
                         if (response["error"] === "attendance_record_error"){
-                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
                         }else{
-                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success">Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td><td>' + response["data"][0]["month"] + '</td><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="downloadOnePayslip(this);">Download</button></td></tr> ')
                         }
                         
                     }
@@ -175,17 +175,59 @@
                 });
         }
     }
-    function downloadOnePayslip(){
+    //Download Single PDF
+    function downloadOnePayslip(button){
+        var download_button = document.getElementById("download_one_payslip_button")
+        var month = button.getAttribute("data-month")
+        var emp_id = button.getAttribute("data-empID")
+            function sendData(data) {
+                console.log('Sending data');
 
+                const XHR = new XMLHttpRequest();
+
+                const urlEncodedDataPairs = [];
+
+                // Turn the data object into an array of URL-encoded key/value pairs.
+                for (const [name, value] of Object.entries(data)) {
+                    urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+                }
+
+                // Combine the pairs into a single string and replace all %-encoded spaces to
+                // the '+' character; matches the behavior of browser form submissions.
+                const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+
+                // Define what happens on successful data submission
+                XHR.addEventListener('load', (event) => {
+                    // alert('Yeah! Data sent and response loaded.');
+                    var a;
+                    if (XHR.readyState === 4 && XHR.status === 200) {
+                        // Trick for making downloadable link
+                        a = document.createElement('a');
+                        a.href = window.URL.createObjectURL(XHR.response);
+                        // Give filename you wish to download
+                        a.download = "test.pdf";
+                        a.style.display = 'none';
+                        document.body.appendChild(a);
+                        a.click();
+                    }
+                });
+                // Define what happens in case of an error
+                XHR.addEventListener('error', (event) => {
+                    alert('Oops! Something went wrong.');
+                });
+
+                // Set up our request
+                XHR.open('POST', "{% url 'pay_slip_pdf_view' %}");
+
+                // Add the required HTTP header for form data POST requests
+                XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                XHR.responseType = 'blob';
+
+                // Finally, send our data.
+                XHR.send(urlEncodedData);
+                }
+            sendData({ emp_id: emp_id,month:month,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() });
     }
-    $('#download_one_payslip_button').on('click', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var emp_id = button.data('date')  
-        var month = button.data('amount') 
-        console.log(emp_id,month)
-
-        
-        })
     //Get employee name and Data
     var payslip_emp_id_input = document.getElementById("payslip_emp_id");
     var payslip_emp_name_input = document.getElementById("payslip_emp_name");

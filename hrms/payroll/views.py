@@ -9,10 +9,11 @@ from .models import SalaryAdvance,Alllowance
 
 from reportlab.pdfgen import canvas
 import io
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate,Table,TableStyle
+from reportlab.lib.pagesizes import A4,landscape
+from reportlab.platypus import SimpleDocTemplate,Table,TableStyle,Frame
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch,cm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -575,17 +576,21 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         return
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'payslips.html',context={'user':user})
     def post(self,request):
         # Employee ID and Month
         if request.POST["type"] == "id_month":
             emp_id = request.POST["emp_id"]
             year_month = request.POST["month"]
+            emp = Employee.objects.get(emp_id=emp_id)
             year_month_split = year_month.split('-')
             payslips_record = []
             try :
                 response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-                payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
-                return JsonResponse({})
+                payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
+                return JsonResponse({"data":payslips_record})
             except ValueError:
                 return JsonResponse({"error":"attendance_record_error"})
         elif request.POST["type"] == "month":
@@ -621,12 +626,150 @@ class PayslipInfo(LoginRequiredMixin,View):
             
 class PayslipPdfView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
-    def get(self,request):
-        user = request.user
-        get_final_salary_details(emp_id="A07176",month="02")
-        return render (request,'payslips.html',context={'users':user})
     def post(self,request):
-        return JsonResponse({})
+        emp_id = request.POST["emp_id"]
+        year_month = request.POST["month"]
+        year_month_split = year_month.split('-')
+        response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+        emp = Employee.objects.get(emp_id=emp_id)
+
+        # attendance_allowance = "{:>9.2f}".format(response[0])
+        # fixed_allowance = "{:>9.2f}".format(response[1])
+        # br_payment = "{:>9.2f}".format(response[2])
+        # fixed_basic_salary = "{:>9.2f}".format(response[3])
+        # room_charge = "{:>9.2f}".format(response[4])
+        # epf = "{:>9.2f}".format(response[5])
+        # total_advance_amount = "{:>9.2f}".format(response[6])
+        # total_allowance = "{:>9.2f}".format(response[7])
+        # ot_payment = "{:>9.2f}".format(response[8])
+        # ot_payment_rate = "{:>9.2f}".format(response[9])
+        # hourly_payment_rate = "{:>9.2f}".format(response[10])
+        # basic_salary = "{:>9.2f}".format(response[11])
+        # net_salary = "{:>9.2f}".format(response[12])
+
+        buffer = io.BytesIO()
+
+        pdf = canvas.Canvas(buffer,pagesize = landscape(A4))
+        # pdf = canvas.Canvas(filename="test.pdf",pagesize = landscape(A4))
+
+        flow_obj = []
+
+        company_name = "Ceylon Marine Services Holdings (Pvt)Ltd"
+        month = year_month
+        employee_name = emp.name
+        department = emp.department
+        epf_no = emp.epf_no
+        employee_no =emp_id
+
+        basic_salary =response[3]
+        br_payment=response[2]
+        fixed_allowance = response[1]
+        gross_salary = basic_salary+ br_payment +fixed_allowance
+        ot_payment = response[8]
+        ot_payment_rate = response[9]
+        ot_hours=71
+        total_earning = 40000
+        epf=response[5]
+        salary_advance = response[6]
+        room_charge = response[4]
+        total_deduction = response[12] + salary_advance + room_charge
+        net_payment=response[12]
+
+        table_data = []
+        # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
+        row1 = [company_name]
+        row2 = [month]
+        empty_row1 = [""]
+        row3 = ["Employee Name :","",employee_name,""]
+        row4 = ["Department","",department,""]
+        row5 = ["Employee No:","",employee_no]
+        row6 = ["E.P.F No","",epf_no]
+        empty_row5 = [""]
+        row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
+        row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
+        row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
+        row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
+        empty_row2 = [""]
+        row11 = ["Additions","","",""]
+        row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
+        row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
+        row14 = ["Total Earning","","",f"{total_earning:.2f}"]
+        empty_row3 = [""]
+        row15 = ["Deductions","","",""]
+        row16 = ["EPF 8%","",f"{epf:.2f}",""]
+        row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
+        row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
+        row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
+        empty_row4 = [""]
+        row20 = ["Net Payment","","",f"{net_payment:.2f}"]
+
+        table_data.append(row1)
+        table_data.append(row2)
+        table_data.append(empty_row1)
+        table_data.append(row3)
+        table_data.append(row4)
+        table_data.append(row5)
+        table_data.append(row6)
+        table_data.append(empty_row5)
+
+        table_data.append(row7)
+        table_data.append(row8)
+        table_data.append(row9)
+        table_data.append(row10)
+        table_data.append(empty_row2)
+        table_data.append(row11)
+        table_data.append(row12)
+        table_data.append(row13)
+        table_data.append(row14)
+        table_data.append(empty_row3)
+        table_data.append(row15)
+        table_data.append(row16)
+        table_data.append(row17)
+        table_data.append(row18)
+        table_data.append(row19)
+        table_data.append(empty_row4)
+        table_data.append(row20)
+
+
+
+        table = Table(table_data)
+        table_style = TableStyle([
+            # ("GRID",(0,0),(-1,-1),1,colors.black),
+            ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
+            ('BOLD', (0, 0), (-1, -1)),
+
+            ('SPAN', (0, 0), (-1, 0)), # Company Name Row
+            ('SPAN', (0, 1), (-1,1 )), # Month Row
+            ('SPAN', (0, 3), (1,3 )), # Name Column 
+            ('SPAN', (2, 3), (3,3 )), # Department Column 
+            ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
+            ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
+            ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+            ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
+            ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
+            ('LINEBELOW', (0, 18), (0, 18),1,colors.black),
+            ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+            ('LINEBELOW', (2, 15), (3, 15),1,colors.black),
+            ('LINEBELOW', (2, 21), (3, 21),1,colors.black),
+            ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
+            ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
+
+
+        ])
+        table.setStyle(table_style)
+        flow_obj.append(table)
+        frame1 = Frame(0.35*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+        frame2 = Frame(7.68*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+        frame3 = Frame(15.01*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+        frame4 = Frame(22.34*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
+        frame1.addFromList(flow_obj,pdf)
+        frame2.addFromList(flow_obj,pdf)
+        frame3.addFromList(flow_obj,pdf)
+        frame4.addFromList(flow_obj,pdf)
+        pdf.save()
+        buffer.seek(0)
+        print("Endd")
+        return FileResponse(buffer, as_attachment=True, filename="test.pdf")
 
 class AllowancesView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
