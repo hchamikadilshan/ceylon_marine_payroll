@@ -843,14 +843,14 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 j=0
                 flow_obj = []
                 for response in payslips_record:
-                    employee_name = response[-3]
-                    department =  response[-2]
+                    employee_name = response[-4]
+                    department =  response[-3]
                     if len(department) >= 12:
                         font_size = 6.3
                     else:
                         font_size = 6.5
-                    epf_no = response[-1]
-                    employee_no =response[-4]
+                    epf_no = response[-2]
+                    employee_no =response[-5]
                     basic_salary =response[3]
                     br_payment=response[2]
                     fixed_allowance = response[1]
