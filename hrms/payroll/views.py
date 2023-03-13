@@ -561,14 +561,20 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
 # Calculating Attendance Allowance
+        attendance_allowance_26 = 0
+        extra_days = 0
+        extra_attendance_allowance = 0
         if len(attendance_record_list) >= 26:
+            attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
         if len(attendance_record_list) > 26:
+            extra_days = len(attendance_record_list)-26
+            extra_attendance_allowance = (len(attendance_record_list)-26)*500
             attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
 # Adding Employee Basic Details
         employee = Employee.objects.get(emp_id=emp_id)
         
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,employee.emp_id,employee.name,employee.department,employee.epf_no]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.emp_id,employee.name,employee.department,employee.epf_no]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -843,12 +849,15 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     ot_payment_rate = response[9]
                     ot_hours=epf_no = response[-5]
                     total_allowance = response[7]
-                    total_earning = ot_payment + total_allowance
                     epf=response[5]
                     salary_advance = response[6]
                     room_charge = response[4]
                     total_deduction = response[12] + salary_advance + room_charge
                     net_payment=response[12]
+                    attendance_allowance_26 = response[16]
+                    extra_days = response[17]
+                    extra_payment = response[18]
+                    total_earning = ot_payment + attendance_allowance_26
                     if i <= no_pages:
                         if j < 4:
                             table_data = []
@@ -867,7 +876,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             empty_row2 = [""]
                             row11 = ["Additions","","",""]
                             row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-                            row13 = [f"Total Allowance ","",f"{total_allowance:.2f}"]
+                            row13 = [f"Attendance Allowance 26 days ","",f"{attendance_allowance_26:.2f}"]
                             row14 = ["Total Earning","","",f"{total_earning:.2f}"]
                             empty_row3 = [""]
                             row15 = ["Deductions","","",""]
