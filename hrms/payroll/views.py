@@ -888,7 +888,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
                             row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
                             row131 = [f"Att Allowance Extra {extra_days} x 500 days ","",f"{extra_payment:>9.2f}"]
-                            row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
+                            # row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
                             row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
                             empty_row3 = [""]
                             row15 = ["Deductions","","",""]
@@ -919,7 +919,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table_data.append(row131)
                             for allowance in response[-1]:
                                 table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
-                            table_data.append(row132)
+                            # table_data.append(row132)
                             table_data.append(row14)
                             table_data.append(empty_row3)
                             table_data.append(row15)
