@@ -507,12 +507,13 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            if (employee_finance is not None) and (employee_finance.daily_payment != 0.0 or employee_finance.ot_payment_rate != 0.0 or employee_finance.basic_salary != 0.0):
+            if (employee_finance is not None) and (employee_finance.daily_payment != 0.0 and employee_finance.ot_payment_rate != 0.0 and employee_finance.basic_salary != 0.0):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
                 room_charge = employee_finance.room_charge
                 fixed_basic_salary = employee_finance.basic_salary
                 br_payment = employee_finance.br_payment
+                print(employee_finance.daily_payment,employee_finance.ot_payment_rate,employee_finance.basic_salary)
             else:
                 return "employee_finance_details_error"
                 # return JsonResponse({'error':"no employee finance data"})
@@ -838,11 +839,11 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 flow_obj = []
                 for response in payslips_record:
                     employee_name = response[-3]
-                    if len(employee_name) >= 12:
+                    department =  response[-2]
+                    if len(department) >= 12:
                         font_size = 6.3
                     else:
                         font_size = 6.5
-                    department =  response[-2]
                     epf_no = response[-1]
                     employee_no =response[-4]
                     basic_salary =response[3]
