@@ -507,7 +507,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            if (employee_finance is not None) and (employee_finance.daily_payment == "" or employee_finance.ot_payment_rate == "" or employee_finance.basic_salary == ""):
+            if (employee_finance is not None) and (employee_finance.daily_payment != "" or employee_finance.ot_payment_rate != "" or employee_finance.basic_salary != ""):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
                 room_charge = employee_finance.room_charge
@@ -693,8 +693,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
             row6 = ["E.P.F No","",epf_no]
             empty_row5 = [""]
             row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
-            row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
-            row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
+            row8 = ["B R Allowance","",f"{br_payment:.2f}",""]
+            row9 = ["Other Allowance","",f"{fixed_allowance:.2f}",""]
             row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
             empty_row2 = [""]
             row11 = ["Additions","","",""]
