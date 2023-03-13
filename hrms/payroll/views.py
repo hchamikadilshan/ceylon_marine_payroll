@@ -507,7 +507,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            if (employee_finance is not None) and (employee_finance.daily_payment != 0 or employee_finance.ot_payment_rate != 0 or employee_finance.basic_salary != 0):
+            if (employee_finance is not None) and (employee_finance.daily_payment != 0.0 or employee_finance.ot_payment_rate != 0.0 or employee_finance.basic_salary != 0.0):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
                 room_charge = employee_finance.room_charge
@@ -838,6 +838,10 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 flow_obj = []
                 for response in payslips_record:
                     employee_name = response[-3]
+                    if len(employee_name) >= 12:
+                        font_size = 6.3
+                    else:
+                        font_size = 6.5
                     department =  response[-2]
                     epf_no = response[-1]
                     employee_no =response[-4]
@@ -847,7 +851,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     gross_salary = basic_salary+ br_payment +fixed_allowance
                     ot_payment = response[8]
                     ot_payment_rate = response[9]
-                    ot_hours= response[-5]
+                    ot_hours= response[15]
                     total_allowance = response[7]
                     epf=response[5]
                     salary_advance = response[6]
@@ -923,7 +927,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table = Table(table_data)
                             table_style = TableStyle([
                                 # ("GRID",(0,0),(-1,-1),1,colors.black),
-                                ('FONT', (0, 0), (-1, -1), 'Helvetica',6.5),
+                                ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
                                 ('BOLD', (0, 0), (-1, -1)),
 
                                 ('SPAN', (0, 0), (-1, 0)), # Company Name Row
