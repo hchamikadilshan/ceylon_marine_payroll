@@ -671,22 +671,29 @@ class PayslipPdfView(LoginRequiredMixin,View):
             month = year_month
             employee_name = emp.name
             department = emp.department
-            epf_no = emp.epf_no
-            employee_no =emp_id
-
+            if len(department) >= 12 or len(employee_name) >= 12:
+                font_size = 6.3
+            else:
+                font_size = 6.5
+            epf_no = response[-2]
+            employee_no =response[-5]
             basic_salary =response[3]
             br_payment=response[2]
             fixed_allowance = response[1]
             gross_salary = basic_salary+ br_payment +fixed_allowance
             ot_payment = response[8]
             ot_payment_rate = response[9]
-            ot_hours=71
-            total_earning = 40000
+            ot_hours= response[15]
+            total_allowance = response[7]
             epf=response[5]
             salary_advance = response[6]
             room_charge = response[4]
-            total_deduction = response[12] + salary_advance + room_charge
+            total_deduction = epf + salary_advance + room_charge
             net_payment=response[12]
+            attendance_allowance_26 = response[16]
+            extra_days = response[17]
+            extra_payment = response[18]
+            total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance +basic_salary + br_payment +fixed_allowance
 
             table_data = []
             # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
@@ -698,23 +705,25 @@ class PayslipPdfView(LoginRequiredMixin,View):
             row5 = ["Employee No:","",employee_no]
             row6 = ["E.P.F No","",epf_no]
             empty_row5 = [""]
-            row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
-            row8 = ["B R Allowance","",f"{br_payment:.2f}",""]
-            row9 = ["Other Allowance","",f"{fixed_allowance:.2f}",""]
-            row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
+            row7 = ["Basic Salary","",f"{basic_salary:>9.2f}",""]
+            row8 = ["B R Allowance","",f"{br_payment:>9.2f}",""]
+            row9 = ["Other Allowance","",f"{fixed_allowance:>9.2f}",""]
+            # row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
             empty_row2 = [""]
             row11 = ["Additions","","",""]
-            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-            row13 = [f"Total Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
-            row14 = ["Total Earning","","",f"{total_earning:.2f}"]
+            row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
+            row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
+            row131 = [f"Att Allowance Extra {extra_days} x 500 days ","",f"{extra_payment:>9.2f}"]
+            # row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
+            row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
             empty_row3 = [""]
             row15 = ["Deductions","","",""]
-            row16 = ["EPF 8%","",f"{epf:.2f}",""]
-            row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
-            row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
-            row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
+            row16 = ["EPF 8%","",f"{epf:9.2f}",""]
+            row17 = ["Salary Advance","",f"{salary_advance:9.2f}",""]
+            row18 = ["Room Charges","",f"{room_charge:9.2f}",""]
+            row19 = ["Total Deductions","","",f"{total_deduction:9.2f}"]
             empty_row4 = [""]
-            row20 = ["Net Payment","","",f"{net_payment:.2f}"]
+            row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
 
             table_data.append(row1)
             table_data.append(row2)
@@ -728,11 +737,15 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table_data.append(row7)
             table_data.append(row8)
             table_data.append(row9)
-            table_data.append(row10)
+            # table_data.append(row10)
             table_data.append(empty_row2)
             table_data.append(row11)
             table_data.append(row12)
             table_data.append(row13)
+            table_data.append(row131)
+            for allowance in response[-1]:
+                table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
+            # table_data.append(row132)
             table_data.append(row14)
             table_data.append(empty_row3)
             table_data.append(row15)
@@ -748,7 +761,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table = Table(table_data)
             table_style = TableStyle([
                 # ("GRID",(0,0),(-1,-1),1,colors.black),
-                ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
+                ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
                 ('BOLD', (0, 0), (-1, -1)),
 
                 ('SPAN', (0, 0), (-1, 0)), # Company Name Row
@@ -758,12 +771,13 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
                 ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
                 ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+                ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
-                ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
-                ('LINEBELOW', (0, 18), (0, 18),1,colors.black),
-                ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                ('LINEBELOW', (2, 15), (3, 15),1,colors.black),
-                ('LINEBELOW', (2, 21), (3, 21),1,colors.black),
+                ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
+                ('LINEBELOW', (0, -7), (0, -7),1,colors.black),
+                # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+                ('LINEBELOW', (2, -10), (3, -10),1,colors.black),
+                ('LINEBELOW', (2, -4), (3,-4),1,colors.black),
                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
@@ -772,16 +786,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table.setStyle(table_style)
             flow_obj.append(table)
             frame1 = Frame(0.35*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-            frame2 = Frame(7.68*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-            frame3 = Frame(15.01*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
-            frame4 = Frame(22.34*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
             frame1.addFromList(flow_obj,pdf)
-            frame2.addFromList(flow_obj,pdf)
-            frame3.addFromList(flow_obj,pdf)
-            frame4.addFromList(flow_obj,pdf)
             pdf.save()
             buffer.seek(0)
-            print("Endd")
             return FileResponse(buffer, as_attachment=True, filename=f"{emp_id}-{employee_name}-{month}-payslip.pdf")
         elif pdf_type == "multiple":
             print("inside multiple")
@@ -845,7 +852,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 for response in payslips_record:
                     employee_name = response[-4]
                     department =  response[-3]
-                    if len(department) >= 12:
+                    if len(department) >= 12 or len(employee_name) >= 12:
                         font_size = 6.3
                     else:
                         font_size = 6.5
@@ -867,7 +874,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     attendance_allowance_26 = response[16]
                     extra_days = response[17]
                     extra_payment = response[18]
-                    total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance
+                    total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance +basic_salary + br_payment +fixed_allowance
                     if i <= no_pages:
                         if j < 4:
                             table_data = []
