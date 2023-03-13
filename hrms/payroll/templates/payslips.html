@@ -146,10 +146,12 @@
                     },
                     success: function (response) {
                         $("#payslip_info_table").empty()
-                        if (response["error"] === "attendance_record_error"){
+                        if (response["data"][0]["status"] === 1){
                             $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
-                        }else{
+                        }else if(response["data"][0]["status"] === 0){
                             $("#payslip_info_table").append('<tr><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td><td>' + response["data"][0]["month"] + '</td><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="downloadOnePayslip(this);">Download</button></td></tr> ')
+                        }else if(response["data"][0]["status"] === 2){
+                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Employee Finance</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
                         }
                         
                     }
