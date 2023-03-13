@@ -865,8 +865,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
                         font_size = 6.3
                     else:
                         font_size = 6.5
-                    epf_no = response[-2]
-                    employee_no =response[-5]
+                    epf_no = response[-3]
+                    employee_no =response[-6]
                     basic_salary =response[3]
                     br_payment=response[2]
                     fixed_allowance = response[1]
@@ -884,92 +884,98 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     extra_days = response[17]
                     extra_payment = response[18]
                     total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance +basic_salary + br_payment +fixed_allowance
-                    if i <= no_pages:
-                        if j < 4:
-                            table_data = []
-                            row1 = [company_name]
-                            row2 = [month]
-                            empty_row1 = [""]
-                            row3 = ["Employee Name :","",employee_name,""]
-                            row4 = ["Department","",department,""]
-                            row5 = ["Employee No:","",employee_no]
-                            row6 = ["E.P.F No","",epf_no]
-                            empty_row5 = [""]
-                            row7 = ["Basic Salary","",f"{basic_salary:>9.2f}",""]
-                            row8 = ["B R Allowance","",f"{br_payment:>9.2f}",""]
-                            row9 = ["Other Allowance","",f"{fixed_allowance:>9.2f}",""]
-                            # row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
-                            empty_row2 = [""]
-                            row11 = ["Additions","","",""]
-                            row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
-                            row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
-                            row131 = [f"Att Allowance Extra {extra_days} x 500 days ","",f"{extra_payment:>9.2f}"]
-                            # row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
-                            row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
-                            empty_row3 = [""]
-                            row15 = ["Deductions","","",""]
-                            row16 = ["EPF 8%","",f"{epf:9.2f}",""]
-                            row17 = ["Salary Advance","",f"{salary_advance:9.2f}",""]
-                            row18 = ["Room Charges","",f"{room_charge:9.2f}",""]
-                            row19 = ["Total Deductions","","",f"{total_deduction:9.2f}"]
-                            empty_row4 = [""]
-                            row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
+                    total_worked_days = response[-1]
 
-                            table_data.append(row1)
-                            table_data.append(row2)
-                            table_data.append(empty_row1)
-                            table_data.append(row3)
-                            table_data.append(row4)
-                            table_data.append(row5)
-                            table_data.append(row6)
-                            table_data.append(empty_row5)
+                    table_data = []
+                    # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
+                    row1 = [company_name]
+                    row2 = [month]
+                    empty_row1 = [""]
+                    row3 = ["Employee Name :","",employee_name,""]
+                    row4 = ["Department","",department,""]
+                    row5 = ["Employee No:","",employee_no]
+                    row6 = ["E.P.F No","",epf_no]
+                    empty_row5 = [""]
+                    row7 = ["Basic Salary","",f"{basic_salary:>9.2f}",""]
+                    row8 = ["B R Allowance","",f"{br_payment:>9.2f}",""]
+                    row9 = ["Other Allowance","",f"{fixed_allowance:>9.2f}",""]
+                    # row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
+                    empty_row2 = [""]
+                    row11 = ["Additions","","",""]
+                    row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
+                    row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
+                    row131 = [f"Att Allowance Extra {extra_days} days x 500  ","",f"{extra_payment:>9.2f}"]
+                    # row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
+                    row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
+                    empty_row3 = [""]
+                    row15 = ["Deductions","","",""]
+                    row16 = ["EPF 8%","",f"{epf:9.2f}",""]
+                    row17 = ["Salary Advance","",f"{salary_advance:9.2f}",""]
+                    row18 = ["Room Charges","",f"{room_charge:9.2f}",""]
+                    row19 = ["Total Deductions","","",f"{total_deduction:9.2f}"]
+                    empty_row4 = [""]
+                    row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
+                    row21 = ["Total OT Hours","",f"{ot_hours:>9} Hrs",""]
+                    row22 = ["Total Worked Days","",f"{total_worked_days:>9} Days",""]
 
-                            table_data.append(row7)
-                            table_data.append(row8)
-                            table_data.append(row9)
-                            # table_data.append(row10)
-                            table_data.append(empty_row2)
-                            table_data.append(row11)
-                            table_data.append(row12)
-                            table_data.append(row13)
-                            table_data.append(row131)
-                            for allowance in response[-1]:
-                                table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
-                            # table_data.append(row132)
-                            table_data.append(row14)
-                            table_data.append(empty_row3)
-                            table_data.append(row15)
-                            table_data.append(row16)
-                            table_data.append(row17)
-                            table_data.append(row18)
-                            table_data.append(row19)
-                            table_data.append(empty_row4)
-                            table_data.append(row20)
+                    table_data.append(row1)
+                    table_data.append(row2)
+                    table_data.append(empty_row1)
+                    table_data.append(row3)
+                    table_data.append(row4)
+                    table_data.append(row5)
+                    table_data.append(row6)
+                    table_data.append(empty_row5)
+
+                    table_data.append(row7)
+                    table_data.append(row8)
+                    table_data.append(row9)
+                    # table_data.append(row10)
+                    table_data.append(empty_row2)
+                    table_data.append(row11)
+                    table_data.append(row12)
+                    table_data.append(row13)
+                    table_data.append(row131)
+                    for allowance in response[-2]:
+                        table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
+                    # table_data.append(row132)
+                    table_data.append(row14)
+                    table_data.append(empty_row3)
+                    table_data.append(row15)
+                    table_data.append(row16)
+                    table_data.append(row17)
+                    table_data.append(row18)
+                    table_data.append(row19)
+                    table_data.append(empty_row4)
+                    table_data.append(row20)
+                    table_data.append(row21)
+                    table_data.append(row22)
 
 
 
-                            table = Table(table_data)
-                            table_style = TableStyle([
-                                # ("GRID",(0,0),(-1,-1),1,colors.black),
-                                ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
-                                ('BOLD', (0, 0), (-1, -1)),
+                    table = Table(table_data)
+                    table_style = TableStyle([
+                        # ("GRID",(0,0),(-1,-1),1,colors.black),
+                        ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
+                        ('BOLD', (0, 0), (-1, -1)),
 
-                                ('SPAN', (0, 0), (-1, 0)), # Company Name Row
-                                ('SPAN', (0, 1), (-1,1 )), # Month Row
-                                ('SPAN', (0, 3), (1,3 )), # Name Column 
-                                ('SPAN', (2, 3), (3,3 )), # Department Column 
-                                ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
-                                ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
-                                ('ALIGN', (0, 0), (-1, 1),'CENTER'),
-                                ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
-                                ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
-                                ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
-                                ('LINEBELOW', (0, -7), (0, -7),1,colors.black),
-                                # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                                ('LINEBELOW', (2, -10), (3, -10),1,colors.black),
-                                ('LINEBELOW', (2, -4), (3,-4),1,colors.black),
-                                ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
-                                ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
+                        ('SPAN', (0, 0), (-1, 0)), # Company Name Row
+                        ('SPAN', (0, 1), (-1,1 )), # Month Row
+                        ('SPAN', (0, 3), (1,3 )), # Name Column 
+                        ('SPAN', (2, 3), (3,3 )), # Department Column 
+                        ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
+                        ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
+                        ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+                        ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
+                        ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
+                        ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
+                        ('LINEBELOW', (0, -9), (0, -9),1,colors.black),
+                        # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+                        ('LINEBELOW', (2, -12), (3, -12),1,colors.black),
+                        ('LINEBELOW', (2, -6), (3,-6),1,colors.black),
+                        ('LINEBELOW', (0, -3), (-1, -3),1,colors.black),
+                        ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
+                        ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
 
                             ])
