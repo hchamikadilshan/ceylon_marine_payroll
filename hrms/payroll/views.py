@@ -869,16 +869,16 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             row5 = ["Employee No:","",employee_no]
                             row6 = ["E.P.F No","",epf_no]
                             empty_row5 = [""]
-                            row7 = ["Basic Salary","",f"{basic_salary:.2f}",""]
-                            row8 = ["B-R Payment","",f"{br_payment:.2f}",""]
-                            row9 = ["Fixed Allowance","",f"{fixed_allowance:.2f}",""]
-                            row10 = ["Gross Salary","","",f"{gross_salary:.2f}"]
+                            row7 = ["Basic Salary","",f"{basic_salary:>9.2f}",""]
+                            row8 = ["B-R Payment","",f"{br_payment:>9.2f}",""]
+                            row9 = ["Fixed Allowance","",f"{fixed_allowance:>9.2f}",""]
+                            row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
                             empty_row2 = [""]
                             row11 = ["Additions","","",""]
-                            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-                            row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:.2f}"]
-                            row131 = [f"Att Allowance Extra {extra_days}x500 days ","",f"{extra_payment:.2f}"]
-                            row14 = ["Total Earning","","",f"{total_earning:.2f}"]
+                            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:>9.2f}",""]
+                            row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
+                            row131 = [f"Att Allowance Extra {extra_days}x500 days ","",f"{extra_payment:>9.2f}"]
+                            row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
                             empty_row3 = [""]
                             row15 = ["Deductions","","",""]
                             row16 = ["EPF 8%","",f"{epf:.2f}",""]
@@ -932,7 +932,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                                 ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
                                 ('ALIGN', (0, 0), (-1, 1),'CENTER'),
                                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
-                                ('LINEBELOW', (0, 14), (0, 14),1,colors.black),
+                                ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
                                 ('LINEBELOW', (0, 19), (0, 19),1,colors.black),
                                 ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
                                 ('LINEBELOW', (2, 16), (3, 16),1,colors.black),
