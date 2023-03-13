@@ -507,7 +507,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            if (employee_finance is not None) and (employee_finance.daily_payment != "" or employee_finance.ot_payment_rate != "" or employee_finance.basic_salary != ""):
+            if (employee_finance is not None) and (employee_finance.daily_payment != 0 or employee_finance.ot_payment_rate != 0 or employee_finance.basic_salary != 0):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
                 room_charge = employee_finance.room_charge
@@ -847,7 +847,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     gross_salary = basic_salary+ br_payment +fixed_allowance
                     ot_payment = response[8]
                     ot_payment_rate = response[9]
-                    ot_hours=epf_no = response[-5]
+                    ot_hours= response[-5]
                     total_allowance = response[7]
                     epf=response[5]
                     salary_advance = response[6]
@@ -870,14 +870,14 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             row6 = ["E.P.F No","",epf_no]
                             empty_row5 = [""]
                             row7 = ["Basic Salary","",f"{basic_salary:>9.2f}",""]
-                            row8 = ["B-R Payment","",f"{br_payment:>9.2f}",""]
-                            row9 = ["Fixed Allowance","",f"{fixed_allowance:>9.2f}",""]
-                            row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
+                            row8 = ["B R Allowance","",f"{br_payment:>9.2f}",""]
+                            row9 = ["Other Allowance","",f"{fixed_allowance:>9.2f}",""]
+                            # row10 = ["Gross Salary","","",f"{gross_salary:>9.2f}"]
                             empty_row2 = [""]
                             row11 = ["Additions","","",""]
-                            row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:>9.2f}",""]
+                            row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
                             row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
-                            row131 = [f"Att Allowance Extra {extra_days}x500 days ","",f"{extra_payment:>9.2f}"]
+                            row131 = [f"Att Allowance Extra {extra_days} x 500 days ","",f"{extra_payment:>9.2f}"]
                             row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
                             row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
                             empty_row3 = [""]
@@ -885,7 +885,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             row16 = ["EPF 8%","",f"{epf:9.2f}",""]
                             row17 = ["Salary Advance","",f"{salary_advance:9.2f}",""]
                             row18 = ["Room Charges","",f"{room_charge:9.2f}",""]
-                            row19 = ["Total Deduction","","",f"{total_deduction:9.2f}"]
+                            row19 = ["Total Deductions","","",f"{total_deduction:9.2f}"]
                             empty_row4 = [""]
                             row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
 
@@ -901,7 +901,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table_data.append(row7)
                             table_data.append(row8)
                             table_data.append(row9)
-                            table_data.append(row10)
+                            # table_data.append(row10)
                             table_data.append(empty_row2)
                             table_data.append(row11)
                             table_data.append(row12)
@@ -935,11 +935,11 @@ class PayslipPdfView(LoginRequiredMixin,View):
                                 ('ALIGN', (0, 0), (-1, 1),'CENTER'),
                                 ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
-                                ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
-                                ('LINEBELOW', (0, 20), (0, 20),1,colors.black),
-                                ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                                ('LINEBELOW', (2, 17), (3, 17),1,colors.black),
-                                ('LINEBELOW', (2, 23), (3, 23),1,colors.black),
+                                ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
+                                ('LINEBELOW', (0, 19), (0, 19),1,colors.black),
+                                # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
+                                ('LINEBELOW', (2, 16), (3, 16),1,colors.black),
+                                ('LINEBELOW', (2, 22), (3, 22),1,colors.black),
                                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 

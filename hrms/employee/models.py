@@ -23,8 +23,8 @@ class Employee(models.Model):
 
 class EmployeeFinance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    daily_payment = models.FloatField()
-    ot_payment_rate = models.FloatField()
+    daily_payment = models.FloatField(default=0)
+    ot_payment_rate = models.FloatField(default=0)
     epf_type = models.CharField(max_length=2,default="1")
     # fixed_allowance = models.FloatField()
     basic_salary = models.FloatField(default=0)
