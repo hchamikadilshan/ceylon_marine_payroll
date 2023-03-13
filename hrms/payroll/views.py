@@ -507,16 +507,12 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         try:
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp).order_by('-submit_date').first()
-            if employee_finance is not None:
-                if (employee_finance.daily_payment == "" or employee_finance.ot_payment_rate == "" or employee_finance.basic_salary == ""):
-                    return "employee_finance_details_error"
-                else:
-                    daily_payment_rate = employee_finance.daily_payment
-                    ot_payment_rate = employee_finance.ot_payment_rate
-                    room_charge = employee_finance.room_charge
-                    fixed_basic_salary = employee_finance.basic_salary
-                    br_payment = employee_finance.br_payment
-                
+            if (employee_finance is not None) and (employee_finance.daily_payment == "" or employee_finance.ot_payment_rate == "" or employee_finance.basic_salary == ""):
+                daily_payment_rate = employee_finance.daily_payment
+                ot_payment_rate = employee_finance.ot_payment_rate
+                room_charge = employee_finance.room_charge
+                fixed_basic_salary = employee_finance.basic_salary
+                br_payment = employee_finance.br_payment
             else:
                 return "employee_finance_details_error"
                 # return JsonResponse({'error':"no employee finance data"})
