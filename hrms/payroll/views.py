@@ -568,7 +568,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
 # Adding Employee Basic Details
         employee = Employee.objects.get(emp_id=emp_id)
         
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,employee.name,employee.department,employee.epf_no]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,employee.emp_id,employee.name,employee.department,employee.epf_no]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -693,7 +693,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             empty_row2 = [""]
             row11 = ["Additions","","",""]
             row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-            row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
+            row13 = [f"Total Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
             row14 = ["Total Earning","","",f"{total_earning:.2f}"]
             empty_row3 = [""]
             row15 = ["Deductions","","",""]
@@ -831,18 +831,19 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 j=0
                 flow_obj = []
                 for response in payslips_record:
-                    employee_name = epf_no = response[-3]
-                    department = epf_no = response[-2]
+                    employee_name = response[-3]
+                    department =  response[-2]
                     epf_no = response[-1]
-                    employee_no ="A03611"
+                    employee_no =response[-4]
                     basic_salary =response[3]
                     br_payment=response[2]
                     fixed_allowance = response[1]
                     gross_salary = basic_salary+ br_payment +fixed_allowance
                     ot_payment = response[8]
                     ot_payment_rate = response[9]
-                    ot_hours=epf_no = response[-4]
-                    total_earning = 40000
+                    ot_hours=epf_no = response[-5]
+                    total_allowance = response[7]
+                    total_earning = ot_payment + total_allowance
                     epf=response[5]
                     salary_advance = response[6]
                     room_charge = response[4]
@@ -866,7 +867,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             empty_row2 = [""]
                             row11 = ["Additions","","",""]
                             row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}",""]
-                            row13 = [f"Travel Allowance ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:.2f}"]
+                            row13 = [f"Total Allowance ","",f"{total_allowance:.2f}"]
                             row14 = ["Total Earning","","",f"{total_earning:.2f}"]
                             empty_row3 = [""]
                             row15 = ["Deductions","","",""]
