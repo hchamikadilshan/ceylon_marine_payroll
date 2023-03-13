@@ -513,6 +513,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 room_charge = employee_finance.room_charge
                 fixed_basic_salary = employee_finance.basic_salary
                 br_payment = employee_finance.br_payment
+                if (daily_payment_rate == "" or ot_payment_rate == "" or fixed_basic_salary == ""):
+                    return "employee_finance_details_error"
             else:
                 return "employee_finance_details_error"
                 # return JsonResponse({'error':"no employee finance data"})
@@ -839,7 +841,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 for response in payslips_record:
                     employee_name = response[-3]
                     department =  response[-2]
-                    epf_no = response[22]
+                    epf_no = response[-1]
                     employee_no =response[-4]
                     basic_salary =response[3]
                     br_payment=response[2]
@@ -852,7 +854,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     epf=response[5]
                     salary_advance = response[6]
                     room_charge = response[4]
-                    total_deduction = response[12] + salary_advance + room_charge
+                    total_deduction = epf + salary_advance + room_charge
                     net_payment=response[12]
                     attendance_allowance_26 = response[16]
                     extra_days = response[17]
