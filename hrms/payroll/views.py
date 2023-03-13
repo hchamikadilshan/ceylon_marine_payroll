@@ -567,6 +567,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         attendance_allowance_26 = 0
         extra_days = 0
         extra_attendance_allowance = 0
+        worked_days = len(attendance_record_list)
         if len(attendance_record_list) >= 26:
             attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
@@ -577,7 +578,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
 # Adding Employee Basic Details
         employee = Employee.objects.get(emp_id=emp_id)
         
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.emp_id,employee.name,employee.department,employee.epf_no,allowances]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.emp_id,employee.name,employee.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -663,6 +664,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             buffer = io.BytesIO()
 
             pdf = canvas.Canvas(buffer,pagesize = landscape(A4))
+            
             # pdf = canvas.Canvas(filename="test.pdf",pagesize = landscape(A4))
 
             flow_obj = []
@@ -675,8 +677,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 font_size = 6.3
             else:
                 font_size = 6.5
-            epf_no = response[-2]
-            employee_no =response[-5]
+            epf_no = response[-3]
+            employee_no =response[-6]
             basic_salary =response[3]
             br_payment=response[2]
             fixed_allowance = response[1]
@@ -694,6 +696,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             extra_days = response[17]
             extra_payment = response[18]
             total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance +basic_salary + br_payment +fixed_allowance
+            total_worked_days = response[-1]
 
             table_data = []
             # op, start, stop, weight, colour, cap, dashes, join, linecount, linespacing
@@ -713,7 +716,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             row11 = ["Additions","","",""]
             row12 = [f"OT Payment ({ot_payment_rate} x {ot_hours} Hrs)","",f"{ot_payment:>9.2f}",""]
             row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
-            row131 = [f"Att Allowance Extra {extra_days} x 500 days ","",f"{extra_payment:>9.2f}"]
+            row131 = [f"Att Allowance Extra {extra_days} days x 500  ","",f"{extra_payment:>9.2f}"]
             # row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
             row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
             empty_row3 = [""]
@@ -724,6 +727,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
             row19 = ["Total Deductions","","",f"{total_deduction:9.2f}"]
             empty_row4 = [""]
             row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
+            row21 = ["Total OT Hours","",f"{ot_hours:>9} Hrs",""]
+            row22 = ["Total Worked Days","",f"{total_worked_days:>9} Days",""]
 
             table_data.append(row1)
             table_data.append(row2)
@@ -755,6 +760,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table_data.append(row19)
             table_data.append(empty_row4)
             table_data.append(row20)
+            table_data.append(row21)
+            table_data.append(row22)
 
 
 
@@ -774,10 +781,11 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
                 ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
-                ('LINEBELOW', (0, -7), (0, -7),1,colors.black),
+                ('LINEBELOW', (0, -9), (0, -9),1,colors.black),
                 # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                ('LINEBELOW', (2, -10), (3, -10),1,colors.black),
-                ('LINEBELOW', (2, -4), (3,-4),1,colors.black),
+                ('LINEBELOW', (2, -12), (3, -12),1,colors.black),
+                ('LINEBELOW', (2, -6), (3,-6),1,colors.black),
+                ('LINEBELOW', (0, -3), (-1, -3),1,colors.black),
                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
@@ -787,6 +795,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             flow_obj.append(table)
             frame1 = Frame(0.35*cm,0.5*cm,7*cm,20*cm,showBoundary=1)
             frame1.addFromList(flow_obj,pdf)
+            pdf.setTitle(f"{emp_id}-{employee_name}-{month}-Salary Slip")
             pdf.save()
             buffer.seek(0)
             return FileResponse(buffer, as_attachment=True, filename=f"{emp_id}-{employee_name}-{month}-payslip.pdf")
@@ -976,6 +985,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                                 pdf.showPage()    
                     k += 1
                 pdf.save()
+                pdf.setTitle(f"{month}-Salary Slips")
                 buffer.seek(0)   
                 print("end")
                 return FileResponse(buffer, as_attachment=True, filename=f"payslip.pdf")
