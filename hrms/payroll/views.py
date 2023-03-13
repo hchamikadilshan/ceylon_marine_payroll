@@ -978,17 +978,17 @@ class PayslipPdfView(LoginRequiredMixin,View):
                         ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
 
-                            ])
-                            table.setStyle(table_style)
-                            flow_obj.append(table)
-                            print(j)
-                            frame_list[k].addFromList(flow_obj,pdf)
-                            j += 1
-                            if j == 4:
-                                flow_obj = []
-                                j=0
-                                i += 1  
-                                pdf.showPage()    
+                    ])
+                    table.setStyle(table_style)
+                    flow_obj.append(table)
+                    print(j)
+                    frame_list[k].addFromList(flow_obj,pdf)
+                    j += 1
+                    if j == 4:
+                        flow_obj = []
+                        j=0
+                        i += 1  
+                        pdf.showPage()    
                     k += 1
                 pdf.save()
                 pdf.setTitle(f"{month}-Salary Slips")
