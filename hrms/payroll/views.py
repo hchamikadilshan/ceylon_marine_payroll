@@ -917,6 +917,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table_data.append(row12)
                             table_data.append(row13)
                             table_data.append(row131)
+                            for allowance in response[-1]:
+                                table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
                             table_data.append(row132)
                             table_data.append(row14)
                             table_data.append(empty_row3)
@@ -946,10 +948,10 @@ class PayslipPdfView(LoginRequiredMixin,View):
                                 ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
                                 ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
-                                ('LINEBELOW', (0, 19), (0, 19),1,colors.black),
+                                ('LINEBELOW', (0, -7), (0, -7),1,colors.black),
                                 # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                                ('LINEBELOW', (2, 16), (3, 16),1,colors.black),
-                                ('LINEBELOW', (2, 22), (3, 22),1,colors.black),
+                                ('LINEBELOW', (2, -10), (3, -10),1,colors.black),
+                                ('LINEBELOW', (2, -4), (3,-4),1,colors.black),
                                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
