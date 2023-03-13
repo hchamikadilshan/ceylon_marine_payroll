@@ -748,7 +748,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table_data.append(row12)
             table_data.append(row13)
             table_data.append(row131)
-            for allowance in response[-1]:
+            for allowance in response[-2]:
                 table_data.append([f"{allowance[0]} ","",f"{allowance[1]:>9.2f}"])
             # table_data.append(row132)
             table_data.append(row14)
