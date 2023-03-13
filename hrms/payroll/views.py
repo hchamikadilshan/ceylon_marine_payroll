@@ -839,7 +839,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 for response in payslips_record:
                     employee_name = response[-3]
                     department =  response[-2]
-                    epf_no = response[-1]
+                    epf_no = response[22]
                     employee_no =response[-4]
                     basic_salary =response[3]
                     br_payment=response[2]
@@ -857,7 +857,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     attendance_allowance_26 = response[16]
                     extra_days = response[17]
                     extra_payment = response[18]
-                    total_earning = ot_payment + attendance_allowance_26 + extra_payment
+                    total_earning = ot_payment + attendance_allowance_26 + extra_payment + total_allowance
                     if i <= no_pages:
                         if j < 4:
                             table_data = []
@@ -878,15 +878,16 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             row12 = [f"OT Payment ({ot_payment_rate}x{ot_hours}h)","",f"{ot_payment:>9.2f}",""]
                             row13 =  [f"Att Allowance 26 days ","",f"{attendance_allowance_26:>9.2f}"]
                             row131 = [f"Att Allowance Extra {extra_days}x500 days ","",f"{extra_payment:>9.2f}"]
+                            row132 = [f"Other Allowances ","",f"{total_allowance:>9.2f}"]
                             row14 = ["Total Earning","","",f"{total_earning:>9.2f}"]
                             empty_row3 = [""]
                             row15 = ["Deductions","","",""]
-                            row16 = ["EPF 8%","",f"{epf:.2f}",""]
-                            row17 = ["Salary Advance","",f"{salary_advance:.2f}",""]
-                            row18 = ["Room Charges","",""f"{room_charge:.2f}",""]
-                            row19 = ["Total Deduction","","",f"{total_deduction:.2f}"]
+                            row16 = ["EPF 8%","",f"{epf:9.2f}",""]
+                            row17 = ["Salary Advance","",f"{salary_advance:9.2f}",""]
+                            row18 = ["Room Charges","",f"{room_charge:9.2f}",""]
+                            row19 = ["Total Deduction","","",f"{total_deduction:9.2f}"]
                             empty_row4 = [""]
-                            row20 = ["Net Payment","","",f"{net_payment:.2f}"]
+                            row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
 
                             table_data.append(row1)
                             table_data.append(row2)
@@ -906,6 +907,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                             table_data.append(row12)
                             table_data.append(row13)
                             table_data.append(row131)
+                            table_data.append(row132)
                             table_data.append(row14)
                             table_data.append(empty_row3)
                             table_data.append(row15)
@@ -931,12 +933,13 @@ class PayslipPdfView(LoginRequiredMixin,View):
                                 ('SPAN', (0, 6), (1,6 )), # Employee No Cell 
                                 ('SPAN', (2, 6), (3,6 )), # EPF No Cell 
                                 ('ALIGN', (0, 0), (-1, 1),'CENTER'),
+                                ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
                                 ('LINEBELOW', (0, 13), (0, 13),1,colors.black),
-                                ('LINEBELOW', (0, 19), (0, 19),1,colors.black),
+                                ('LINEBELOW', (0, 20), (0, 20),1,colors.black),
                                 ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                                ('LINEBELOW', (2, 16), (3, 16),1,colors.black),
-                                ('LINEBELOW', (2, 22), (3, 22),1,colors.black),
+                                ('LINEBELOW', (2, 17), (3, 17),1,colors.black),
+                                ('LINEBELOW', (2, 23), (3, 23),1,colors.black),
                                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
 
