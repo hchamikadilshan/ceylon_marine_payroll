@@ -513,7 +513,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 room_charge = employee_finance.room_charge
                 fixed_basic_salary = employee_finance.basic_salary
                 br_payment = employee_finance.br_payment
-                print(employee_finance.daily_payment,employee_finance.ot_payment_rate,employee_finance.basic_salary)
             else:
                 return "employee_finance_details_error"
                 # return JsonResponse({'error':"no employee finance data"})
@@ -788,8 +787,6 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 ('LINEBELOW', (0, -3), (-1, -3),1,colors.black),
                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
                 ('LINEAFTER', (1, 8), (1, -1),1,colors.black),
-
-
             ])
             table.setStyle(table_style)
             flow_obj.append(table)
