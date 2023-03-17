@@ -376,12 +376,13 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         total_ot_hours = 0
         epf = 0
         attendance_allowance = 0
-
+        over_night_days = 0
 
         for record in attendance_record_list:
         
             normal_working_hours = 9.0
             ot_hours = 0
+            
             date = str(record['date']).split('-')
             in_time = str(record['in_time']).split('.')
             out_time = str(record['out_time']).split('.')
@@ -458,6 +459,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             else: 
                 
 # Out time O/T Hours Calculation
+                if (in_time_obj <= attendance_in_time) and (out_time_obj >= attendance_in_time):
+                    over_night_days += 1
                 if (record['day'] == "Saturday" ):
                     ot_hours = ot_hours + 3
                 elif (record['day'] == "Sunday" ):
@@ -566,7 +569,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         attendance_allowance_26 = 0
         extra_days = 0
         extra_attendance_allowance = 0
-        worked_days = len(attendance_record_list)
+        worked_days = len(attendance_record_list) + over_night_days
         if len(attendance_record_list) >= 26:
             attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
