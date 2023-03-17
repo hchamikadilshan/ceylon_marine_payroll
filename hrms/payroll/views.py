@@ -570,13 +570,13 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         extra_days = 0
         extra_attendance_allowance = 0
         worked_days = len(attendance_record_list) + over_night_days
-        if len(attendance_record_list) >= 26:
+        if worked_days >= 26:
             attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
-        if len(attendance_record_list) > 26:
-            extra_days = len(attendance_record_list)-26
-            extra_attendance_allowance = (len(attendance_record_list)-26)*500
-            attendance_allowance = attendance_allowance + (len(attendance_record_list)-26)*500
+        if worked_days > 26:
+            extra_days = worked_days-26
+            extra_attendance_allowance = (worked_days-26)*500
+            attendance_allowance = attendance_allowance + (worked_days-26)*500
 # Adding Employee Basic Details
         employee = Employee.objects.get(emp_id=emp_id)
         
