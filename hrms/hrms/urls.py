@@ -7,5 +7,6 @@ urlpatterns = [
     path('dashboard/',include('dashboard.urls')),
     path('employee_management/',include('employee.urls')),
     path('attendance/', include('attendance.urls')),
-    path('payroll/',include('payroll.urls'))
+    path('payroll/',include('payroll.urls')),
+    path('reports/',include('reports.urls'))
 ]

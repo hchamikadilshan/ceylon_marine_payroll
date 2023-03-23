@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from employee.models import Employee
+from employee.models import Employee,Bank
 from payroll.models import SalaryAdvance
 from payroll.views import get_final_salary_details
 
@@ -76,3 +76,60 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
             print(monthly_net_salary_payed_record)
         
         return JsonResponse({'monthly_salary_advance_record':monthly_salary_advance_record,'monthly_net_salary_payed_record':monthly_net_salary_payed_record})
+    
+
+def add_data():
+        banks = [
+        ["7010","Bank of Ceylon"],
+        ["7038","Standard Chartered Bank"],
+        ["7047","Citi Bank"],
+        ["7056","Commercial Bank PLC"],
+        ["7074","Habib Bank Ltd"],
+        ["7083","Hatton National Bank PLC"],
+        ["7092","Hongkong Shanghai Bank"],
+        ["7108","Indian Bank"],
+        ["7117","Indian Overseas Bank"],
+        ["7135","Peoples Bank"],
+        ["7144","State Bank of India"],
+        ["7162","Nations Trust Bank PLC"],
+        ["7205","Deutsche Bank"],
+        ["7214","National Development Bank PLC"],
+        ["7269","MCB Bank Ltd"],
+        ["7278","Sampath Bank PLC"],
+        ["7287","Seylan Bank PLC"],
+        ["7296","Public Bank"],
+        ["7302","Union Bank of Colombo PLC"],
+        ["7311","Pan Asia Banking Corporation PLC"],
+        ["7384","ICICI Bank Ltd"],
+        ["7454","DFCC Bank PLC"],
+        ["7463","Amana Bank PLC"],
+        ["7472","Axis Bank"],
+        ["7481","Cargills Bank Limited"],
+        ["7719","National Savings Bank"],
+        ["7728","Sanasa Development Bank"],
+        ["7737","HDFC Bank"],
+        ["7746","Citizen Development Business Finance PLC"],
+        ["7755","Regional Development Bank"],
+        ["7764","State Mortgage & Investment Bank"],
+        ["7773","LB Finance PLC"],
+        ["7782","Senkadagala Finance PLC"],
+        ["7807","Commercial Leasing and Finance"],
+        ["7816","Vallibel Finance PLC"],
+        ["7825","Central Finance PLC"],
+        ["7834","Kanrich Finance Limited"],
+        ["7852","Alliance Finance Company PLC"],
+        ["7861","LOLC Finance PLC"],
+        ["7870","Commercial Credit & Finance PLC"],
+        ["7898","Merchant Bank of Sri Lanka & Finance PLC"],
+        ["7904","HNB Grameen Finance Limited"],
+        ["7913","Mercantile Investment and Finance PLC"],
+        ["7922","People's Leasing & Finance PLC"],
+        ["8004","Central Bank of Sri Lanka "]
+        ]
+        
+
+        for bank in banks:
+            bankk = Bank(bank[0],bank[1])
+            bankk.save()
+            print(bank[0])
+        print("done")

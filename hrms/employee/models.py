@@ -2,6 +2,15 @@ from django.db import models
 
 
 # Create your models here.
+class Bank(models.Model):
+    bank_id = models.CharField(primary_key=True,max_length=4)
+    bank_name = models.CharField(max_length=100)
+
+class BankBranch(models.Model):
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
+    branch_id = models.CharField(max_length=4)
+    branch_name = models.CharField(max_length=100)
+
 class Employee(models.Model):
     emp_id = models.CharField(max_length=10,primary_key=True)
     emp_title = models.CharField(default="", max_length=50),
@@ -19,6 +28,7 @@ class Employee(models.Model):
     bank_branch = models.CharField(max_length=20, default="")
     bank_acc_name = models.CharField(max_length=20, default="")
     bank_acc_no = models.CharField(max_length=15,default="")
+
     active_status = models.BooleanField(default=True)
 
 class EmployeeFinance(models.Model):
@@ -34,4 +44,8 @@ class EmployeeFinance(models.Model):
     room_charge =models.FloatField()
     staff_welf_contribution = models.FloatField()
     submit_date = models.DateTimeField()
+
+
+
+
     

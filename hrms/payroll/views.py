@@ -7,7 +7,6 @@ from django.db.models import Avg, Case, Count, F
 from datetime import  datetime
 from .models import SalaryAdvance,Alllowance
 
-from reportlab.pdfgen import canvas
 import io
 from reportlab.lib.pagesizes import A4,landscape
 from reportlab.platypus import SimpleDocTemplate,Table,TableStyle,Frame
@@ -859,8 +858,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 j=0
                 flow_obj = []
                 for response in payslips_record:
-                    employee_name = response[-4]
-                    department =  response[-3]
+                    employee_name = response[-5]
+                    department =  response[-4]
                     if len(department) >= 12 or len(employee_name) >= 12:
                         font_size = 6
                     else:

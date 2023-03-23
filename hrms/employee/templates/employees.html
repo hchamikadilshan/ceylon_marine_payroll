@@ -76,6 +76,7 @@
                                 </div> -->
                                 <div class="">
                                     <select class="form-control" name="bank_name" id="bank_name">
+                                        <option value="" selected>Select Bank</option>
                                         <option value=7010>Bank of Ceylon</option>
                                         <option value=7038>Standard Chartered Bank</option>
                                         <option value=7047>Citi Bank</option>
@@ -249,8 +250,9 @@ modal.find('#edit_employee_nic_no').val(nic_no)
 modal.find('#edit_employee_mobile_no').val(mobile_no)
 modal.find('#edit_employee_email').val(email)
 modal.find('#edit_employee_address').val(address)
-modal.find('#bank_branch').val(bank_branch)
+modal.find('#bank_name').val("")
 modal.find('#bank_name').val(bank_name)
+modal.find('#bank_branch').val(bank_branch)
 modal.find('#bank_acc_name').val(bank_acc_name)
 modal.find('#bank_acc_no').val(bank_acc_no)
 })

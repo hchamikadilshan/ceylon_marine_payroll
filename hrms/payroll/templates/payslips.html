@@ -210,7 +210,7 @@
                         a = document.createElement('a');
                         a.href = window.URL.createObjectURL(XHR.response);
                         // Give filename you wish to download
-                        a.download = emp_id + month;
+                        a.download = emp_id + " " + month;
                         a.style.display = 'none';
                         document.body.appendChild(a);
                         a.click();
