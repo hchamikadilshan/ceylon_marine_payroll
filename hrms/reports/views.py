@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.views.generic import View
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse,FileResponse
 from payroll.views import get_final_salary_details
 from employee.models import Employee
 
@@ -40,10 +40,39 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     response_employees.append([employee_response[-6],employee_response[-5],f"{employee_response[12]:9.2f}"])
             except (ValueError,IndexError):
                 pass
+        file_name = f"2023-03_Salary_Signature Sheet.pdf"
+        title = f"2023-03 Salary Signature Sheet"
+        buffer = io.BytesIO() 
+        pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        
         table_data = []
-        document_heading = ['Attendance Report']
+        document_heading = [f"2023-03 SalarySignature Sheet"]
+        empty_row_heading =[""]
         table_data.append(document_heading)
+        table_data.append(empty_row_heading)
         table_heading = ['Emp ID', 'Name', 'Net Salary','Signature']
         table_data.append(table_heading)
-        print(response_employees)
-        return 
+        for emp in response_employees:
+            table_row = [emp[0], emp[1], emp[2],'']
+            table_data.append(table_row)
+        elements = []
+        attendance_table = Table(table_data,colWidths=[1*inch,3*inch,1.5*inch,2*inch])
+        attendance_table_styles = TableStyle(
+            [
+                ('GRID', (0, 2), (-1, -1), 1, colors.black),
+                ('FONT', (0, 0), (0, 0), 'Helvetica',15),
+                ('FONT', (0, 2), (-1, -1), 'Helvetica',11),
+                ('SPAN', (0, 0), (-1, 0)),
+                ('ALIGN', (0, 0), (-1, 2),'CENTER'),
+                ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+                ]
+            
+        )
+        attendance_table.setStyle(attendance_table_styles)
+        elements.append(attendance_table)
+        pdf.build(elements)
+        buffer.seek(0)
+        print("doneee")
+        return FileResponse(buffer, as_attachment=True, filename=file_name)
+        
+      
