@@ -98,7 +98,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                 
 # O/T Hours Calculation
                 if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
-                    if in_time_obj < attendance_in_time :
+                    if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
                         in_time_difference_ot = attendance_in_time - in_time_obj
                         in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                         a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
@@ -430,7 +430,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 
 # O/T Hours Calculation
                 if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
-                    if in_time_obj < attendance_in_time :
+                    if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
                         in_time_difference_ot = attendance_in_time - in_time_obj
                         in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                         a = (in_time_difference_ot.total_seconds()/(60*60))//0.5

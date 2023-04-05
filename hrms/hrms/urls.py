@@ -8,5 +8,6 @@ urlpatterns = [
     path('employee_management/',include('employee.urls')),
     path('attendance/', include('attendance.urls')),
     path('payroll/',include('payroll.urls')),
-    path('reports/',include('reports.urls'))
+    path('reports/',include('reports.urls')),
+    path('admin_settings/',include('adminapp.urls')),
 ]

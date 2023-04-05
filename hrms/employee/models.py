@@ -1,4 +1,5 @@
 from django.db import models
+from adminapp.models import Department
 
 
 # Create your models here.
@@ -10,13 +11,15 @@ class BankBranch(models.Model):
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
     branch_id = models.CharField(max_length=4)
     branch_name = models.CharField(max_length=100)
-
+def get_default_department():
+    return Department.objects.filter(department='TRANSPORT')[0]
 class Employee(models.Model):
     emp_id = models.CharField(max_length=10,primary_key=True)
     emp_title = models.CharField(default="", max_length=50),
     emp_type = models.IntegerField(default=0)
     name = models.CharField(max_length=100)
     department = models.CharField(max_length=100,default="")
+    dprtmnt = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
     epf_no = models.CharField(max_length=10, default="")
     nic_no = models.CharField(max_length=15, default="")
     appoinment_date = models.DateField(null=True)
@@ -28,7 +31,6 @@ class Employee(models.Model):
     bank_branch = models.CharField(max_length=20, default="")
     bank_acc_name = models.CharField(max_length=20, default="")
     bank_acc_no = models.CharField(max_length=15,default="")
-
     active_status = models.BooleanField(default=True)
 
 class EmployeeFinance(models.Model):
@@ -44,6 +46,8 @@ class EmployeeFinance(models.Model):
     room_charge =models.FloatField()
     staff_welf_contribution = models.FloatField()
     submit_date = models.DateTimeField()
+
+
 
 
 

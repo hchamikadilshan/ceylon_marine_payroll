@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'employee',
     'attendance',
     'payroll',
-    'reports'
+    'reports',
+    'adminapp'
 ]
 
 MIDDLEWARE = [

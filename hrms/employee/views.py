@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from datetime import datetime
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.mixins import LoginRequiredMixin
+from adminapp.models import Department
 
 # Create your views here.
 class EditEmployee(LoginRequiredMixin,View):
@@ -25,8 +26,9 @@ class EditEmployee(LoginRequiredMixin,View):
         bank_acc_no = request.POST.get('bank_acc_no',"")
 
         employee = Employee.objects.get(emp_id=emp_id)
+        department = Department.objects.get(id=department)
         employee.name = emp_name
-        employee.department = department
+        employee.dprtmnt = department
         employee.epf_no = epf_no
         employee.nic_no= nic_no
         employee.mobile_no = mobile_no
@@ -65,7 +67,8 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self, request):
         user = request.user
-        return render(request, 'add_new_emp.html',context={'user':user})
+        departments = Department.objects.all()
+        return render(request, 'add_new_emp.html',context={'user':user,'departments':departments})
 
     # def post(self, request):
     #     print("Inside employee add post")
@@ -112,11 +115,13 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
 class EmployeesMainView(LoginRequiredMixin,View):
     def get(self,request):
         employee_list = Employee.objects.all()
-        return render(request,'employees.html',context={'employee_list':employee_list})
+        departments = Department.objects.all()
+        return render(request,'employees.html',context={'employee_list':employee_list,'departments':departments})
     def post(self,request):
         employees = Employee.objects.all().values()
         employees_list = list(employees)
-        return JsonResponse({'employees_list':employees_list})
+        departments = Department.objects.all()
+        return JsonResponse({'employees_list':employees_list,'departments':departments})
 
 
 class GetEmpNameView(LoginRequiredMixin,View):

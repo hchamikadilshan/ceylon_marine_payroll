@@ -53,9 +53,20 @@
                                 <label for="inputAddress" class="form-label">NIC No</label>
                                 <input type="text" class="form-control" id="edit_employee_nic_no" name="edit_employee_nic_no" >
                             </div>
-                            <div class="col-6">
+                            <!-- <div class="col-6">
                                 <label for="inputPassword4" class="form-label">Department</label>
                                 <input type="text" class="form-control" id="edit_employee_department" name="edit_employee_department">
+                            </div> -->
+                            <div class="col-6">
+                                <label class=" col-form-label" for="emp_type">Department</label>
+                                <div class="">
+                                    <select class="form-control" id="edit_employee_department" name="edit_employee_department">
+                                        {% for department in departments %}
+                                            <option value={{department.id}}>{{department.department}}</option>
+                                        {% endfor %}
+                                        
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-6">
                                 <label for="inputAddress" class="form-label">Mobile No</label>
@@ -197,7 +208,7 @@
                     {% elif employee.emp_type == 1 %}
                     <td>Shift Employee</td>
                     {% endif %}
-                    <td>{{ employee.department }}</td>
+                    <td>{{ employee.dprtmnt.department }}</td>
                     <td>{{ employee.epf_no }}</td>
                     <td>{{ employee.nic_no }}</td>
                     <!-- <td>{{ employee.appoinement_date }}</td>
@@ -310,7 +321,7 @@ function editEmployee(){
                             }else{
                                 emp_type = "Shift Employee"
                             }
-                            $("#employee_data_table").append('<tr><th scope="row"></th><td>' + response['employees_list'][i]['emp_id'] + '</td ><td>' + response['employees_list'][i]['name'] + '</td><td>' + emp_type + '</td><td>' + response['employees_list'][i]['department'] + '</td><td>' + response['employees_list'][i]['epf_no'] + '</td><td>' + response['employees_list'][i]['nic_no'] + '</td><td>' + response['employees_list'][i]['address'] + '</td><td>' + response['employees_list'][i]['mobile_no'] + '</td><td>' + response['employees_list'][i]['email'] + '</td><td>' + response['employees_list'][i]['bank_name'] + '</td><td>' + response['employees_list'][i]['bank_branch'] + '</td><td>' + response['employees_list'][i]['bank_acc_name'] + '</td><td>' + response['employees_list'][i]['bank_acc_no'] + '</td><td><button class="btn btn-primary" data-id="' + response['employees_list'][i]['emp_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="' + response['employees_list'][i]['emp_id'] + '" data-empName="' + response['employees_list'][i]['name'] + '" data-empType="' + response['employees_list'][i]['emp_type'] + '" data-department="' + response['employees_list'][i]['department'] + '" data-epfNo="' + response['employees_list'][i]['epf_no'] + '" data-nicNo="' + response['employees_list'][i]['nic_no'] + '" data-address="' + response['employees_list'][i]['address'] + '"  data-mobileNo="' + response['employees_list'][i]['mobile_no'] + '" data-email="' + response['employees_list'][i]['email'] + '" data-bankBranch="' + response['employees_list'][i]['bank_branch'] + '" data-bankName="' + response['employees_list'][i]['bank_name'] + '" data-accNo="' + response['employees_list'][i]['bank_acc_no'] + '" data-accName="' + response['employees_list'][i]['bank_acc_name'] + '">Edit</button></td></tr> ')
+                            $("#employee_data_table").append('<tr><th scope="row"></th><td>' + response['employees_list'][i]['emp_id'] + '</td ><td>' + response['employees_list'][i]['name'] + '</td><td>' + emp_type + '</td><td>' + response['employees_list'][i]['dprtmnt.department'] + '</td><td>' + response['employees_list'][i]['epf_no'] + '</td><td>' + response['employees_list'][i]['nic_no'] + '</td><td>' + response['employees_list'][i]['address'] + '</td><td>' + response['employees_list'][i]['mobile_no'] + '</td><td>' + response['employees_list'][i]['email'] + '</td><td>' + response['employees_list'][i]['bank_name'] + '</td><td>' + response['employees_list'][i]['bank_branch'] + '</td><td>' + response['employees_list'][i]['bank_acc_name'] + '</td><td>' + response['employees_list'][i]['bank_acc_no'] + '</td><td><button class="btn btn-primary" data-id="' + response['employees_list'][i]['emp_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="' + response['employees_list'][i]['emp_id'] + '" data-empName="' + response['employees_list'][i]['name'] + '" data-empType="' + response['employees_list'][i]['emp_type'] + '" data-department="' + response['employees_list'][i]['department'] + '" data-epfNo="' + response['employees_list'][i]['epf_no'] + '" data-nicNo="' + response['employees_list'][i]['nic_no'] + '" data-address="' + response['employees_list'][i]['address'] + '"  data-mobileNo="' + response['employees_list'][i]['mobile_no'] + '" data-email="' + response['employees_list'][i]['email'] + '" data-bankBranch="' + response['employees_list'][i]['bank_branch'] + '" data-bankName="' + response['employees_list'][i]['bank_name'] + '" data-accNo="' + response['employees_list'][i]['bank_acc_no'] + '" data-accName="' + response['employees_list'][i]['bank_acc_name'] + '">Edit</button></td></tr> ')
 
                             i++
                 

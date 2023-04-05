@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Admin {% endblock %}
+
+{% block top_heading %}Admin{% endblock %}
+{% block sub_heading %} Admin{% endblock %}
+{% block sub_heading2 %} Admin{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+{% block content %}
+
+<form method="POST" action ="{% url 'add_department_view' %}"id="allowance_form">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <h5 class="card-title">Departments</h5>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_department_name">Department Name</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="admin_department_name" id="admin_department_name" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="attendance_view_emp_name">Add New Department</label>
+                <div class="">
+                    <button id="payroll_employee_salary_pdf_generate_button" class="btn btn-primary">Add Department</button>
+                </div>
+            </div>
+            <table class="table table-hover ">
+                <thead>
+                    <tr>
+                        <th scope="col">Department Name</th>
+                        <th scope="col">Edit</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance_data_table" >
+                    {% for department in departments %}
+                <tr>
+                    <td class="fs-6">{{ department.department }}</td>
+                    <td><button class="btn btn-primary btn-sm">Edit</button></td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    
+                </tr>
+                
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<script>
+
+</script>
+
+{% endblock %}
