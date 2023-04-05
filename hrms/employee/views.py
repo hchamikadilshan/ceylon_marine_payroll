@@ -82,7 +82,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
     def post(self,request):
 
         emp_id = request.POST.get('emp_id')
-        emp_type = request.POST('emp_type')
+        emp_type = request.POST.get('emp_type')
         name = request.POST.get('name')
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
