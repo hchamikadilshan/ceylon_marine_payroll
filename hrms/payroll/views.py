@@ -430,24 +430,27 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 
 # O/T Hours Calculation
                 if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
-                    if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
-                        in_time_difference_ot = attendance_in_time - in_time_obj
-                        in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
-                        a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
-                        b = (in_time_difference_ot.total_seconds()/(60*60)) % 0.5
-                        if in_time_difference_ot_hours < 0.5:
-                            pass
-                        elif in_time_difference_ot_hours >= 0.5:
-                            ot_hours = ot_hours + (0.5 * a) 
-                    if out_time_obj > attendance_out_time:
-                        out_time_difference_ot = out_time_obj - attendance_out_time
-                        out_time_difference_ot_hours = out_time_difference_ot.total_seconds()/(60*60)
-                        a = (out_time_difference_ot_hours//0.5)
-                        b = (out_time_difference_ot_hours % 0.5)
-                        if out_time_difference_ot_hours < 0.5:
-                            pass
-                        elif out_time_difference_ot_hours >= 0.5:
-                            ot_hours = ot_hours + (0.5 * a) 
+                    if emp.dprtmnt is None:
+                        return "Department Empty"
+                    else:
+                        if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
+                            in_time_difference_ot = attendance_in_time - in_time_obj
+                            in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
+                            a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
+                            b = (in_time_difference_ot.total_seconds()/(60*60)) % 0.5
+                            if in_time_difference_ot_hours < 0.5:
+                                pass
+                            elif in_time_difference_ot_hours >= 0.5:
+                                ot_hours = ot_hours + (0.5 * a) 
+                        if out_time_obj > attendance_out_time:
+                            out_time_difference_ot = out_time_obj - attendance_out_time
+                            out_time_difference_ot_hours = out_time_difference_ot.total_seconds()/(60*60)
+                            a = (out_time_difference_ot_hours//0.5)
+                            b = (out_time_difference_ot_hours % 0.5)
+                            if out_time_difference_ot_hours < 0.5:
+                                pass
+                            elif out_time_difference_ot_hours >= 0.5:
+                                ot_hours = ot_hours + (0.5 * a) 
                 if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 )):
                     ot_hours = ot_hours + 3
                 elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 )):
@@ -596,7 +599,9 @@ class PayslipInfo(LoginRequiredMixin,View):
             try :
                 response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                 if response == "employee_finance_details_error":
-                        payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":2})
+                    payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":2})
+                elif response == "Department Empty":
+                    payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":3})
                 else:
                         payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
                 return JsonResponse({"data":payslips_record})
@@ -615,6 +620,8 @@ class PayslipInfo(LoginRequiredMixin,View):
                     response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                     if response == "employee_finance_details_error":
                         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":2})
+                    elif response == "Department Empty":
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":3})
                     else:
                         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
                 except (ValueError,IndexError):
@@ -811,7 +818,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     
                     try :
                         response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-                        if response == "employee_finance_details_error":
+                        if response == "employee_finance_details_error" or response == "Department Empty":
                             pass
                         else:
                             payslips_record.append(response)

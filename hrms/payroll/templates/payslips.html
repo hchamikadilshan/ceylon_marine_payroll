@@ -100,6 +100,7 @@
     });
     // Click Filter Button 
     function cliclFilterButton(){
+        document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = false;
         console.log("inside filter button")
         var emp_id = document.getElementById("payslip_emp_id").value;
         var month = document.getElementById("payslip_month").value;
@@ -125,7 +126,8 @@
                                 $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip(this);" >Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 2){
                                 $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Finance Details</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
-                            }
+                            }else if(response["data"][i]["status"] === 3){
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')}
                             i++
                         }
                         
@@ -148,10 +150,15 @@
                         $("#payslip_info_table").empty()
                         if (response["data"][0]["status"] === 1){
                             $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
                         }else if(response["data"][0]["status"] === 0){
                             $("#payslip_info_table").append('<tr><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td><td>' + response["data"][0]["month"] + '</td><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="downloadOnePayslip(this);">Download</button></td></tr> ')
                         }else if(response["data"][0]["status"] === 2){
                             $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Employee Finance</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
+                        }else if(response["data"][i]["status"] === 3){
+                            $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                            document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
                         }
                         
                     }
