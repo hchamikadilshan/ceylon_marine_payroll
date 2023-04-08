@@ -692,7 +692,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             employee_name = emp.name
             department = emp.dprtmnt.department
             if len(department) >= 12 or len(employee_name) >= 12:
-                font_size = 5.5
+                font_size = 6.0
             else:
                 font_size = 6.0
             epf_no = response[-3]
@@ -783,7 +783,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
 
 
 
-            table = Table(table_data)
+            table = Table(table_data,colWidths=[1.2*inch,0*inch,0.8*inch,0.75*inch])
             table_style = TableStyle([
                 # ("GRID",(0,0),(-1,-1),1,colors.black),
                 ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
@@ -878,9 +878,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     employee_name = response[-5]
                     department =  response[-4]
                     if len(department) >= 12 or len(employee_name) >= 12:
-                        font_size = 5.4
+                        font_size = 6.0
                     else:
-                        font_size = 5.9
+                        font_size = 6.0
                     epf_no = response[-3]
                     employee_no =response[-6]
                     basic_salary =response[3]
@@ -969,7 +969,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
 
 
 
-                    table = Table(table_data)
+                    table = Table(table_data,colWidths=[1.2*inch,0*inch,0.8*inch,0.75*inch])
                     table_style = TableStyle([
                         # ("GRID",(0,0),(-1,-1),1,colors.black),
                         ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
