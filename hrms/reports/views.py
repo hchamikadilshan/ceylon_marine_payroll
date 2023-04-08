@@ -44,7 +44,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         file_name = f"2023-03_Salary_Signature Sheet.pdf"
         title = f"2023-03 Salary Signature Sheet"
         buffer = io.BytesIO() 
-        pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        pdf = SimpleDocTemplate(buffer,pagesize = landscape(A4), title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
         
         table_data = []
         document_heading = [f"2023-03 Salary Signature Sheet"]
