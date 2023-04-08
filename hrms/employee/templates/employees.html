@@ -98,7 +98,7 @@
                             <div class="col-md-6">
                                 <label class=" col-form-label" for="bank_branch">Bank Branch Name</label>
                                 <div class="">
-                                    <select class="form-control" name="bank_branch" id="bank_branch">
+                                    <select class="form-control" name="bank_branch" id="bank_branch" onchange="bank_branch_select();">
                                         
                                     </select>
                                 </div>
@@ -178,10 +178,10 @@
                     <td>{{ employee.mobile_no }}</td>
                     <td>{{ employee.email }}</td>
                     <td>{{ employee.bank.bank_name}}</td>
-                    <td>{{ employee.bank_branch}}</td>
+                    <td>{{ employee.branch.branch_name}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td>
-                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank_name }}" data-bankBranch="{{ employee.bank_branch }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}">Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}">Edit</button></td>
                     
                 </tr>
                 {% endfor %}
@@ -211,7 +211,9 @@ var bank_name = button.data('bankname')
 var bank_branch = button.data('bankbranch') 
 var modal = $(this)
 
-console.log(bank_acc_name,bank_acc_no,bank_name,bank_branch)
+console.log(bank_name,bank_branch)
+
+bank_branch_select()
 
 modal.find('#edit_employee_emp_id').val(emp_id)
 modal.find('#edit_employee_emp_name').val(emp_name)
@@ -222,7 +224,6 @@ modal.find('#edit_employee_nic_no').val(nic_no)
 modal.find('#edit_employee_mobile_no').val(mobile_no)
 modal.find('#edit_employee_email').val(email)
 modal.find('#edit_employee_address').val(address)
-modal.find('#bank_name').val("")
 modal.find('#bank_name').val(bank_name)
 modal.find('#bank_branch').val(bank_branch)
 modal.find('#bank_acc_name').val(bank_acc_name)
@@ -301,6 +302,28 @@ function editEmployee(){
 
             }
         );
+    }
+    function bank_branch_select(){
+        var bank_select = document.getElementById("bank_name")
+        var branch_select = document.getElementById("bank_branch");
+        bank = bank_select.value
+
+        $.ajax({
+        type: 'POST',
+        url: "{% url 'get_bank_branches' %}",
+        data: {
+            bank: bank,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function (response) {
+            console.log(response["branches"][0])
+            branch_select.innerHTML = "";
+            for (var i = 0; i < response["branches"].length; i++) {
+                let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);
+                branch_select.add(newOption,undefined);
+            }
+        }
+    });
     }
 </script>
 

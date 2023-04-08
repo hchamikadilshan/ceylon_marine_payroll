@@ -30,6 +30,7 @@ class Employee(models.Model):
     mobile_no = models.CharField(max_length=15, default="")
     email = models.EmailField(max_length=50, default="")
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE, null=True)
+    branch = models.ForeignKey(BankBranch, on_delete=models.CASCADE, null=True)
     bank_name = models.CharField(max_length=50, default="")
     bank_branch = models.CharField(max_length=20, default="")
     bank_acc_name = models.CharField(max_length=20, default="")
