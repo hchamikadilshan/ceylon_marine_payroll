@@ -121,8 +121,11 @@
                             </div> -->
                             <div class="">
                                 <select class="form-control" name="bank_name" id="bank_name">
-                                    <option value=7010>Bank of Ceylon</option>
-                                    <option value=7038>Standard Chartered Bank</option>
+                                    {% for bank in banks %}
+                                        <option value={{bank.bank_id}}>{{bank.bank_name}}</option>
+                                    {% endfor %}
+                                    <!-- <option value=7010>Bank of Ceylon</option> -->
+                                    <!-- <option value=7038>Standard Chartered Bank</option>
                                     <option value=7047>Citi Bank</option>
                                     <option value=7056>Commercial Bank PLC</option>
                                     <option value=7074>Habib Bank Ltd</option>
@@ -165,7 +168,7 @@
                                     <option value=7904>HNB Grameen Finance Limited</option>
                                     <option value=7913>Mercantile Investment and Finance PLC</option>
                                     <option value=7922>People's Leasing & Finance PLC</option>
-                                    <option value=8004> Central Bank of Sri Lanka </option>
+                                    <option value=8004> Central Bank of Sri Lanka </option> -->
                                 </select>     
                 </div>
             </div>

@@ -1,25 +1,27 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView
 from .forms import EmployeeForm
-from .models import Employee, EmployeeFinance
+from .models import Employee, EmployeeFinance,Bank,BankBranch
 from django.http import JsonResponse
 from datetime import datetime
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from adminapp.models import Department
+from django.core import serializers
 
 # Create your views here.
 class EditEmployee(LoginRequiredMixin,View):
     def post(self,request):
-        emp_id = request.POST.get('emp_id')
-        emp_name = request.POST.get('emp_name',"")
-        emp_type = request.POST['emp_type']
-        department = request.POST.get('department',"")
-        epf_no = request.POST.get('epf_no',"")
-        nic_no = request.POST.get('nic_no',"")
-        mobile_no = request.POST.get('mobile_no',"")
-        email = request.POST.get('email',"")
-        address = request.POST.get('address',"")
+        emp_id = request.POST.get('edit_employee_emp_id')
+        emp_name = request.POST.get('edit_employee_emp_name',"")
+        emp_type = request.POST['edit_emp_type']
+        department = request.POST.get('edit_employee_department',"")
+        epf_no = request.POST.get('edit_employee_epf_no',"")
+        nic_no = request.POST.get('edit_employee_nic_no',"")
+        mobile_no = request.POST.get('edit_employee_mobile_no',"")
+        email = request.POST.get('edit_employee_email',"")
+        address = request.POST.get('edit_employee_address',"")
+        bank = request.POST.get('bank_name',"")
         bank_name = request.POST.get('bank_name',"")
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
@@ -27,6 +29,7 @@ class EditEmployee(LoginRequiredMixin,View):
 
         employee = Employee.objects.get(emp_id=emp_id)
         department = Department.objects.get(id=department)
+        bank = Bank.objects.get(bank_id = bank)
         employee.name = emp_name
         employee.dprtmnt = department
         employee.epf_no = epf_no
@@ -35,6 +38,7 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.email = email
         employee.address = address
         employee.emp_type =emp_type
+        employee.bank = bank
         employee.bank_acc_name = bank_acc_name
         employee.bank_acc_no = bank_acc_no
         employee.bank_name = bank_name
@@ -68,7 +72,8 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
     def get(self, request):
         user = request.user
         departments = Department.objects.all()
-        return render(request, 'add_new_emp.html',context={'user':user,'departments':departments})
+        banks = Bank.objects.all()
+        return render(request, 'add_new_emp.html',context={'user':user,'departments':departments,'banks':banks})
 
     # def post(self, request):
     #     print("Inside employee add post")
@@ -92,13 +97,17 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         address = request.POST.get('address',"")
         mobile_no = request.POST.get('mobile_no',"")
         email = request.POST.get('email',"")
+        bank = request.POST.get('bank_name',"")
         bank_name = request.POST.get('bank_name',"")
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
+
+        department = Department.objects.get(id=department)
+        bank = Bank.objects.get(bank_id = bank)
         
 
-        employee = Employee(emp_id=emp_id, name=name, department=department,emp_type=emp_type,
+        employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,bank=bank,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
@@ -116,12 +125,14 @@ class EmployeesMainView(LoginRequiredMixin,View):
     def get(self,request):
         employee_list = Employee.objects.all()
         departments = Department.objects.all()
-        return render(request,'employees.html',context={'employee_list':employee_list,'departments':departments})
+        banks = Bank.objects.all()
+        return render(request,'employees.html',context={'employee_list':employee_list,'departments':departments,'banks':banks})
     def post(self,request):
-        employees = Employee.objects.all().values()
-        employees_list = list(employees)
-        departments = Department.objects.all()
-        return JsonResponse({'employees_list':employees_list,'departments':departments})
+        employees = Employee.objects.all()
+        # employees_list = list(employees)
+        employees_list = serializers.serialize('json', employees)
+        print(employees_list)
+        return JsonResponse({'employees_list':employees_list})
 
 
 class GetEmpNameView(LoginRequiredMixin,View):
@@ -179,3 +190,12 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         emplyee_finance_record.save()
 
         return redirect("employee_salary_details_view")
+    
+class GetBankBranches(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        print("insideee")
+        bank_id = request.POST["bank"]
+        bank_obj = Bank.objects.get(bank_id = bank_id)
+        branches = BankBranch.objects.get(bank = bank_obj)
+        print(branches)

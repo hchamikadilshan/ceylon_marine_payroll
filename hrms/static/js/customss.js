@@ -1,9 +1,8 @@
 // Load Employee Personal Data
 
 // Bank Selctions
+console.log("helloww")
 var select = document.getElementById("bank_name");
-
-
 
 var branches = {
     "7010": [
@@ -3809,23 +3808,29 @@ var branches = {
 select.addEventListener('change',function(){
 
     bank_code = select.value;
-    console.log(bank_code);
-    branch_list = branches[bank_code]
-    console.log(branch_list)
-    
     let branch_selector = document.getElementById("bank_branch");
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'get_bank_branches' %}",
+        data: {
+            bank: bank_code,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function (response) {
+            console3.log("done")
+        }
+    });
+    branch_list = branches[bank_code]
+    
+    
 
     branch_selector.innerHTML = "";
     var branch_list;
     for (var i = 0; i < branch_list.length; i++) {
-    console.log(branch_list[i]);
-  
-    
 
     let newOption = new Option(branch_list[i].name,branch_list[i].ID);
     branch_selector.add(newOption,undefined);
 }
-
 });
 
 

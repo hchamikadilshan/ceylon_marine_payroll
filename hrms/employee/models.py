@@ -5,14 +5,16 @@ from adminapp.models import Department
 # Create your models here.
 class Bank(models.Model):
     bank_id = models.CharField(primary_key=True,max_length=4)
-    bank_name = models.CharField(max_length=100)
+    bank_name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.bank_name
 
 class BankBranch(models.Model):
-    bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE,null=True)
     branch_id = models.CharField(max_length=4)
     branch_name = models.CharField(max_length=100)
-def get_default_department():
-    return Department.objects.filter(department='TRANSPORT')[0]
+
 class Employee(models.Model):
     emp_id = models.CharField(max_length=10,primary_key=True)
     emp_title = models.CharField(default="", max_length=50),
@@ -27,6 +29,7 @@ class Employee(models.Model):
     address = models.CharField(max_length=50,default="")
     mobile_no = models.CharField(max_length=15, default="")
     email = models.EmailField(max_length=50, default="")
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE, null=True)
     bank_name = models.CharField(max_length=50, default="")
     bank_branch = models.CharField(max_length=20, default="")
     bank_acc_name = models.CharField(max_length=20, default="")
@@ -46,6 +49,7 @@ class EmployeeFinance(models.Model):
     room_charge =models.FloatField()
     staff_welf_contribution = models.FloatField()
     submit_date = models.DateTimeField()
+
 
 
 

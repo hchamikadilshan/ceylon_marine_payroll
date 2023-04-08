@@ -554,15 +554,25 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     total_allowance = total_allowance + allowance["amount"]
             except Alllowance.DoesNotExist:
                 print("No Allowance")
-
-
+# Calculating Attendance Allowance
+            attendance_allowance_26 = 0
+            extra_days = 0
+            extra_attendance_allowance = 0
+            worked_days = len(attendance_record_list) + over_night_days
+            if worked_days >= 26:
+                attendance_allowance_26 = 1000
+                attendance_allowance = attendance_allowance + 1000
+            if worked_days > 26:
+                extra_days = worked_days-26
+                extra_attendance_allowance = (worked_days-26)*500
+                attendance_allowance = attendance_allowance + (worked_days-26)*500
 
 # EPF Calculation
             if employee_finance.epf_type == "1":
                 epf = epf + (min_salary_amount * 0.08)
             elif employee_finance.epf_type == "2":
                 pass
-            net_salary = net_salary - epf + total_allowance
+            net_salary = net_salary - epf + total_allowance + attendance_allowance
 
             
         except EmployeeFinance.DoesNotExist:
@@ -1116,10 +1126,12 @@ class SalaryReportView(LoginRequiredMixin,View):
         response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
         if response == "employee_finance_details_error":
             return JsonResponse({'error':"no employee finance data"})
+        elif response == "Department Empty":
+            return JsonResponse({'error':"Department"})
         else:
-
-            attendance_allowance = "{:>9.2f}".format(response[0])
-            fixed_allowance = "{:>9.2f}".format(response[1])
+            attendance_allowance = response[16] + response[17]
+            attendance_allowance_final = "{:>9.2f}".format(attendance_allowance)
+            other_allowance = "{:>9.2f}".format(response[1])
             br_payment = "{:>9.2f}".format(response[2])
             fixed_basic_salary = "{:>9.2f}".format(response[3])
             room_charge = "{:>9.2f}".format(response[4])
@@ -1132,5 +1144,5 @@ class SalaryReportView(LoginRequiredMixin,View):
             basic_salary = "{:>9.2f}".format(response[11])
             net_salary = "{:>9.2f}".format(response[12])
 
-            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'fixed_allowance':fixed_allowance,'attendance_allowance':attendance_allowance}, status=200)
+            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final}, status=200)
         
