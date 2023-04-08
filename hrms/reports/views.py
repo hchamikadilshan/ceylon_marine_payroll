@@ -37,7 +37,8 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                 if employee_response == "employee_finance_details_error":
                     pass
                 else:
-                    response_employees.append([employee_response[-6],employee_response[-5],f"{employee_response[12]:9.2f}"])
+                    total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
+                    response_employees.append([employee_response[-6],employee_response[-5],f"{employee_response[3]:9.2f}",f"{employee_response[2]:9.2f}",f"{employee_response[1]:9.2f}",f"{employee_response[8]:9.2f}",f"{employee_response[2]:9.2f}",f"{employee_response[5]:9.2f}",f"{(total_deduction):9.2f}",f"{employee_response[12]:9.2f}"])
             except (ValueError,IndexError):
                 pass
         file_name = f"2023-03_Salary_Signature Sheet.pdf"
@@ -46,7 +47,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
         
         table_data = []
-        document_heading = [f"2023-03 SalarySignature Sheet"]
+        document_heading = [f"2023-03 Salary Signature Sheet"]
         empty_row_heading =[""]
         table_data.append(document_heading)
         table_data.append(empty_row_heading)
@@ -60,7 +61,7 @@ Deductions""", 'Net Salary','Signature']
             table_row = [emp[0], emp[1], emp[2],'']
             table_data.append(table_row)
         elements = []
-        attendance_table = Table(table_data,colWidths=[0.6*inch,2.5*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,2.0*inch])
+        attendance_table = Table(table_data,colWidths=[0.6*inch,2.5*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(employees_list)+3)])
         attendance_table_styles = TableStyle(
     [
         ('GRID', (0, 2), (-1, -1), 1, colors.black),
