@@ -1129,7 +1129,7 @@ class SalaryReportView(LoginRequiredMixin,View):
         elif response == "Department Empty":
             return JsonResponse({'error':"Department"})
         else:
-            attendance_allowance = response[16] + response[17]
+            attendance_allowance = response[16] + response[18]
             attendance_allowance_final = "{:>9.2f}".format(attendance_allowance)
             other_allowance = "{:>9.2f}".format(response[1])
             br_payment = "{:>9.2f}".format(response[2])
