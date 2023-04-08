@@ -878,9 +878,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     employee_name = response[-5]
                     department =  response[-4]
                     if len(department) >= 12 or len(employee_name) >= 12:
-                        font_size = 6
+                        font_size = 5.4
                     else:
-                        font_size = 6.3
+                        font_size = 5.9
                     epf_no = response[-3]
                     employee_no =response[-6]
                     basic_salary =response[3]
