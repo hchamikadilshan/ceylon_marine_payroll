@@ -50,29 +50,32 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         empty_row_heading =[""]
         table_data.append(document_heading)
         table_data.append(empty_row_heading)
-        table_heading = ['Emp ID', 'Name', 'Net Salary','Signature']
+        table_heading = ['Emp ID', 'Name','Basic Salary',"""B R 
+Allowance""","""Other 
+Allowance""",'OT Payment',"""Total 
+Allowance""",'EPF',"""Total 
+Deductions""", 'Net Salary','Signature']
         table_data.append(table_heading)
         for emp in response_employees:
             table_row = [emp[0], emp[1], emp[2],'']
             table_data.append(table_row)
         elements = []
-        attendance_table = Table(table_data,colWidths=[1*inch,3*inch,1.5*inch,2*inch])
+        attendance_table = Table(table_data,colWidths=[0.6*inch,2.5*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,2.0*inch])
         attendance_table_styles = TableStyle(
-            [
-                ('GRID', (0, 2), (-1, -1), 1, colors.black),
-                ('FONT', (0, 0), (0, 0), 'Helvetica',15),
-                ('FONT', (0, 2), (-1, -1), 'Helvetica',11),
-                ('SPAN', (0, 0), (-1, 0)),
-                ('ALIGN', (0, 0), (-1, 2),'CENTER'),
-                ('ALIGN', (2, 3), (2, -1),'RIGHT'),
-                ]
-            
-        )
+    [
+        ('GRID', (0, 2), (-1, -1), 1, colors.black),
+        ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
+        ('FONT', (0, 2), (-1, -1), 'Helvetica',9),
+        ('SPAN', (0, 0), (-1, 0)),
+        ('ALIGN', (0, 0), (-1, 2),'CENTER'),
+        ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+        ]
+    
+)
         attendance_table.setStyle(attendance_table_styles)
         elements.append(attendance_table)
         pdf.build(elements)
         buffer.seek(0)
-        print("doneee")
         return FileResponse(buffer, as_attachment=True, filename=file_name)
         
       
