@@ -163,6 +163,8 @@
                     if (response["status"] === 0){
                         
                     }else{
+                        console.log(response['epf'])
+                        document.getElementById("epf_type").value = response['epf']
                         document.getElementById("emp_daily_payment").value = response['daily_payment']
                         document.getElementById("emp_ot_rate").value = response['ot_payment']
                         // document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
