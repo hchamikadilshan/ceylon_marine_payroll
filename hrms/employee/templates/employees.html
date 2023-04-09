@@ -88,7 +88,7 @@
                                     <input class="form-control" type="text" name="bank_name" id="bank_name">
                                 </div> -->
                                 <div class="">
-                                    <select class="form-control" name="bank_name" id="bank_name">
+                                    <select class="form-control" name="bank_name" id="bank_name" onchange="bank_branch_select();">
                                         {% for bank in banks %}
                                             <option value={{bank.bank_id}}>{{bank.bank_name}}</option>
                                         {% endfor %}
@@ -98,7 +98,7 @@
                             <div class="col-md-6">
                                 <label class=" col-form-label" for="bank_branch">Bank Branch Name</label>
                                 <div class="">
-                                    <select class="form-control" name="bank_branch" id="bank_branch" onchange="bank_branch_select();">
+                                    <select class="form-control" name="bank_branch" id="bank_branch" >
                                         
                                     </select>
                                 </div>
