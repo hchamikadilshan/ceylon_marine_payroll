@@ -75,7 +75,7 @@ Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"N
         table_data.append(table_heading)
         table_data.append(table_row_empty)
         for emp in response_employees:
-            table_row = [emp[0], emp[1], emp[2],emp[3], emp[4], emp[5],emp[6], emp[7], emp[8],emp[9],emp[10],emp[11], ""]
+            table_row = [emp[0], emp[1], emp[2],emp[3], emp[4], emp[5],emp[6], emp[7], emp[8],emp[9],emp[10], ""]
             table_data.append(table_row)
         elements = []
         # attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.7*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+3)])
