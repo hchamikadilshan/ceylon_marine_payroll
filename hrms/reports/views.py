@@ -43,7 +43,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     basic_salary = employee_response[3]
                     br_allowance = employee_response[2]
                     epf_12 = (basic_salary + br_allowance) * 0.12
-                    epf_8 =(basic_salary + br_allowance) * 0.8
+                    epf_8 =employee_response[5]
                     advance = employee_response[4] +employee_response[6]
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
