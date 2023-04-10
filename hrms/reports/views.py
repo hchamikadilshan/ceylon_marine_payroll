@@ -37,8 +37,18 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                 if employee_response == "employee_finance_details_error":
                     pass
                 else:
+                    epf_no = employee_response[-3]
+                    name = employee_response[-5]
+                    department = employee_response[-4]
+                    basic_salary = employee_response[3]
+                    br_allowance = employee_response[2]
+                    epf_12 = (basic_salary + br_allowance) * 0.12
+                    epf_8 =(basic_salary + br_allowance) * 0.8
+                    advance = employee_response[4] +employee_response[6]
+                    ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
-                    response_employees.append([employee_response[-6],employee_response[-5],f"{employee_response[3]:9.2f}",f"{employee_response[2]:9.2f}",f"{employee_response[1]:9.2f}",f"{employee_response[8]:9.2f}",f"{employee_response[2]:9.2f}",f"{employee_response[5]:9.2f}",f"{(total_deduction):9.2f}",f"{employee_response[12]:9.2f}"])
+                    net_salary = employee_response[12]
+                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
                 pass
         file_name = f"2023-03_Salary_Signature Sheet.pdf"
