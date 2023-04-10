@@ -69,7 +69,7 @@ Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"N
             table_data.append(table_row)
         elements = []
         # attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.7*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+3)])
-        attendance_table = Table(table_data,colWidths=[0.6*inch,2.0*inch,1.2*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,0.8*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+4)])
+        attendance_table = Table(table_data,colWidths=[0.6*inch,1.9*inch,1.3*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,0.8*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+4)])
         attendance_table_styles = TableStyle(
     [
         ('GRID', (0, 2), (-1, -1), 1, colors.black),
