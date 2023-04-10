@@ -48,7 +48,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
                     net_salary = employee_response[12]
-                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_8:9.2f}",f"{epf_12:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
+                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
                 pass
         file_name = f"2023-03_Salary_Signature Sheet.pdf"
@@ -79,7 +79,7 @@ Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"N
             table_data.append(table_row)
         elements = []
         # attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.7*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+3)])
-        attendance_table = Table(table_data,colWidths=[0.6*inch,1.9*inch,1.3*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,0.8*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+4)])
+        attendance_table = Table(table_data,colWidths=[0.6*inch,1.9*inch,1.3*inch,0.8*inch,0.8*inch,0.75*inch,0.75*inch,0.7*inch,0.7*inch,0.8*inch,0.8*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+4)])
         attendance_table_styles = TableStyle(
     [
         ('GRID', (0, 2), (-1, -1), 1, colors.black),
