@@ -51,24 +51,44 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         empty_row_heading =[""]
         table_data.append(document_heading)
         table_data.append(empty_row_heading)
-        table_heading = ['Emp ID', 'Name','Basic Salary',"""B R 
-Allowance""","""Other 
-Allowance""",'OT Payment',"""Total 
-Allowance""",'EPF',"""Total 
-Deductions""", 'Net Salary','Signature']
-        table_data.append(table_heading)
+#         table_heading = ['Emp ID', 'Name','Basic Salary',"""B R 
+# Allowance""","""Other 
+# Allowance""",'OT Payment',"""Total 
+# Allowance""",'EPF',"""Total 
+# Deductions""", 'Net Salary','Signature']
+        table_heading = ["""Employee
+No""", 'Name','Designation',"""Basic 
+Salary""","""BR
+Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"Net Salary",'Signature']
+        table_row_empty = ["","","","","","","EPF 8%","Advance","OT","Others"]
+        table_row = ["A05267","A.B.C.D.E. Hapuarachchi","100000.00","3500.00","15000.00","55000.00","55000.00","1328.00","55000.00","150000.00"]
+        table_data.append(table_row_empty)
+        table_data.append(table_row)
         for emp in response_employees:
             table_row = [emp[0], emp[1], emp[2],emp[3], emp[4], emp[5],emp[6], emp[7], emp[8],emp[9], ""]
             table_data.append(table_row)
         elements = []
-        attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.7*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+3)])
+        # attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.7*inch,0.7*inch,0.8*inch,2.0*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+3)])
+        attendance_table = Table(table_data,colWidths=[0.6*inch,2.4*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.8*inch,0.6*inch,0.7*inch,0.8*inch,0.8*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(response_employees)+4)])
         attendance_table_styles = TableStyle(
     [
         ('GRID', (0, 2), (-1, -1), 1, colors.black),
         ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
         ('FONT', (0, 2), (-1, -1), 'Helvetica',9),
+        # ('SPAN', (0, 0), (0, 0)),
         ('SPAN', (0, 0), (-1, 0)),
-        ('ALIGN', (0, 0), (-1, 2),'CENTER'),
+        ('SPAN', (0, 2), (0, 3)),
+        ('SPAN', (1, 2), (1, 3)),
+        ('SPAN', (2, 2), (2, 3)),
+        ('SPAN', (3, 2), (3, 3)),
+        ('SPAN', (4, 2), (4, 3)),
+        ('SPAN', (5, 2), (5, 3)),
+        ('SPAN', (10, 2), (10, 3)),
+        ('SPAN', (11, 2), (11, 3)),
+        ('SPAN', (6, 2), (7, 2)),
+        ('SPAN', (8, 2), (9, 2)),
+        ('ALIGN', (0, 0), (-1, 3),'CENTER'),
+        ('ALIGN', (0, 0), (0,0),'CENTER'),
         ('ALIGN', (2, 3), (2, -1),'RIGHT'),
         ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
         ]
