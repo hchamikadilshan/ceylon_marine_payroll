@@ -99,7 +99,7 @@ Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"N
         ('SPAN', (8, 2), (9, 2)),
         ('ALIGN', (0, 0), (-1, 3),'CENTER'),
         ('ALIGN', (0, 0), (0,0),'CENTER'),
-        ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+        ('ALIGN', (4, 3), (-1, -1),'RIGHT'),
         ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
         ]
     
