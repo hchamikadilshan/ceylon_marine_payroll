@@ -48,7 +48,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
                     net_salary = employee_response[12]
-                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
+                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_8:9.2f}",f"{epf_12:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
                 pass
         file_name = f"2023-03_Salary_Signature Sheet.pdf"
