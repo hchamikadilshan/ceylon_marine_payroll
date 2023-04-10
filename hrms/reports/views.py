@@ -62,6 +62,7 @@ Salary""","""BR
 Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"Net Salary",'Signature']
         table_row_empty = ["","","","","","","EPF 8%","Advance","OT","Others"]
         table_row = ["A05267","A.B.C.D.E. Hapuarachchi","100000.00","3500.00","15000.00","55000.00","55000.00","1328.00","55000.00","150000.00"]
+        table_data.append(table_heading)
         table_data.append(table_row_empty)
         table_data.append(table_row)
         for emp in response_employees:
