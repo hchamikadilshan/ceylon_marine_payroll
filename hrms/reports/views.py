@@ -69,7 +69,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         table_heading = ["""Employee
 No""", 'Name','Designation',"""Basic 
 Salary""","""BR
-Allowance""",'Total EPF',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"Net Salary",'Signature']
+Allowance""",'EPF 12%',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"Net Salary",'Signature']
         table_row_empty = ["","","","","","","EPF 8%","Advance","OT","Others"]
         
         table_data.append(table_heading)
