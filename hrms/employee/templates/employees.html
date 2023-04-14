@@ -213,7 +213,7 @@ console.log(bank_name,bank_branch)
 
 
 modal.find('#bank_name').val(bank_name)
-bank_branch_select()
+bank_branch_select(bank_branch)
 modal.find('#edit_employee_emp_id').val(emp_id)
 modal.find('#edit_employee_emp_name').val(emp_name)
 modal.find('#edit_emp_type').val(emp_type)
@@ -223,7 +223,7 @@ modal.find('#edit_employee_nic_no').val(nic_no)
 modal.find('#edit_employee_mobile_no').val(mobile_no)
 modal.find('#edit_employee_email').val(email)
 modal.find('#edit_employee_address').val(address)
-modal.find('#bank_branch').val(bank_branch)
+// modal.find('#bank_branch').val(bank_branch)
 modal.find('#bank_acc_name').val(bank_acc_name)
 modal.find('#bank_acc_no').val(bank_acc_no)
 })
@@ -301,7 +301,7 @@ function editEmployee(){
             }
         );
     }
-    function bank_branch_select(){
+    function bank_branch_select(branch='1'){
         var bank_select = document.getElementById("bank_name")
         var branch_select = document.getElementById("bank_branch");
         bank = bank_select.value
@@ -320,7 +320,9 @@ function editEmployee(){
                 let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);
                 branch_select.add(newOption,undefined);
             }
+            branch_select.value = branch
         }
+        
     });
     }
 </script>
