@@ -21,8 +21,8 @@ class EditEmployee(LoginRequiredMixin,View):
         mobile_no = request.POST.get('edit_employee_mobile_no',"")
         email = request.POST.get('edit_employee_email',"")
         address = request.POST.get('edit_employee_address',"")
-        # bank = request.POST.get('bank_name',"")
-        # branch = request.POST.get('bank_branch',"")
+        bank = request.POST.get('bank_name',"")
+        branch = request.POST.get('bank_branch',"")
         bank_name = request.POST.get('bank_name',"")
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
@@ -30,8 +30,8 @@ class EditEmployee(LoginRequiredMixin,View):
 
         employee = Employee.objects.get(emp_id=emp_id)
         department = Department.objects.get(id=department)
-        # bank_obj = Bank.objects.get(bank_id = bank)
-        # branch_obj = BankBranch.objects.get(bank = bank_obj,branch_id = branch)
+        bank_obj = Bank.objects.get(bank_id = bank)
+        branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
 
         employee.name = emp_name
         employee.dprtmnt = department
@@ -41,8 +41,8 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.email = email
         employee.address = address
         employee.emp_type =emp_type
-        # employee.bank = bank_obj
-        # employee.branch = branch_obj
+        employee.bank = bank_obj
+        employee.branch = branch_obj
         employee.bank_acc_name = bank_acc_name
         employee.bank_acc_no = bank_acc_no
         employee.bank_name = bank_name
@@ -101,16 +101,16 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         address = request.POST.get('address',"")
         mobile_no = request.POST.get('mobile_no',"")
         email = request.POST.get('email',"")
-        # bank = request.POST.get('bank_name',"")
-        # branch = request.POST.get('bank_branch',"")
+        bank = request.POST.get('bank_name',"")
+        branch = request.POST.get('bank_branch',"")
         bank_name = request.POST.get('bank_name',"")
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
 
         department = Department.objects.get(id=department)
-        # bank_obj = Bank.objects.get(bank_id = bank)
-        # branch_obj = BankBranch.objects.get(bank = bank_obj,branch_id = branch)
+        bank_obj = Bank.objects.get(bank_id = bank)
+        branch_obj = BankBranch.objects.get(bank = bank_obj,branch_id = branch)
         
 
         employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,

@@ -82,7 +82,7 @@
                                 <label for="inputAddress" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="edit_employee_address" name="edit_employee_address">
                             </div>
-                            <!-- <div class="col-md-6">
+                            <div class="col-md-6">
                                 <label class=" col-form-label" for="bank_name">Bank Name</label>
                               
                                 <div class="">
@@ -100,7 +100,7 @@
                                         
                                     </select>
                                 </div>
-                            </div> -->
+                            </div>
                             <div class="col-md-6">
                                 <label class=" col-form-label" for="bank_acc_name">Bank Account Name</label>
                                 <div class="">
@@ -211,8 +211,9 @@ var modal = $(this)
 
 console.log(bank_name,bank_branch)
 
-// bank_branch_select()
 
+modal.find('#bank_name').val(bank_name)
+bank_branch_select()
 modal.find('#edit_employee_emp_id').val(emp_id)
 modal.find('#edit_employee_emp_name').val(emp_name)
 modal.find('#edit_emp_type').val(emp_type)
@@ -222,8 +223,7 @@ modal.find('#edit_employee_nic_no').val(nic_no)
 modal.find('#edit_employee_mobile_no').val(mobile_no)
 modal.find('#edit_employee_email').val(email)
 modal.find('#edit_employee_address').val(address)
-// modal.find('#bank_name').val(bank_name)
-// modal.find('#bank_branch').val(bank_branch)
+modal.find('#bank_branch').val(bank_branch)
 modal.find('#bank_acc_name').val(bank_acc_name)
 modal.find('#bank_acc_no').val(bank_acc_no)
 })
@@ -286,9 +286,9 @@ function editEmployee(){
                             if (employee.bank) {
                                 console.log(employee.bank.bank_name);
                             }
-                            // console.log(response['employees_list'][i])
-                            // console.log(response['employees_list'][i]['dprtmnt.department'])
-                            // console.log(response['employees_list'][i]['bank']['bank_name'])
+                            console.log(response['employees_list'][i])
+                            console.log(response['employees_list'][i]['dprtmnt.department'])
+                            console.log(response['employees_list'][i]['bank']['bank_name'])
                             $("#employee_data_table").append('<tr><th scope="row"></th><td>' + response['employees_list'][i]['emp_id'] + '</td ><td>' + response['employees_list'][i]['name'] + '</td><td>' + emp_type + '</td><td>' + response['employees_list'][i]['dprtmnt.department'] + '</td><td>' + response['employees_list'][i]['epf_no'] + '</td><td>' + response['employees_list'][i]['nic_no'] + '</td><td>' + response['employees_list'][i]['address'] + '</td><td>' + response['employees_list'][i]['mobile_no'] + '</td><td>' + response['employees_list'][i]['email'] + '</td><td>' + response['employees_list'][i]['bank.bank_name'] + '</td><td>' + response['employees_list'][i]['bank_branch'] + '</td><td>' + response['employees_list'][i]['bank_acc_name'] + '</td><td>' + response['employees_list'][i]['bank_acc_no'] + '</td><td><button class="btn btn-primary" data-id="' + response['employees_list'][i]['emp_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="' + response['employees_list'][i]['emp_id'] + '" data-empName="' + response['employees_list'][i]['name'] + '" data-empType="' + response['employees_list'][i]['emp_type'] + '" data-department="' + response['employees_list'][i]['department'] + '" data-epfNo="' + response['employees_list'][i]['epf_no'] + '" data-nicNo="' + response['employees_list'][i]['nic_no'] + '" data-address="' + response['employees_list'][i]['address'] + '"  data-mobileNo="' + response['employees_list'][i]['mobile_no'] + '" data-email="' + response['employees_list'][i]['email'] + '" data-bankBranch="' + response['employees_list'][i]['bank_branch'] + '" data-bankName="' + response['employees_list'][i]['bank_name'] + '" data-accNo="' + response['employees_list'][i]['bank_acc_no'] + '" data-accName="' + response['employees_list'][i]['bank_acc_name'] + '">Edit</button></td></tr> ')
 
                             i++
@@ -314,7 +314,7 @@ function editEmployee(){
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function (response) {
-            console.log(response["branches"][0])
+            console.log(response["branches"])
             branch_select.innerHTML = "";
             for (var i = 0; i < response["branches"].length; i++) {
                 let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);
