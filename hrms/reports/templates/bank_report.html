@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Bank Transfer Report {% endblock%}
+
+{% block top_heading %}Reports{% endblock %}
+{% block sub_heading %} Bank Transfer Report{% endblock %}
+{% block sub_heading2 %} Bank Transfer Report{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'salary_signature_report' %}">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="emp_type" id="emp_type">
+                        <option value=0>Normal Employee</option>
+                        <option value=1>Shift Employee</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class=" col-form-label" for="month_year">Month/Year</label>
+                <div class="">
+                    <input required class="form-control" type="month" name="month_year"
+                        id="month_year">
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class=" col-form-label" for="bank_report_view_button">View</label>
+                <div class="">
+                    <button onclick="viewData();"  id="bank_report_view_button" class="btn btn-primary"> View</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <label class=" col-form-label" for="bank_report_download_button">Download</label>
+                <div class="">
+                    <button  id="bank_report_download_button" class="btn btn-success" disabled><i class ="bi bi-download"></i> Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Bank Transfer View Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Select</th>
+                    <th scope="col">Employee ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Month</th>
+                    <th scope="col">Bank Details Status</th>
+                    <th scope="col">Change Bank Details</th>
+                </tr>
+            </thead>
+            <tbody id="bank_transfer_details_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+<script>
+    document.getElementById("bank_report_view_button").addEventListener("click", function(event){
+            event.preventDefault()});
+    // Click View Button 
+    function viewData() {
+        
+        document.getElementById("bank_report_download_button").disabled = false;
+        var month = document.getElementById("month_year").value;
+        var emp_type = document.getElementById("emp_type").value;
+        
+        $.ajax({
+                type: 'POST',
+                url: "{% url 'brank_transfer_report' %}",
+                data: {
+                    month:month,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#bank_transfer_details_table").empty()
+                    var i = 0;
+                    while (i < response["data"].length) {
+                        if (response["data"][i]["status"] === 1){
+                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked><label class="custom-control-label" for="customCheck1">1</label></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                        }else if(response["data"][i]["status"] === 0){
+                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked><label class="custom-control-label" for="customCheck1">1</label></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + '" onclick="downloadOnePayslip(this);" >Edit</button></td></tr> ')
+                        }
+                        i++
+                    }
+                    
+                    
+                }
+            });
+    }
+</script>
+
+
+{% endblock %}

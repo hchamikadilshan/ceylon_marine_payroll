@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse,FileResponse
-from payroll.views import get_final_salary_details
+from payroll.views import get_process_salary,calculate_salary,get_final_salary_details
 from employee.models import Employee
 
 import io
@@ -109,5 +109,35 @@ Allowance""",'EPF 12%',"""Deductions""",'EPF',"""Additions""", 'Net Salary',"Net
         pdf.build(elements)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=file_name)
+    
+
+class BankTranferReport(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'bank_report.html' ,context={'user':user})
+    def post(self,request):
+        print("badu came")
+        year_month = request.POST["month"]
+        year_month_split = year_month.split('-')
+        # employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+        # employees_list = list(employees)
+        payslips_record = []
+        
+        employees_data = get_process_salary("multiple",year_month_split[1])
+        for employee in employees_data:
+            try :
+                response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                print(response)
+                if response == "employee_finance_details_error":
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
+                elif response == "Department Empty":
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
+                else:
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
+            except (ValueError,IndexError):
+                payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
+        return JsonResponse({"data":payslips_record})
+ 
         
       
