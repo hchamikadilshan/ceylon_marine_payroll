@@ -18,7 +18,7 @@
         <form method="POST" action="{% url 'edit_employee_view' %}">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Attendance Data</h5>
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Employee Data</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -179,7 +179,7 @@
                     <td>{{ employee.branch.branch_name}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td>
-                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}">Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}" data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}">Edit</button></td>
                     
                 </tr>
                 {% endfor %}
@@ -192,44 +192,40 @@
 <script>
     $('#edit_employee_data_model').on('show.bs.modal', function (event) {
 
-            
-var button = $(event.relatedTarget) // Button that triggered the modal
-var emp_id = button.data('empid') 
-var emp_type = button.data('emptype') 
-var emp_name = button.data('empname') 
-var department = button.data('department') 
-var epf_no = button.data('epfno') 
-var nic_no = button.data('nicno') 
-var mobile_no = button.data('mobileno') 
-var email = button.data('email') 
-var address = button.data('address') 
-var bank_acc_name = button.data('accname') 
-var bank_acc_no = button.data('accno') 
-var bank_name = button.data('bankname') 
-var bank_branch = button.data('bankbranch') 
-var modal = $(this)
-
-console.log(bank_name,bank_branch)
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var emp_id = button.data('empid') 
+        var emp_type = button.data('emptype') 
+        var emp_name = button.data('empname') 
+        var department = button.data('department') 
+        var epf_no = button.data('epfno') 
+        var nic_no = button.data('nicno') 
+        var mobile_no = button.data('mobileno') 
+        var email = button.data('email') 
+        var address = button.data('address') 
+        var bank_acc_name = button.data('accname') 
+        var bank_acc_no = button.data('accno') 
+        var bank_name = button.data('bankname') 
+        var bank_branch = button.data('bankbranch') 
+        var modal = $(this)
 
 
-modal.find('#bank_name').val(bank_name)
-bank_branch_select(bank_branch)
-modal.find('#edit_employee_emp_id').val(emp_id)
-modal.find('#edit_employee_emp_name').val(emp_name)
-modal.find('#edit_emp_type').val(emp_type)
-modal.find('#edit_employee_department').val(department)
-modal.find('#edit_employee_epf_no').val(epf_no)
-modal.find('#edit_employee_nic_no').val(nic_no)
-modal.find('#edit_employee_mobile_no').val(mobile_no)
-modal.find('#edit_employee_email').val(email)
-modal.find('#edit_employee_address').val(address)
-// modal.find('#bank_branch').val(bank_branch)
-modal.find('#bank_acc_name').val(bank_acc_name)
-modal.find('#bank_acc_no').val(bank_acc_no)
-})
+        modal.find('#bank_name').val(bank_name)
+        bank_branch_select(bank_branch)
+        modal.find('#edit_employee_emp_id').val(emp_id)
+        modal.find('#edit_employee_emp_name').val(emp_name)
+        modal.find('#edit_emp_type').val(emp_type)
+        modal.find('#edit_employee_department').val(department)
+        modal.find('#edit_employee_epf_no').val(epf_no)
+        modal.find('#edit_employee_nic_no').val(nic_no)
+        modal.find('#edit_employee_mobile_no').val(mobile_no)
+        modal.find('#edit_employee_email').val(email)
+        modal.find('#edit_employee_address').val(address)
+        // modal.find('#bank_branch').val(bank_branch)
+        modal.find('#bank_acc_name').val(bank_acc_name)
+        modal.find('#bank_acc_no').val(bank_acc_no)
+        })
 
 function editEmployee(){
-        console.log("sinside")
         var emp_id = document.getElementById("edit_employee_emp_id").value;
         var emp_name = document.getElementById("edit_employee_emp_name").value;
         var emp_type = document.getElementById("edit_emp_type").value;
@@ -286,9 +282,6 @@ function editEmployee(){
                             if (employee.bank) {
                                 console.log(employee.bank.bank_name);
                             }
-                            console.log(response['employees_list'][i])
-                            console.log(response['employees_list'][i]['dprtmnt.department'])
-                            console.log(response['employees_list'][i]['bank']['bank_name'])
                             $("#employee_data_table").append('<tr><th scope="row"></th><td>' + response['employees_list'][i]['emp_id'] + '</td ><td>' + response['employees_list'][i]['name'] + '</td><td>' + emp_type + '</td><td>' + response['employees_list'][i]['dprtmnt.department'] + '</td><td>' + response['employees_list'][i]['epf_no'] + '</td><td>' + response['employees_list'][i]['nic_no'] + '</td><td>' + response['employees_list'][i]['address'] + '</td><td>' + response['employees_list'][i]['mobile_no'] + '</td><td>' + response['employees_list'][i]['email'] + '</td><td>' + response['employees_list'][i]['bank.bank_name'] + '</td><td>' + response['employees_list'][i]['bank_branch'] + '</td><td>' + response['employees_list'][i]['bank_acc_name'] + '</td><td>' + response['employees_list'][i]['bank_acc_no'] + '</td><td><button class="btn btn-primary" data-id="' + response['employees_list'][i]['emp_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="' + response['employees_list'][i]['emp_id'] + '" data-empName="' + response['employees_list'][i]['name'] + '" data-empType="' + response['employees_list'][i]['emp_type'] + '" data-department="' + response['employees_list'][i]['department'] + '" data-epfNo="' + response['employees_list'][i]['epf_no'] + '" data-nicNo="' + response['employees_list'][i]['nic_no'] + '" data-address="' + response['employees_list'][i]['address'] + '"  data-mobileNo="' + response['employees_list'][i]['mobile_no'] + '" data-email="' + response['employees_list'][i]['email'] + '" data-bankBranch="' + response['employees_list'][i]['bank_branch'] + '" data-bankName="' + response['employees_list'][i]['bank_name'] + '" data-accNo="' + response['employees_list'][i]['bank_acc_no'] + '" data-accName="' + response['employees_list'][i]['bank_acc_name'] + '">Edit</button></td></tr> ')
 
                             i++

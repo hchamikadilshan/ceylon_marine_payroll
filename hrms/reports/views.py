@@ -5,7 +5,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse,FileResponse
 from payroll.views import get_process_salary,calculate_salary,get_final_salary_details
-from employee.models import Employee
+from employee.models import Employee,Bank,BankBranch
 
 import io
 from reportlab.lib.pagesizes import A4,landscape
@@ -115,7 +115,8 @@ class BankTranferReport(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
         user = request.user
-        return render(request,'bank_report.html' ,context={'user':user})
+        banks = Bank.objects.all()
+        return render(request,'bank_report.html' ,context={'user':user,'banks':banks})
     def post(self,request):
         print("badu came")
         year_month = request.POST["month"]
@@ -128,13 +129,18 @@ class BankTranferReport(LoginRequiredMixin,View):
         for employee in employees_data:
             try :
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
-                print(response)
+                
                 if response == "employee_finance_details_error":
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
+                    payslips_record.append({"status":2})
                 elif response == "Department Empty":
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
+                    payslips_record.append({"status":3})
+                elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'acc_no':employee[0].bank_acc_no,'acc_name':employee[0].bank_acc_name,"status":4})
                 else:
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
+                    print(employee[0])
+                    print(employee[0].bank)
+                    print(employee[0].bank.bank_id,employee[0].bank_acc_no)
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'bank':employee[0].bank.bank_id,'branch':employee[0].branch.branch_id,'acc_no':employee[0].bank_acc_no,'acc_name':employee[0].bank_acc_name,"status":0})
             except (ValueError,IndexError):
                 payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
         return JsonResponse({"data":payslips_record})

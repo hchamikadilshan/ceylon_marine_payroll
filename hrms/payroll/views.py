@@ -423,7 +423,7 @@ def get_process_salary(request_type,month,emp_id="",emp_type=0):
             employee_advance_payment_records_list = list(employee_advance_payment_records)
             employee_allowance_data = allowance_data.filter(employee=employee)
             employee_allowance_data_list = list(employee_allowance_data)
-            print(employee,employee_attendance_record_list,employee_finance_record,employee_advance_payment_records_list,employee_allowance_data_list)
+            # print(employee,employee_attendance_record_list,employee_finance_record,employee_advance_payment_records_list,employee_allowance_data_list)
             employees_list.append([employee,employee_attendance_record_list,employee_finance_record,employee_advance_payment_records_list,employee_allowance_data_list])       
         
     return employees_list
@@ -572,7 +572,6 @@ def calculate_salary(employee,attendance_record,finance_record,month):
 # Advance Payment Calculation
     
     employee_finance = finance_record
-    print(employee_finance)
     if (employee_finance is not None) and (employee_finance["daily_payment"] != 0.0 and employee_finance["ot_payment_rate"] != 0.0 and employee_finance["basic_salary"] != 0.0):
         daily_payment_rate = employee_finance["daily_payment"]
         ot_payment_rate = employee_finance["ot_payment_rate"]
