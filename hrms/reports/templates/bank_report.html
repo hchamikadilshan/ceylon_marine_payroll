@@ -14,77 +14,6 @@
 
 {% block content %}
 
-<div class="modal fade" id="edit_bank_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <form method="POST" action="{% url 'edit_employee_view' %}">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Bank Data</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
-                        <!-- Vertical Form -->
-                        <div class="row g-3">
-                            {% csrf_token %}
-                            <div class="col-6">
-                                <label for="inputNanme4" class="form-label">Employee ID</label>
-                                <input type="text" class="form-control" id="edit_employee_emp_id" name="edit_employee_emp_id" readonly>
-                            </div>
-                            <div class="col-6">
-                                <label for="inputEmail4" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="edit_employee_emp_name" name="edit_employee_emp_name" >
-                            </div>
-                            <div class="col-md-6">
-                                <label class=" col-form-label" for="bank_name">Bank Name</label>
-                              
-                                <div class="">
-                                    <select class="form-control" name="bank_name" id="bank_name" onchange="bank_branch_select();">
-                                        {% for bank in banks %}
-                                            <option value={{bank.bank_id}}>{{bank.bank_name}}</option>
-                                        {% endfor %}
-                                    </select>     
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class=" col-form-label" for="bank_branch">Bank Branch Name</label>
-                                <div class="">
-                                    <select class="form-control" name="bank_branch" id="bank_branch" >
-                                        
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class=" col-form-label" for="bank_acc_name">Bank Account Name</label>
-                                <div class="">
-                                    <input class="form-control" type="text" name="bank_acc_name" id="bank_acc_name">
-                                </div>
-                            
-                            </div>
-                            <div class="col-md-6">
-                                <label class=" col-form-label" for="bank_acc_no">Bank Account No</label>
-                                <div class="">
-                                    <input class="form-control" type="text" name="bank_acc_no" id="bank_acc_no">
-                                </div>
-                            
-                            </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary">Save changes</button>
-            </div>
-        
-        </div>
-    </form><!-- Vertical Form -->
-    </div>
-</div>
 
 <form method="POST" action="{% url 'salary_signature_report' %}">
     {% csrf_token %}
@@ -135,7 +64,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Month</th>
                     <th scope="col">Bank Details Status</th>
-                    <th scope="col">Edit</th>
+                    <th scope="col">Net Salary</th>
                 </tr>
             </thead>
             <tbody id="bank_transfer_details_table">
@@ -151,7 +80,7 @@
     // Click View Button 
     function viewData() {
         
-        document.getElementById("bank_report_download_button").disabled = false;
+        
         var month = document.getElementById("month_year").value;
         var emp_type = document.getElementById("emp_type").value;
         
@@ -167,63 +96,21 @@
                     var i = 0;
                     while (i < response["data"].length) {
                         if (response["data"][i]["status"] === 4){
-                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td><button data-bs-toggle="modal" data-bs-target="#edit_bank_data_model" class="btn btn-sm btn-primary" data-empID="' + response["data"][i]["emp_id"] +'" data-name="' + response["data"][i]["name"] + '" data-bank="' + response["data"][i]["bank"] + '" data-branch="' + response["data"][i]["branch"] + '" data-bankAccName="' + response["data"][i]["acc_name"] + '" data-bankAccNo="' + response["data"][i]["acc_no"] + '" onclick="" >Edit</button></td></tr> ')
+                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }else if(response["data"][i]["status"] === 0){
                             console.log(response["data"][i]["bank"])
-                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td><button data-bs-toggle="modal" data-bs-target="#edit_bank_data_model" class="btn btn-sm btn-primary" data-empID="' + response["data"][i]["emp_id"] +'" data-name="' + response["data"][i]["name"] + '" data-bank="' + response["data"][i]["bank"] + '" data-branch="' + response["data"][i]["branch"] + '" data-bankAccName="' + response["data"][i]["acc_name"] + '" data-bankAccNo="' + response["data"][i]["acc_no"] + '" onclick="" >Edit</button></td></tr> ')
+                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }
                         i++
                     }
+                    document.getElementById("bank_report_download_button").disabled = false;
                     
                     
                 }
             });
     }
-    $('#edit_bank_data_model').on('show.bs.modal', function (event) {
+    
 
-        var branch_select = document.getElementById("bank_branch");
-        branch_select.innerHTML = "";
-
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var emp_id = button.data('empid') 
-        var emp_name = button.data('name') 
-        var bank_acc_name = button.data('bankaccname') 
-        var bank_acc_no = button.data('bankaccno') 
-        var bank_name = button.data('bank') 
-        var bank_branch = button.data('branch') 
-        var modal = $(this)
-
-        modal.find('#bank_name').val(bank_name)
-        bank_branch_select(bank_branch)
-        modal.find('#edit_employee_emp_id').val(emp_id)
-        modal.find('#edit_employee_emp_name').val(emp_name)
-        modal.find('#bank_acc_name').val(bank_acc_name)
-        modal.find('#bank_acc_no').val(bank_acc_no)
-        })
-
-    function bank_branch_select(branch='1'){
-        var bank_select = document.getElementById("bank_name")
-        var branch_select = document.getElementById("bank_branch");
-        bank = bank_select.value
-
-        $.ajax({
-        type: 'POST',
-        url: "{% url 'get_bank_branches' %}",
-        data: {
-            bank: bank,
-            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-        },
-        success: function (response) {
-            branch_select.innerHTML = "";
-            for (var i = 0; i < response["branches"].length; i++) {
-                let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);
-                branch_select.add(newOption,undefined);
-            }
-            branch_select.value = branch
-        }
-        
-    });
-    }
 </script>
 
 

@@ -129,18 +129,16 @@ class BankTranferReport(LoginRequiredMixin,View):
         for employee in employees_data:
             try :
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
-                
+                net_salary = "{:>9.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
                     payslips_record.append({"status":3})
                 elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'acc_no':employee[0].bank_acc_no,'acc_name':employee[0].bank_acc_name,"status":4})
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'net_salary':net_salary,"status":4})
                 else:
-                    print(employee[0])
-                    print(employee[0].bank)
-                    print(employee[0].bank.bank_id,employee[0].bank_acc_no)
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'bank':employee[0].bank.bank_id,'branch':employee[0].branch.branch_id,'acc_no':employee[0].bank_acc_no,'acc_name':employee[0].bank_acc_name,"status":0})
+                    
+                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'net_salary':net_salary,"status":0})
             except (ValueError,IndexError):
                 payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
         return JsonResponse({"data":payslips_record})
