@@ -402,7 +402,7 @@ def get_process_salary(request_type,month,emp_id="",emp_type=0):
     # Getting Data of multiple employees
     elif request_type == "multiple":
         # Getting employee objects
-        employees = Employee.objects.filter(emp_type=emp_type)
+        employees = Employee.objects.filter(emp_type=emp_type,active_status = 1)
 
         # Getting attendance records
         attendance_records = Attendance.objects.filter(date__month=month).order_by('employee','date').values()
@@ -645,8 +645,8 @@ def calculate_salary(employee,attendance_record,finance_record,month):
         extra_attendance_allowance = (worked_days-26)*500
         attendance_allowance = attendance_allowance + (worked_days-26)*500
 # Adding Employee Basic Details
-    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-    net_salary = locale.currency(net_salary, grouping=True)
+    # locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    # net_salary = locale.currency(net_salary, grouping=True)
     return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 
 

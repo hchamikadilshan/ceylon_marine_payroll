@@ -129,8 +129,7 @@ class BankTranferReport(LoginRequiredMixin,View):
         for employee in employees_data:
             try :
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
-                net_salary = response[12]
-                # net_salary = "{:>9.2f}".format(response[12])
+                net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
