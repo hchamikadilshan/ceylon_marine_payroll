@@ -118,7 +118,6 @@ class BankTranferReport(LoginRequiredMixin,View):
         banks = Bank.objects.all()
         return render(request,'bank_report.html' ,context={'user':user,'banks':banks})
     def post(self,request):
-        print("badu came")
         year_month = request.POST["month"]
         year_month_split = year_month.split('-')
         # employees = Employee.objects.filter(emp_type=0,active_status=True).values()
@@ -142,6 +141,67 @@ class BankTranferReport(LoginRequiredMixin,View):
             except (ValueError,IndexError):
                 payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
         return JsonResponse({"data":payslips_record})
+    
+class BankTranferReportPDF(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        year_month = request.POST["month"]
+        year_month_split = year_month.split('-')
+        employees_data = get_process_salary("multiple",year_month_split[1])
+        for employee in employees_data:
+            try :
+                response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                net_salary = "{:>9,.2f}".format(response[12])
+                if response == "employee_finance_details_error":
+                    pass
+                elif response == "Department Empty":
+                    pass
+                elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
+                    pass
+                else:
+                    employee_records = []
+                    employee_record.append([employee[0].emp_id,employee[0].name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
+            except (ValueError,IndexError):
+                pass
+        file_name = "Bank_Transfer_Request.pdf"
+        buffer = io.BytesIO() 
+        pdf = SimpleDocTemplate(buffer,pagesize = landscape(A4), title="SPECIMEN Bank Transfer List",showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        table_data = []
+
+        document_heading = [f"SPECIMEN Bank Transfer List"]
+        empty_row_heading =[""]
+        table_data.append(document_heading)
+        table_data.append(empty_row_heading)
+        table_heading = ["""No""", """EMPLOYEE
+        ID""","""EMPLOYEE 
+        NAME""","""ACCOUNT 
+        NO""","""BANK""",'BRANCH',"""NET 
+        SALARY"""]
+        no = 1
+        for  employee_record in employee_records:
+                table_data_row = ([no,  employee_record[0], employee_record[1], employee_record[2], employee_record[3], employee_record[4], employee_record[5]])
+                table_data.append(table_data_row)
+                no =+ 1
+        table_data.append(table_heading)
+
+
+        elements = []
+        attendance_table = Table(table_data,colWidths=[0.4*inch,1*inch,2.3*inch,1.5*inch,3*inch,1.3*inch,1*inch])
+        attendance_table_styles = TableStyle(
+            [
+                ('GRID', (0, 2), (-1, -1), 1, colors.black),
+                ('ALIGN', (0, 2), (-1, 2),'CENTER'),
+                ('VALIGN', (0, 2), (-1, 2),'MIDDLE'),
+                ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',12),
+                ('ALIGN', (-1, 3), (-1, -1),'RIGHT'),
+                ]
+            
+        )
+        attendance_table.setStyle(attendance_table_styles)
+        elements.append(attendance_table)
+        pdf.build(elements)
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename=file_name)
  
         
       
