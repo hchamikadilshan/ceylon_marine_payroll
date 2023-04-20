@@ -151,6 +151,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         employee_records = []
         for employee in employees_data:
             try :
+                
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
@@ -160,7 +161,8 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                 elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
                     pass
                 else:    
-                    employee_record.append([employee[0].emp_id,employee[0].name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
+
+                    employee_records.append([employee[0].emp_id,employee[0].name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
         file_name = "Bank_Transfer_Request.pdf"
