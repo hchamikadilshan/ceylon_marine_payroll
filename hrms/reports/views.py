@@ -148,6 +148,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         year_month = request.POST["month_year"]
         year_month_split = year_month.split('-')
         employees_data = get_process_salary("multiple",year_month_split[1])
+        employee_records = []
         for employee in employees_data:
             try :
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
@@ -158,8 +159,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     pass
                 elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
                     pass
-                else:
-                    employee_records = []
+                else:    
                     employee_record.append([employee[0].emp_id,employee[0].name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
