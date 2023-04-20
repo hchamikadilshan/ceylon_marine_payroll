@@ -145,7 +145,7 @@ class BankTranferReport(LoginRequiredMixin,View):
 class BankTranferReportPDF(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):
-        year_month = request.POST["month"]
+        year_month = request.POST["month_year"]
         year_month_split = year_month.split('-')
         employees_data = get_process_salary("multiple",year_month_split[1])
         for employee in employees_data:
