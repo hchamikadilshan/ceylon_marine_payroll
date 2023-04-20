@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse,FileResponse
 from payroll.views import get_process_salary,calculate_salary,get_final_salary_details
 from employee.models import Employee,Bank,BankBranch
-
+import locale
 import io
 from reportlab.lib.pagesizes import A4,landscape
 from reportlab.platypus import SimpleDocTemplate,Table,TableStyle,Frame
@@ -129,7 +129,8 @@ class BankTranferReport(LoginRequiredMixin,View):
         for employee in employees_data:
             try :
                 response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
-                net_salary = "{:>9.2f}".format(response[12])
+                net_salary = response[12]
+                # net_salary = "{:>9.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":

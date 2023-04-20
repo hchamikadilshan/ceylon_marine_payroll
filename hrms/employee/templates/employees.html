@@ -30,13 +30,22 @@
                         <!-- Vertical Form -->
                         <div class="row g-3">
                             {% csrf_token %}
-                            <div class="col-6">
+                            <div class="col-4">
                                 <label for="inputNanme4" class="form-label">Employee ID</label>
                                 <input type="text" class="form-control" id="edit_employee_emp_id" name="edit_employee_emp_id" readonly>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <label for="inputPassword4" class="form-label">EPF No</label>
                                 <input type="text" class="form-control" id="edit_employee_epf_no" name="edit_employee_epf_no">
+                            </div>
+                            <div class="col-4">
+                                <label class=" col-form-label" for="emp_active">Active/ Inactive</label>
+                                <div class="">
+                                    <select class="form-control" name="edit_emp_active" id="edit_emp_active">
+                                        <option value=1>Active</option>
+                                        <option value=0>Inactive</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-6">
                                 <label for="inputEmail4" class="form-label">Name</label>
@@ -141,6 +150,7 @@
                     <th scope="col">Emp ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Type</th>
+                    <th scope="col">Active/Inactive</th>
                     <th scope="col">Department</th>
                     <th scope="col">EPF No</th>
                     <th scope="col">NIC No</th>
@@ -167,6 +177,11 @@
                     {% elif employee.emp_type == 1 %}
                     <td>Shift Employee</td>
                     {% endif %}
+                    {% if employee.active_status == 0 %}
+                    <td>Inactive</td>
+                    {% elif employee.active_status == 1 %}
+                    <td>Active</td>
+                    {% endif %}
                     <td>{{ employee.dprtmnt.department }}</td>
                     <td>{{ employee.epf_no }}</td>
                     <td>{{ employee.nic_no }}</td>
@@ -179,7 +194,7 @@
                     <td>{{ employee.branch.branch_name}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td>
-                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}" data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}">Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}" data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}" data-active="{{ employee.active_status }}" >Edit</button></td>
                     
                 </tr>
                 {% endfor %}
@@ -206,6 +221,7 @@
         var bank_acc_no = button.data('accno') 
         var bank_name = button.data('bankname') 
         var bank_branch = button.data('bankbranch') 
+        var active_status  = button.data('active') 
         var modal = $(this)
 
 
@@ -214,6 +230,7 @@
         modal.find('#edit_employee_emp_id').val(emp_id)
         modal.find('#edit_employee_emp_name').val(emp_name)
         modal.find('#edit_emp_type').val(emp_type)
+        modal.find('#edit_emp_active').val(active_status)
         modal.find('#edit_employee_department').val(department)
         modal.find('#edit_employee_epf_no').val(epf_no)
         modal.find('#edit_employee_nic_no').val(nic_no)

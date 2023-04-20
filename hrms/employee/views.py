@@ -14,6 +14,7 @@ class EditEmployee(LoginRequiredMixin,View):
     def post(self,request):
         emp_id = request.POST.get('edit_employee_emp_id')
         emp_name = request.POST.get('edit_employee_emp_name',"")
+        emp_active = request.POST.get('edit_emp_active',"")
         emp_type = request.POST['edit_emp_type']
         department = request.POST.get('edit_employee_department',"")
         epf_no = request.POST.get('edit_employee_epf_no',"")
@@ -47,6 +48,7 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.bank_acc_no = bank_acc_no
         employee.bank_name = bank_name
         employee.bank_branch = bank_branch
+        employee.active_status = emp_active
         employee.save()
         return redirect('employees_main_view')
 
@@ -92,6 +94,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
 
         emp_id = request.POST.get('emp_id')
         emp_type = request.POST.get('emp_type')
+        emp_active = request.POST.get('edit_emp_active',"")
         name = request.POST.get('name')
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
@@ -113,7 +116,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         branch_obj = BankBranch.objects.get(bank = bank_obj,branch_id = branch)
         
 
-        employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,
+        employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 

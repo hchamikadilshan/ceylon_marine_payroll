@@ -35,7 +35,7 @@ class Employee(models.Model):
     bank_branch = models.CharField(max_length=20, default="")
     bank_acc_name = models.CharField(max_length=20, default="")
     bank_acc_no = models.CharField(max_length=15,default="")
-    active_status = models.BooleanField(default=True)
+    active_status = models.IntegerField(default=1)
 
 class EmployeeFinance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
