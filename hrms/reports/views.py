@@ -175,10 +175,10 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         table_data.append(document_heading)
         table_data.append(empty_row_heading)
         table_heading = ["""No""", """EMPLOYEE
-        ID""","""EMPLOYEE 
-        NAME""","""ACCOUNT 
-        NO""","""BANK""",'BRANCH',"""NET 
-        SALARY"""]
+ID""","""EMPLOYEE 
+NAME""","""ACCOUNT 
+NO""","""BANK""",'BRANCH',"""NET 
+SALARY"""]
         no = 1
         table_data.append(table_heading)
         for  employee_record in employee_records:
