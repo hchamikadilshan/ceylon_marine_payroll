@@ -180,11 +180,12 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         NO""","""BANK""",'BRANCH',"""NET 
         SALARY"""]
         no = 1
+        table_data.append(table_heading)
         for  employee_record in employee_records:
                 table_data_row = ([no,  employee_record[0], employee_record[1], employee_record[2], employee_record[3], employee_record[4], employee_record[5]])
                 table_data.append(table_data_row)
-                no =+ 1
-        table_data.append(table_heading)
+                no = no + 1
+        
 
 
         elements = []
