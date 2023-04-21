@@ -162,6 +162,8 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     pass
                 elif response == "Department Empty":
                     pass
+                elif response[-1] == 0:
+                    pass
                 elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
                     pass
                 else:    
