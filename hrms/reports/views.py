@@ -36,6 +36,8 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                 employee_response = get_final_salary_details(emp_id=employee["emp_id"],month=month_year_split[1])
                 if employee_response == "employee_finance_details_error":
                     pass
+                elif employee_response[-1] == 0:
+                    pass
                 else:
                     epf_no = employee_response[-3]
                     name = employee_response[-5]
@@ -133,6 +135,8 @@ class BankTranferReport(LoginRequiredMixin,View):
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
                     payslips_record.append({"status":3})
+                elif response[-1] == 0:
+                    pass
                 elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
                     payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,'net_salary':net_salary,"status":4})
                 else:
