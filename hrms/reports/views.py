@@ -189,7 +189,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
 
 
         elements = []
-        attendance_table = Table(table_data,colWidths=[0.4*inch,1*inch,2.3*inch,1.5*inch,3*inch,1.3*inch,1*inch])
+        attendance_table = Table(table_data,colWidths=[0.4*inch,1*inch,2.3*inch,1.5*inch,3*inch,1.3*inch,1.1*inch])
         attendance_table_styles = TableStyle(
             [
                 ('GRID', (0, 2), (-1, -1), 1, colors.black),
