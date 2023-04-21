@@ -31,8 +31,22 @@ class EditEmployee(LoginRequiredMixin,View):
 
         employee = Employee.objects.get(emp_id=emp_id)
         department = Department.objects.get(id=department)
-        bank_obj = Bank.objects.get(bank_id = bank)
-        branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
+
+        print(f"Bank - {bank}")
+        if bank == "":
+            bank_obj = None
+        else:
+            bank_obj = Bank.objects.get(bank_id = bank)
+            employee.bank = bank_obj
+            if branch == "":
+                branch_obj = None
+            else:
+                branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
+                employee.branch = branch_obj
+
+
+        
+        
 
         employee.name = emp_name
         employee.dprtmnt = department
@@ -42,8 +56,6 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.email = email
         employee.address = address
         employee.emp_type =emp_type
-        employee.bank = bank_obj
-        employee.branch = branch_obj
         employee.bank_acc_name = bank_acc_name
         employee.bank_acc_no = bank_acc_no
         employee.bank_name = bank_name
