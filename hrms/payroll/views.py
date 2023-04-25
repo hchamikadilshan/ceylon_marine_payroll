@@ -460,7 +460,7 @@ def calculate_salary(employee,attendance_record,finance_record,month):
             int(date[0]), int(date[1]), int(date[2]), 00, 00)
 
         if record['next_day'] == 0:
-            if (in_time_obj == attendance_in_time and out_time_obj == attendance_out_time):
+            if (in_time_obj == attendance_in_time or out_time_obj == attendance_out_time):
                 pass
 # Deducting the punishment hours
             elif (in_time_obj > attendance_in_time or out_time_obj < attendance_out_time):
@@ -717,7 +717,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     normal_working_hours = normal_working_hours - 1
                 
 # O/T Hours Calculation
-                if (in_time_obj < attendance_in_time and out_time_obj > attendance_out_time):
+                if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
                     if emp.dprtmnt is None:
                         return "Department Empty"
                     else:
