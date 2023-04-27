@@ -122,8 +122,10 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
-
-        department = Department.objects.get(id=department)
+        if department == "":
+            pass
+        else:
+            department = Department.objects.get(id=department)
         if bank == "":
             bank_obj = None
             branch_obj = None
