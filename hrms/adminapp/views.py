@@ -9,7 +9,6 @@ from employee.models import Bank,BankBranch
 class AdminMainView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
-        add_bank_branches()
         user = request.user
         departments_list = Department.objects.all()
         return render (request,"admin.html",context={'user':user,'departments':departments_list})
@@ -20,6 +19,18 @@ class AddDepartment(LoginRequiredMixin,View):
         department = Department(department = department_name)
         department.save()
         return redirect("admin_main_view")
+class EditDepartment(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        print("Came")
+        department_id = request.POST["department_id"]
+        new_department_name = request.POST["department_name"]
+
+        department = Department.objects.get(id=department_id)
+        department.department = new_department_name
+        department.save()
+
+        return redirect ("admin_main_view")
     
 def add_bank_branches():
 

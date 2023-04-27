@@ -12,7 +12,37 @@
 {% block user_last_name %}{{user.last_name}} {% endblock %}
 {% block username %}{{user.username}} {% endblock %}
 {% block content %}
-
+<div class="modal fade" id="edit_department_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg " role="document">
+        <form method="POST">
+        {% csrf_token %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Department</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="inputNanme4" class="form-label">Department</label>
+                                <input type="text" data-id="" class="form-control" id="edit_department" name="edit_department">
+                            </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="editDepartment();" id="department_edit_save_button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+    </form><!-- Vertical Form -->
+    </div>
+</div>
 <form method="POST" action ="{% url 'add_department_view' %}"id="allowance_form">
     {% csrf_token %}
     <div class="card formss">
@@ -51,7 +81,7 @@
                             {% for department in departments %}
                         <tr>
                             <td class="fs-6">{{ department.department }}</td>
-                            <td><button class="btn btn-primary btn-sm">Edit</button></td>
+                            <td><button id="department_edit_button" data-bs-toggle="modal" data-bs-target="#edit_department_model" data-id={{department.id}} data-department ={{department.department}} class="btn btn-primary btn-sm">Edit</button></td>
                         </tr>
                         {% endfor %}
                         <tr>
@@ -68,7 +98,74 @@
 </form>
 
 <script>
+    
+var department_edit_button = document.getElementById("department_edit_button");
+department_edit_button.addEventListener("click", function(event) {
+  event.preventDefault();
+});
 
+document.getElementById("department_edit_save_button").addEventListener("click", function(event) {
+  event.preventDefault();
+});
+$('#edit_department_model').on('show.bs.modal', function (event) {
+    
+    console.log("oay")
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var department = button.data('department') 
+    var department_id = button.data('id')
+    console.log(department,department_id)
+    var modal = $(this)
+    modal.find('#edit_department').val(department)
+    modal.find('#edit_department').attr('data-id', department_id)
+    })
+
+function editDepartment(){
+        var xhr = new XMLHttpRequest(); // Create XHR object
+
+        department_id = document.getElementById("edit_department").getAttribute("data-id")
+        department_name = document.getElementById("edit_department").value
+        token = $('input[name=csrfmiddlewaretoken]').val()
+
+        function sendData(data) {
+                console.log('Sending data');
+
+                const XHR = new XMLHttpRequest();
+
+                const urlEncodedDataPairs = [];
+
+                // Turn the data object into an array of URL-encoded key/value pairs.
+                for (const [name, value] of Object.entries(data)) {
+                    urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+                }
+
+                // Combine the pairs into a single string and replace all %-encoded spaces to
+                // the '+' character; matches the behavior of browser form submissions.
+                const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+                // Define what happens on successful data submission
+                XHR.addEventListener('load', (event) => {
+                    // alert('Yeah! Data sent and response loaded.');
+                    var a;
+                    if (XHR.readyState === 4 && XHR.status === 200) {
+                        location.reload();
+                    }
+                });
+                // Define what happens in case of an error
+                XHR.addEventListener('error', (event) => {
+                    alert('Oops! Something went wrong.');
+                });
+
+                // Set up our request
+                XHR.open('POST', "{% url 'edit_department_view' %}");
+
+                // Add the required HTTP header for form data POST requests
+                XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                // Finally, send our data.
+                XHR.send(urlEncodedData);
+                }
+            sendData({ department_id: department_id,department_name:department_name,csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val() });
+
+        }
 </script>
 
 {% endblock %}
