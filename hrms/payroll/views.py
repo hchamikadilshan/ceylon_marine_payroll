@@ -490,11 +490,11 @@ def calculate_salary(employee,attendance_record,finance_record,month):
                 normal_working_hours = normal_working_hours - 1
             
 # O/T Hours Calculation
-            if (in_time_obj < attendance_in_time or out_time_obj > attendance_out_time):
+            if (in_time_obj <= attendance_in_time or out_time_obj >= attendance_out_time):
                 if emp.dprtmnt is None:
                     return "Department Empty"
                 else:
-                    if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
+                    if (in_time_obj <= attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
                         in_time_difference_ot = attendance_in_time - in_time_obj
                         in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                         a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
@@ -503,7 +503,7 @@ def calculate_salary(employee,attendance_record,finance_record,month):
                             pass
                         elif in_time_difference_ot_hours >= 0.5:
                             ot_hours = ot_hours + (0.5 * a) 
-                    if out_time_obj > attendance_out_time:
+                    if out_time_obj >= attendance_out_time:
                         out_time_difference_ot = out_time_obj - attendance_out_time
                         out_time_difference_ot_hours = out_time_difference_ot.total_seconds()/(60*60)
                         a = (out_time_difference_ot_hours//0.5)
@@ -512,12 +512,12 @@ def calculate_salary(employee,attendance_record,finance_record,month):
                             pass
                         elif out_time_difference_ot_hours >= 0.5:
                             ot_hours = ot_hours + (0.5 * a) 
-            if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 )):
-                ot_hours = ot_hours + 3
-            elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 )):
-                ot_hours = ot_hours + 4
-            elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8)):
-                ot_hours = ot_hours + 4
+            if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                    ot_hours = ot_hours + 3
+            elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                    ot_hours = ot_hours + 4
+            elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
+                    ot_hours = ot_hours + 4
 # Next Day Out
         else: 
             
@@ -721,7 +721,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     if emp.dprtmnt is None:
                         return "Department Empty"
                     else:
-                        if (in_time_obj < attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
+                        if (in_time_obj <= attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
                             in_time_difference_ot = attendance_in_time - in_time_obj
                             in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                             a = (in_time_difference_ot.total_seconds()/(60*60))//0.5
@@ -730,7 +730,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                                 pass
                             elif in_time_difference_ot_hours >= 0.5:
                                 ot_hours = ot_hours + (0.5 * a) 
-                        if out_time_obj > attendance_out_time:
+                        if out_time_obj >= attendance_out_time:
                             out_time_difference_ot = out_time_obj - attendance_out_time
                             out_time_difference_ot_hours = out_time_difference_ot.total_seconds()/(60*60)
                             a = (out_time_difference_ot_hours//0.5)
@@ -739,11 +739,11 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                                 pass
                             elif out_time_difference_ot_hours >= 0.5:
                                 ot_hours = ot_hours + (0.5 * a) 
-                if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj < attendance_in_time and out_time_obj > attendance_out_time)):
+                if (record['day'] == "Saturday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 3
-                elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj < attendance_in_time and out_time_obj > attendance_out_time)):
+                elif (record['day'] == "Sunday" and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (record['special_holiday'] != 1 ) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 4
-                elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (in_time_obj < attendance_in_time and out_time_obj > attendance_out_time)):
+                elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 4
 # Next Day Out
             else: 
