@@ -324,7 +324,6 @@ function editEmployee(){
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function (response) {
-            console.log(response["branches"])
             branch_select.innerHTML = "";
             for (var i = 0; i < response["branches"].length; i++) {
                 let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);

@@ -31,9 +31,9 @@
                 </div>
             </div> -->
             <div class="col-md-4">
-                <label class=" col-form-label" for="emp_type">Department</label>
+                <label class=" col-form-label" for="department">Department</label>
                 <div class="">
-                    <select class="form-control" name="emp_type" id="emp_type">
+                    <select class="form-control" name="department" id="department">
                         {% for department in departments %}
                             <option value={{department.id}}>{{department.department}}</option>
                         {% endfor %}
@@ -191,7 +191,6 @@
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function (response) {
-            console.log(response["branches"][0])
             branch_select.innerHTML = "";
             for (var i = 0; i < response["branches"].length; i++) {
                 let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);

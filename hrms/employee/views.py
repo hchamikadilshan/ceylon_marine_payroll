@@ -106,7 +106,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
 
         emp_id = request.POST.get('emp_id')
         emp_type = request.POST.get('emp_type')
-        emp_active = request.POST.get('edit_emp_active',"")
+        emp_active = request.POST.get('edit_emp_active',1)
         name = request.POST.get('name')
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
@@ -124,11 +124,18 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         bank_acc_no = request.POST.get('bank_acc_no',"")
 
         department = Department.objects.get(id=department)
-        bank_obj = Bank.objects.get(bank_id = bank)
-        branch_obj = BankBranch.objects.get(bank = bank_obj,branch_id = branch)
+        if bank == "":
+            bank_obj = None
+            branch_obj = None
+        else:
+            bank_obj = Bank.objects.get(bank_id = bank)
+            if branch == "":
+                branch_obj = None
+            else:
+                branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
         
 
-        employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,
+        employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,bank = bank_obj,branch = branch_obj,
                             epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
