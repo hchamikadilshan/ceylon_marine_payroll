@@ -43,6 +43,59 @@
     </form><!-- Vertical Form -->
     </div>
 </div>
+<form method="POST" action ="{% url 'edit_company_details_view' %}">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <h5 class="card-title">Company Details</h5>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_name">Company Name</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_name" id="admin_company_name" value="{{company_details.name}}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_name">EPF Registration No</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_epf_no" id="admin_company_epf_no" value="{{company_details.epf_no}}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_name">Company Address</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_address" id="admin_company_address" value="{{company_details.address}}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_name">Bank & Branch</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_bank_branch" id="admin_company_bank_branch" value="{{company_details.bank_branch}}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_name">Contact No</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_contact_no" id="admin_company_contact_no" value="{{company_details.contact_no}}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="col-form-label" for="admin_company_email">Email</label>
+                <div class="">
+                    <input class="form-control" type="text"
+                        name="admin_company_email" id="admin_company_email" value="{{company_details.email}}">
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</form>
 <form method="POST" action ="{% url 'add_department_view' %}"id="allowance_form">
     {% csrf_token %}
     <div class="card formss">

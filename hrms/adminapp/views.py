@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Department
+from .models import Department,Company
 from employee.models import Bank,BankBranch
 
 # Create your views here.
@@ -11,7 +11,8 @@ class AdminMainView(LoginRequiredMixin,View):
     def get(self,request):
         user = request.user
         departments_list = Department.objects.all()
-        return render (request,"admin.html",context={'user':user,'departments':departments_list})
+        company_details = Company.objects.get(id=4)
+        return render (request,"admin.html",context={'user':user,'departments':departments_list,'company_details':company_details})
 class AddDepartment(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):
@@ -29,6 +30,26 @@ class EditDepartment(LoginRequiredMixin,View):
         department = Department.objects.get(id=department_id)
         department.department = new_department_name
         department.save()
+
+        return redirect ("admin_main_view")
+class EditCompanyDetails(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        name = request.POST["admin_company_name"]
+        epf_no = request.POST["admin_company_epf_no"]
+        address = request.POST["admin_company_address"]
+        bank_branch = request.POST["admin_company_bank_branch"]
+        contact_no = request.POST["admin_company_contact_no"]
+        email = request.POST["admin_company_email"]
+
+        company = Company.objects.get(id=4)
+        company.name = name
+        company.epf_no = epf_no
+        company.address = address
+        company.bank_branch = bank_branch
+        company.contact_no = contact_no
+        company.email = email
+        company.save()
 
         return redirect ("admin_main_view")
     

@@ -651,6 +651,7 @@ def calculate_salary(employee,attendance_record,finance_record,month):
 
 
 def get_final_salary_details(emp_id="",month="",emp_type=""):
+    print("test 1")
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
 
@@ -721,7 +722,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     if emp.dprtmnt is None:
                         return "Department Empty"
                     else:
-                        if (in_time_obj <= attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLLOR"] :
+                        if (in_time_obj <= attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLOOR"] :
+                            print("inside_morning_ot")
                             in_time_difference_ot = attendance_in_time - in_time_obj
                             in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)
                             a = (in_time_difference_ot.total_seconds()/(60*60))//0.5

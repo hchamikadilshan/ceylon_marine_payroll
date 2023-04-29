@@ -211,6 +211,12 @@ SALARY"""]
         pdf.build(elements)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=file_name)
+    
+class EpfCForm(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'epf_c_form.html' ,context={'user':user})
  
         
       
