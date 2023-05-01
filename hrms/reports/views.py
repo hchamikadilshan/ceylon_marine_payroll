@@ -294,41 +294,57 @@ class EpfCForm(LoginRequiredMixin,View):
                             pass
                         else:
                             fixed_basic_salary = response[2] + response[3]
-                            if response[11] > fixed_basic_salary:
-                                total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+                            total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
-                                employees = fixed_basic_salary * 0.08
-                                employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
-                                employees_int = int(fixed_basic_salary * 0.08)
-                                employees_float = employees_string[-2:]
+                            employees = fixed_basic_salary * 0.08
+                            employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+                            employees_int = int(fixed_basic_salary * 0.08)
+                            employees_float = employees_string[-2:]
 
-                                employers = fixed_basic_salary * 0.12
-                                employers_string = "{:>9.2f}".format(employers)
-                                employers_int = int(employers)
-                                employers_float = employers_string[-2:]
+                            employers = fixed_basic_salary * 0.12
+                            employers_string = "{:>9.2f}".format(employers)
+                            employers_int = int(employers)
+                            employers_float = employers_string[-2:]
 
-                                total_epf =  employers + employees
-                                total_epf_string = "{:>9.2f}".format(total_epf)
-                                total_epf_int = int(total_epf)
-                                total_rpf_float = total_epf_string[-2:]
+                            total_epf =  employers + employees
+                            total_epf_string = "{:>9.2f}".format(total_epf)
+                            total_epf_int = int(total_epf)
+                            total_rpf_float = total_epf_string[-2:]
+                            # if response[11] > fixed_basic_salary:
+                            #     total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+
+                            #     employees = fixed_basic_salary * 0.08
+                            #     employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+                            #     employees_int = int(fixed_basic_salary * 0.08)
+                            #     employees_float = employees_string[-2:]
+
+                            #     employers = fixed_basic_salary * 0.12
+                            #     employers_string = "{:>9.2f}".format(employers)
+                            #     employers_int = int(employers)
+                            #     employers_float = employers_string[-2:]
+
+                            #     total_epf =  employers + employees
+                            #     total_epf_string = "{:>9.2f}".format(total_epf)
+                            #     total_epf_int = int(total_epf)
+                            #     total_rpf_float = total_epf_string[-2:]
                                 
-                            else:
-                                total_earning = "{:>9,.2f}".format(response[11])
+                            # else:
+                            #     total_earning = "{:>9,.2f}".format(response[11])
 
-                                employees = response[11] * 0.08
-                                employees_string = "{:>9.2f}".format(employees)
-                                employees_int = int(response[11] * 0.08)
-                                employees_float = employees_string[-2:]
+                            #     employees = response[11] * 0.08
+                            #     employees_string = "{:>9.2f}".format(employees)
+                            #     employees_int = int(response[11] * 0.08)
+                            #     employees_float = employees_string[-2:]
                                 
-                                employers = response[11] * 0.12
-                                employers_string = "{:>9.2f}".format(employers)
-                                employers_int = int(employers)
-                                employers_float = employers_string[-2:]
+                            #     employers = response[11] * 0.12
+                            #     employers_string = "{:>9.2f}".format(employers)
+                            #     employers_int = int(employers)
+                            #     employers_float = employers_string[-2:]
 
-                                total_epf =  employers + employees
-                                total_epf_string = "{:>9.2f}".format(total_epf)
-                                total_epf_int = int(total_epf)
-                                total_rpf_float = total_epf_string[-2:]
+                            #     total_epf =  employers + employees
+                            #     total_epf_string = "{:>9.2f}".format(total_epf)
+                            #     total_epf_int = int(total_epf)
+                            #     total_rpf_float = total_epf_string[-2:]
                             total_contribution += total_epf    
                             name = response[-5]
                             epf_no = response[-3]
