@@ -632,18 +632,14 @@ def calculate_salary(employee,attendance_record,finance_record,month):
         pass
     net_salary = net_salary - epf + total_allowance + attendance_allowance
 
-# Calculating Attendance Allowance
-    attendance_allowance_26 = 0
-    extra_days = 0
-    extra_attendance_allowance = 0
-    worked_days = len(attendance_record_list) + over_night_days
-    if worked_days >= 26:
-        attendance_allowance_26 = 1000
-        attendance_allowance = attendance_allowance + 1000
-    if worked_days > 26:
-        extra_days = worked_days-26
-        extra_attendance_allowance = (worked_days-26)*500
-        attendance_allowance = attendance_allowance + (worked_days-26)*500
+# Calculate salary if attendance payment is less than fixed payment   
+    calculated_fixed_basic_salary =  br_payment + fixed_basic_salary
+
+    if calculated_fixed_basic_salary > basic_salary:
+        br_payment = 140 * worked_days
+        fixed_basic_salary = basic_salary - br_payment
+        fixed_allowance = 0.0
+        net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
 
     return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 
@@ -879,6 +875,15 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             attendance_allowance = attendance_allowance + (worked_days-26)*500
 # Adding Employee Basic Details
         employee = Employee.objects.get(emp_id=emp_id)
+
+        # Calculate salary if attendance payment is less than fixed payment   
+        calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
+
+        if calculated_fixed_basic_salary > basic_salary:
+            br_payment = 140 * worked_days
+            fixed_basic_salary = basic_salary - br_payment
+            fixed_allowance = 0.0
+            net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
         
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):

@@ -276,7 +276,6 @@ class EpfCForm(LoginRequiredMixin,View):
 
         # Employee Data Table Frame
         employees_data = get_process_salary("multiple",month)
-        print("okaaaay")
         data_list = []
         i=1
         total_contribution = 0
@@ -294,7 +293,6 @@ class EpfCForm(LoginRequiredMixin,View):
                         elif response[-1] == 0:
                             pass
                         else:
-                            print(i)
                             fixed_basic_salary = response[2] + response[3]
                             if response[11] > fixed_basic_salary:
                                 total_earning = "{:>9,.2f}".format(fixed_basic_salary)
@@ -445,10 +443,10 @@ class EpfCForm(LoginRequiredMixin,View):
         frame5 = Frame(0.08*inch,0.08*inch,8.1*inch,1.6*inch,showBoundary=0)
         frame5.addFromList(flow_obj,pdf)
 
-        pdf.setTitle(f"{month}-EPF C FORM")
+        pdf.setTitle(f"{year_month}-EPF C FORM")
         pdf.save()
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename=f"{month}-epf-C-Form.pdf")
+        return FileResponse(buffer, as_attachment=True, filename=f"{year_month}-epf-C-Form.pdf")
  
         
       
