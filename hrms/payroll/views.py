@@ -638,7 +638,11 @@ def calculate_salary(employee,attendance_record,finance_record,month):
     if calculated_fixed_basic_salary > basic_salary:
         br_payment = 140 * worked_days
         fixed_basic_salary = basic_salary - br_payment
-        fixed_allowance = 0.0
+        if fixed_basic_salary > 13100.0:
+            fixed_allowance =  fixed_basic_salary - 13100.0
+            fixed_basic_salary = 13100.0
+        else:
+            fixed_allowance = 0.0
         net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
 
     return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
@@ -882,7 +886,11 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         if calculated_fixed_basic_salary > basic_salary:
             br_payment = 140 * worked_days
             fixed_basic_salary = basic_salary - br_payment
-            fixed_allowance = 0.0
+            if fixed_basic_salary > 13100.0:
+                fixed_allowance =  fixed_basic_salary - 13100.0
+                fixed_basic_salary = 13100.0
+            else:
+                fixed_allowance = 0.0
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
         
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
