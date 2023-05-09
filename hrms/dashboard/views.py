@@ -35,7 +35,7 @@ class DashboardMainView(LoginRequiredMixin,View):
 class SalarySummaryChartData(LoginRequiredMixin,View):
     login_url = '/accounts/login'
 
-    @method_decorator(cache_page(60*60*2))  # cache for 2 hours
+    @method_decorator(cache_page(60*60*12))  # cache for 12 hours
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     def get(self,request):
@@ -55,6 +55,7 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
             print("inside calculation")
             response_list = []
             total_net_salary = 0
+            employees = 0
             employee_data = get_process_salary("multiple",month[0])
             for employee in employee_data:
                 try :
@@ -67,10 +68,11 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
                         pass
                     else:
                         total_net_salary = total_net_salary + response[12]
+                        employees += 1
                     
                 except (ValueError,IndexError):
                     pass
-            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary])
+            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees])
             print(monthly_net_salary_payed_record)
         
         return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record})
