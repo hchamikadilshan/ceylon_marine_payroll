@@ -131,7 +131,7 @@ class BankTranferReport(LoginRequiredMixin,View):
         employees_data = get_process_salary("multiple",year_month_split[1])
         for employee in employees_data:
             try :
-                response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
@@ -158,7 +158,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         for employee in employees_data:
             try :
                 
-                response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     pass
@@ -170,7 +170,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     pass
                 else:    
 
-                    employee_records.append([employee[0].emp_id,employee[0].name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
+                    employee_records.append([employee[0].emp_id,employee[0].bank_acc_name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
         file_name = "Bank_Transfer_Request.pdf"
@@ -284,7 +284,7 @@ class EpfCForm(LoginRequiredMixin,View):
                 if employee[2]["epf_type"] == "1": # type: ignore
                     
                     try :
-                        response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                        response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                         net_salary = "{:>9,.2f}".format(response[12])
                         if response == "employee_finance_details_error":
                             pass

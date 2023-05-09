@@ -125,62 +125,59 @@
     
     animate();
 });
-// $( document ).ready(function() {
-//   console.log("Inside")
-//   $.ajax({
-//         type: 'GET',
-//         url: "{% url 'get_salary_summary_data' %}",
-//         success: function (response) { 
-//             new ApexCharts(document.querySelector("#columnChart"), {
-//               series: [ {
-//                 name: 'Net Salary',
-//                 data: [response["monthly_net_salary_payed_record"][0][2], response["monthly_net_salary_payed_record"][1][2], response["monthly_net_salary_payed_record"][2][2], response["monthly_net_salary_payed_record"][3][2], response["monthly_net_salary_payed_record"][4][2], response["monthly_net_salary_payed_record"][5][2]]
-//               }, {
-//                 name: 'Free Cash Flow',
-//                 data: [35, 41, 36, 26, 45, 48]
-//               }],
-//               chart: {
-//                 type: 'bar',
-//                 height: 350
-//               },
-//               plotOptions: {
-//                 bar: {
-//                   horizontal: false,
-//                   columnWidth: '70%',
-//                   endingShape: 'rounded'
-//                 },
-//               },
-//               dataLabels: {
-//                 enabled: false
-//               },
-//               stroke: {
-//                 show: true,
-//                 width: 2,
-//                 colors: ['transparent']
-//               },
-//               xaxis: {
-//                 categories: [],
-//               },
-//               yaxis: {
-//                 title: {
-//                   text: 'Rs (Rupees)'
-//                 }
-//               },
-//               fill: {
-//                 opacity: 1
-//               },
-//               tooltip: {
-//                 y: {
-//                   formatter: function(val) {
-//                     return "Rs " + val 
-//                   }
-//                 }
-//               }
-//             }).render();
-//         }
-//     });
+$( document ).ready(function() {
+  console.log("Inside")
+  $.ajax({
+        type: 'GET',
+        url: "{% url 'get_salary_summary_data' %}",
+        success: function (response) { 
+            new ApexCharts(document.querySelector("#columnChart"), {
+              series: [ {
+                name: 'Net Salary',
+                data: [response["monthly_net_salary_payed_record"][0][2], response["monthly_net_salary_payed_record"][1][2], response["monthly_net_salary_payed_record"][2][2], response["monthly_net_salary_payed_record"][3][2], response["monthly_net_salary_payed_record"][4][2], response["monthly_net_salary_payed_record"][5][2]]
+              }],
+              chart: {
+                type: 'bar',
+                height: 350
+              },
+              plotOptions: {
+                bar: {
+                  horizontal: false,
+                  columnWidth: '70%',
+                  endingShape: 'rounded'
+                },
+              },
+              dataLabels: {
+                enabled: false
+              },
+              stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+              },
+              xaxis: {
+                categories: [response["monthly_net_salary_payed_record"][0][1], response["monthly_net_salary_payed_record"][1][1], response["monthly_net_salary_payed_record"][2][1], response["monthly_net_salary_payed_record"][3][1], response["monthly_net_salary_payed_record"][4][1], response["monthly_net_salary_payed_record"][5][1]],
+              },
+              yaxis: {
+                title: {
+                  text: 'Rs (Rupees)'
+                }
+              },
+              fill: {
+                opacity: 1
+              },
+              tooltip: {
+                y: {
+                  formatter: function(val) {
+                    return "Rs " + val 
+                  }
+                }
+              }
+            }).render();
+        }
+    });
   
-// });
+});
 
 </script>
 

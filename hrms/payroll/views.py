@@ -428,7 +428,7 @@ def get_process_salary(request_type,month,emp_id="",emp_type=0):
         
     return employees_list
 
-def calculate_salary(employee,attendance_record,finance_record,month):
+def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,allowance_data,month):
     emp = employee
     attendance_record_list = attendance_record
     min_salary_amount = 16600.0
@@ -592,9 +592,9 @@ def calculate_salary(employee,attendance_record,finance_record,month):
     net_salary = basic_salary + ot_payment - room_charge
     fixed_allowance = basic_salary - fixed_basic_salary - br_payment
     
-    advance_payment_data = SalaryAdvance.objects.filter(
-        employee=emp, date__month=month).order_by('date').values()
-    advance_payment_data_list = list(advance_payment_data)
+    # advance_payment_data = SalaryAdvance.objects.filter(
+    #     employee=emp, date__month=month).order_by('date').values()
+    advance_payment_data_list = advance_payemnt
     total_advance_amount = 0
     for advance in advance_payment_data_list:
         total_advance_amount = total_advance_amount + advance["amount"]
@@ -603,9 +603,9 @@ def calculate_salary(employee,attendance_record,finance_record,month):
 
 # Allowances Calculation 
   
-    allowance_data = Alllowance.objects.filter(
-        employee=emp, date__month=month,status =True).order_by('date').values()
-    allowance_data_list = list(allowance_data)
+    # allowance_data = Alllowance.objects.filter(
+    #     employee=emp, date__month=month,status =True).order_by('date').values()
+    allowance_data_list = allowance_data
     total_allowance = 0
     allowances = []
     for allowance in allowance_data_list:
@@ -910,7 +910,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             employee_data = get_process_salary("single",year_month_split[1],emp_id)
             for employee in employee_data:
                 try :
-                    response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                    response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                     if response == "employee_finance_details_error":
                         payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
                     elif response == "Department Empty":
