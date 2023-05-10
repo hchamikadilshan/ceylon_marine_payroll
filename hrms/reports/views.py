@@ -48,6 +48,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     br_allowance = employee_response[2]
                    
                     epf_8 =employee_response[5]
+                    print(epf_8)
                     if epf_8 == 0:
                         epf_12 = 0
                     else:
@@ -56,9 +57,9 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     advance = employee_response[4] +employee_response[6]
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
-                    
+                    other = employee_response[7] + employee_response[16] + employee_response[18] + employee_response[1]
+                    print(other)
                     net_salary = employee_response[12]
-                    other = net_salary - basic_salary - br_allowance -ot
                     response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(other):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
                 pass
