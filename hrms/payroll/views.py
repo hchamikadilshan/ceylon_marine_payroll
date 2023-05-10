@@ -625,12 +625,17 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
         extra_attendance_allowance = (worked_days-26)*500
         attendance_allowance = attendance_allowance + (worked_days-26)*500
 
+        calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
+
 # EPF Calculation
-    if employee_finance["epf_type"] == "1":
-        epf = epf + (min_salary_amount * 0.08)
-    elif employee_finance["epf_type"] == "2":
-        pass
-    net_salary = net_salary - epf + total_allowance + attendance_allowance
+        if employee_finance.epf_type == "1":
+            if calculated_fixed_basic_salary > basic_salary:
+                epf = epf + (basic_salary * 0.08)
+            else:
+                epf = epf + (min_salary_amount * 0.08)
+        elif employee_finance.epf_type == "2":
+            pass
+        net_salary = net_salary - epf + total_allowance + attendance_allowance
 
 # Calculate salary if attendance payment is less than fixed payment   
     calculated_fixed_basic_salary =  br_payment + fixed_basic_salary
@@ -661,6 +666,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         total_working_hours = 0
         total_ot_hours = 0
         epf = 0
+        epf_12 =0
         attendance_allowance = 0
         over_night_days = 0
 
@@ -808,7 +814,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 br_payment = employee_finance.br_payment
             else:
                 return "employee_finance_details_error"
-                # return JsonResponse({'error':"no employee finance data"})
+
             # daily_payment_rate = employee_finance.daily_payment
             hourly_payment_rate = daily_payment_rate/8
             # ot_payment_rate = employee_finance.ot_payment_rate
@@ -855,9 +861,16 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 extra_attendance_allowance = (worked_days-26)*500
                 attendance_allowance = attendance_allowance + (worked_days-26)*500
 
+            calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
+
 # EPF Calculation
             if employee_finance.epf_type == "1":
-                epf = epf + (min_salary_amount * 0.08)
+                if calculated_fixed_basic_salary > basic_salary:
+                    epf = epf + (basic_salary * 0.08)
+                    epf_12 = epf_12 + (basic_salary * 0.12)
+                else:
+                    epf = epf + (min_salary_amount * 0.08)
+                    epf_12 = epf_12 + (min_salary_amount * 0.12)
             elif employee_finance.epf_type == "2":
                 pass
             net_salary = net_salary - epf + total_allowance + attendance_allowance
@@ -891,9 +904,10 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 fixed_basic_salary = 13100.0
             else:
                 fixed_allowance = 0.0
+            
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
         
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):

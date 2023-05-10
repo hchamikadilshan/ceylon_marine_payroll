@@ -46,22 +46,29 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     department = employee_response[-4]
                     basic_salary = employee_response[3]
                     br_allowance = employee_response[2]
-                    epf_12 = (basic_salary + br_allowance) * 0.12
+                   
                     epf_8 =employee_response[5]
+                    if epf_8 == 0:
+                        epf_12 = 0
+                    else:
+                        #  epf_12 = (basic_salary + br_allowance) * 0.12
+                        epf_12 = employee_response[-8]
                     advance = employee_response[4] +employee_response[6]
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
+                    
                     net_salary = employee_response[12]
-                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(total_deduction):9.2f}",f"{net_salary:9.2f}"])
+                    other = net_salary - basic_salary - br_allowance -ot
+                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(other):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
                 pass
-        file_name = f"2023-03_Salary_Signature Sheet.pdf"
-        title = f"2023-03 Salary Signature Sheet"
+        file_name = f"{month_year}_Salary_Signature Sheet.pdf"
+        title = f"{month_year} Salary Signature Sheet"
         buffer = io.BytesIO() 
         pdf = SimpleDocTemplate(buffer,pagesize = landscape(A4), title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
         
         table_data = []
-        document_heading = [f"2023-03 Salary Signature Sheet"]
+        document_heading = [f"{month_year} Salary Signature Sheet"]
         empty_row_heading =[""]
         table_data.append(document_heading)
         table_data.append(empty_row_heading)

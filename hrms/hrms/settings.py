@@ -91,27 +91,27 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'heroku_224badc376eea21',
-		'USER': 'bff5e7e4628e19',
-		'PASSWORD': '01625560',
-		'HOST': 'us-cdbr-east-06.cleardb.net',
-		'PORT':'3306',
-	}
-}
-
 # DATABASES = {
 # 	'default': {
 # 		'ENGINE': 'django.db.backends.mysql',
-# 		'NAME': 'payroll_test',
-# 		'USER': 'root',
-# 		'PASSWORD': '[Python2001mysql]',
-# 		'HOST': '127.0.0.1',
+# 		'NAME': 'heroku_224badc376eea21',
+# 		'USER': 'bff5e7e4628e19',
+# 		'PASSWORD': '01625560',
+# 		'HOST': 'us-cdbr-east-06.cleardb.net',
 # 		'PORT':'3306',
 # 	}
 # }
+
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'payroll_test',
+		'USER': 'root',
+		'PASSWORD': '[Python2001mysql]',
+		'HOST': '127.0.0.1',
+		'PORT':'3306',
+	}
+}
 
 
 
