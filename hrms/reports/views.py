@@ -10,11 +10,13 @@ from adminapp.models import Company
 import locale
 import io
 from reportlab.lib.pagesizes import A4,landscape
-from reportlab.platypus import SimpleDocTemplate,Table,TableStyle,Frame
+from reportlab.platypus import SimpleDocTemplate,Table,TableStyle,Frame,Paragraph,KeepTogether
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch,cm
 import decimal
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from operator import itemgetter
 
 # Create your views here.
 class SalarySignatureReport(LoginRequiredMixin,View):
@@ -181,31 +183,44 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     employee_records.append([employee[0].emp_id,employee[0].bank_acc_name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
+        sorted_employee_data = sorted(employee_records, key=itemgetter(3))
+        company_bank_account = Company.objects.get(id=4)
         file_name = "Bank_Transfer_Request.pdf"
         buffer = io.BytesIO() 
-        pdf = SimpleDocTemplate(buffer,pagesize = landscape(A4), title="SPECIMEN Bank Transfer List",showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        pdf = SimpleDocTemplate(buffer,pagesize = A4, title="SPECIMEN Bank Transfer List",showBoundary=0,leftMargin=0, rightMargin=0, topMargin=1.795*inch, bottomMargin=1.15*inch,)
         table_data = []
 
-        document_heading = [f"SPECIMEN Bank Transfer List"]
+        header_style = ParagraphStyle(name='HeaderStyle', fontSize=14, leading=16)
+        
+
+        styles = getSampleStyleSheet()
+        paragraph_style = styles["Normal"]
+        document_heading_wraped=[""]
+        table_data.append(document_heading_wraped)
         empty_row_heading =[""]
-        table_data.append(document_heading)
+        # table_data.append(document_heading)
         table_data.append(empty_row_heading)
-        table_heading = ["""No""", """EMPLOYEE
-ID""","""EMPLOYEE 
+        table_heading = ["""No""", """EMP
+ID""","""EMP 
 NAME""","""ACCOUNT 
 NO""","""BANK""",'BRANCH',"""NET 
 SALARY"""]
         no = 1
         table_data.append(table_heading)
-        for  employee_record in employee_records:
-                table_data_row = ([no,  employee_record[0], employee_record[1], employee_record[2], employee_record[3], employee_record[4], employee_record[5]])
-                table_data.append(table_data_row)
+        for  employee_record in sorted_employee_data:
+                table_data_row = ([str(no),  employee_record[0], employee_record[1], employee_record[2], employee_record[3], employee_record[4], employee_record[5]])
+                new_table_row =[]
+                for cell in table_data_row:
+                    cell_content = Paragraph(cell, paragraph_style)
+                    new_table_row.append(cell_content)
+                table_data.append(new_table_row)
                 no = no + 1
         
 
 
         elements = []
-        attendance_table = Table(table_data,colWidths=[0.4*inch,1*inch,2.3*inch,1.5*inch,3*inch,1.3*inch,1.1*inch])
+        
+        attendance_table = Table(table_data,colWidths=[0.4*inch,0.7*inch,1*inch,1.5*inch,1.8*inch,1.3*inch,1*inch])
         attendance_table_styles = TableStyle(
             [
                 ('GRID', (0, 2), (-1, -1), 1, colors.black),
@@ -213,12 +228,25 @@ SALARY"""]
                 ('VALIGN', (0, 2), (-1, 2),'MIDDLE'),
                 ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',12),
                 ('ALIGN', (-1, 3), (-1, -1),'RIGHT'),
+                ('SPAN', (0,0), (0, 1)),
                 ]
             
         )
+        
         attendance_table.setStyle(attendance_table_styles)
+
+        def create_header(canvas, doc):
+            header_text = f"Please transfer the following amounts to the respective accounts of my employees listed below from my account ({company_bank_account.bank_account_no})"
+            header = Paragraph(header_text, header_style)
+            header.wrapOn(canvas, doc.width - 1*inch, doc.topMargin)
+            header.drawOn(canvas, doc.leftMargin + 0.5*inch, doc.height + doc.topMargin - header.height)
+
+            frame = Frame(0, 1.15*inch, pdf.width, pdf.height - 1.13*inch, id='normal')
+            frame.addFromList([attendance_table], canvas)
+        # table_with_wrapper = KeepTogether([attendance_table])
+
         elements.append(attendance_table)
-        pdf.build(elements)
+        pdf.build(elements,onFirstPage=create_header, onLaterPages=create_header)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=file_name)
     

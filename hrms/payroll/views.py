@@ -628,12 +628,12 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
         calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
 
 # EPF Calculation
-        if employee_finance.epf_type == "1":
+        if employee_finance["epf_type"] == "1":
             if calculated_fixed_basic_salary > basic_salary:
                 epf = epf + (basic_salary * 0.08)
             else:
                 epf = epf + (min_salary_amount * 0.08)
-        elif employee_finance.epf_type == "2":
+        elif employee_finance["epf_type"] == "2":
             pass
         net_salary = net_salary - epf + total_allowance + attendance_allowance
 
@@ -957,7 +957,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             employees_data = get_process_salary("multiple",year_month_split[1])
             for employee in employees_data:
                 try :
-                    response = calculate_salary(employee[0],employee[1],employee[2],year_month_split[1])
+                    response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                     print(response)
                     if response == "employee_finance_details_error":
                         payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
