@@ -460,10 +460,14 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
             int(date[0]), int(date[1]), int(date[2]), 00, 00)
 
         if record['next_day'] == 0:
+            if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+                    print(f"intime outtime {in_time_obj}-{out_time_obj}:")
             if (in_time_obj == attendance_in_time or out_time_obj == attendance_out_time):
                 pass
 # Deducting the punishment hours
             elif (in_time_obj > attendance_in_time or out_time_obj < attendance_out_time):
+                if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+                    print(f"intime {in_time_obj}:")
                 if in_time_obj > attendance_in_time:
                     in_time_difference = in_time_obj - attendance_in_time
                     in_time_difference_hours = in_time_difference.total_seconds()/(60*60)
@@ -474,6 +478,8 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
                     elif in_time_difference_hours > 0.5:
                         normal_working_hours = normal_working_hours - \
                             (0.5 * a) - (0.5 if b != 0 else 0)
+                    if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+                        print(f"dedction_working_hour:{in_time_obj} - {normal_working_hours}")
                 if out_time_obj < attendance_out_time:
                     out_time_difference = attendance_out_time - out_time_obj
                     out_time_difference_hours = out_time_difference.total_seconds()/(60*60)
@@ -484,6 +490,8 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
                     elif out_time_difference_hours > 0.5:
                         normal_working_hours = normal_working_hours - \
                             (0.5 * a) - (0.5 if b != 0 else 0)
+                    if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+                        print(f"dedction_working_hour:{out_time_obj} - {normal_working_hours}")
             if ((out_time_obj <= attendance_out_time_noon)):
                 pass
             else:
@@ -567,6 +575,8 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
         # total_working_hours = total_working_hours + normal_working_hours
         # total_ot_hours = total_ot_hours + ot_hours
     for record in attendance_record_list:
+        if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+            print(record["working_hours"])
         total_working_hours = total_working_hours + record['working_hours']
         total_ot_hours = total_ot_hours + record['ot_hours']
 # Advance Payment Calculation
@@ -625,17 +635,18 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
         extra_attendance_allowance = (worked_days-26)*500
         attendance_allowance = attendance_allowance + (worked_days-26)*500
 
-        calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
+    calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
 
 # EPF Calculation
-        if employee_finance["epf_type"] == "1":
-            if calculated_fixed_basic_salary > basic_salary:
-                epf = epf + (basic_salary * 0.08)
-            else:
-                epf = epf + (min_salary_amount * 0.08)
-        elif employee_finance["epf_type"] == "2":
-            pass
-        net_salary = net_salary - epf + total_allowance + attendance_allowance
+        
+    if employee_finance["epf_type"] == "1":
+        if calculated_fixed_basic_salary > basic_salary:
+            epf = epf + (basic_salary * 0.08)
+        else:
+            epf = epf + (min_salary_amount * 0.08)
+    elif employee_finance["epf_type"] == "2":
+        pass
+    net_salary = net_salary - epf + total_allowance + attendance_allowance
 
 # Calculate salary if attendance payment is less than fixed payment   
     calculated_fixed_basic_salary =  br_payment + fixed_basic_salary
@@ -649,7 +660,18 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
         else:
             fixed_allowance = 0.0
         net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
-
+    if emp.emp_id == "A04456" or emp.emp_id == "A04455":
+        print(f"employee:{emp.emp_id}")
+        print(f"total_salary:{net_salary}")    
+        print(f"attendance_payment : {basic_salary}")
+        print(f"worked_hours:{total_working_hours}")
+        print(f"ot_payment :{ot_payment}")
+        print(f"room_charge:{room_charge}")
+        print(f"total_advance_amount:{total_advance_amount}")
+        print(f"epf:{epf}")
+        print(f"total_allowance{total_allowance}")
+        print(f"attendance_allowance:{attendance_allowance}")
+        print("--------------")
     return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 
 
@@ -691,6 +713,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 int(date[0]), int(date[1]), int(date[2]), 00, 00)
 
             if record['next_day'] == 0:
+                if emp_id == "A04456" or emp_id == "A04455":
+                    print(f"intime outtime {in_time_obj}-{out_time_obj}:")
                 if (in_time_obj == attendance_in_time and out_time_obj == attendance_out_time):
                     pass
 # Deducting the punishment hours
@@ -705,6 +729,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         elif in_time_difference_hours > 0.5:
                             normal_working_hours = normal_working_hours - \
                                 (0.5 * a) - (0.5 if b != 0 else 0)
+                        if emp_id == "A04456" or emp_id == "A04455":
+                            print(f"dedction_working_hour:{in_time_obj} - {normal_working_hours}")
                     if out_time_obj < attendance_out_time:
                         out_time_difference = attendance_out_time - out_time_obj
                         out_time_difference_hours = out_time_difference.total_seconds()/(60*60)
@@ -715,6 +741,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         elif out_time_difference_hours > 0.5:
                             normal_working_hours = normal_working_hours - \
                                 (0.5 * a) - (0.5 if b != 0 else 0)
+                        if emp_id == "A04456" or emp_id == "A04455":
+                            print(f"dedction_working_hour:{out_time_obj} - {normal_working_hours}")
                 if ((out_time_obj <= attendance_out_time_noon)):
                     pass
                 else:
@@ -799,6 +827,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             # total_working_hours = total_working_hours + normal_working_hours
             # total_ot_hours = total_ot_hours + ot_hours
         for record in attendance_record_list:
+            if emp_id == "A04456" or emp_id == "A04455":
+                print(record["working_hours"])
             total_working_hours = total_working_hours + record['working_hours']
             total_ot_hours = total_ot_hours + record['ot_hours']
 # Advance Payment Calculation
@@ -905,7 +935,19 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 fixed_allowance = 0.0
             
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
-        
+        if emp_id == "A04456" or emp_id == "A04455":
+            print(f"employee:{emp_id}")   
+            print(f"total_salary:{net_salary}") 
+            print(f"attendance_payment : {basic_salary}")
+            print(f"worked_hourse:{total_working_hours}")
+            print(f"ot_payment :{ot_payment}")
+            print(f"room_charge:{room_charge}")
+            print(f"total_advance_amount:{total_advance_amount}")
+            print(f"epf:{epf}")
+            print(f"total_allowance{total_allowance}")
+            print(f"attendance_allowance:{attendance_allowance}")
+            print("--------------")
+
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
@@ -917,70 +959,70 @@ class PayslipInfo(LoginRequiredMixin,View):
         if request.POST["type"] == "id_month":
             emp_id = request.POST["emp_id"]
             year_month = request.POST["month"]
-            # emp = Employee.objects.get(emp_id=emp_id)
+            emp = Employee.objects.get(emp_id=emp_id)
             year_month_split = year_month.split('-')
             payslips_record = []
-            employee_data = get_process_salary("single",year_month_split[1],emp_id)
-            for employee in employee_data:
-                try :
-                    response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
-                    if response == "employee_finance_details_error":
-                        payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
-                    elif response == "Department Empty":
-                        payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
-                    else:
-                            payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
-                    return JsonResponse({"data":payslips_record})
-                except (ValueError,IndexError):
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
-                return JsonResponse({"data":payslips_record})
-            # try :
-            #     response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-            #     if response == "employee_finance_details_error":
-            #         payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":2})
-            #     elif response == "Department Empty":
-            #         payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":3})
-            #     else:
-            #             payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
+            # employee_data = get_process_salary("single",year_month_split[1],emp_id)
+            # for employee in employee_data:
+            #     try :
+            #         response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
+            #         if response == "employee_finance_details_error":
+            #             payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
+            #         elif response == "Department Empty":
+            #             payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
+            #         else:
+            #                 payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
+            #         return JsonResponse({"data":payslips_record})
+            #     except (ValueError,IndexError):
+            #         payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
             #     return JsonResponse({"data":payslips_record})
-            # except (ValueError,IndexError):
-            #     payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":1})
-            # return JsonResponse({"data":payslips_record})
+            try :
+                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                if response == "employee_finance_details_error":
+                    payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":2})
+                elif response == "Department Empty":
+                    payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":3})
+                else:
+                        payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
+                return JsonResponse({"data":payslips_record})
+            except (ValueError,IndexError):
+                payslips_record.append({'emp_id':emp_id,"name":emp.name,"month":year_month,"status":1})
+            return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "month":
             print("inside")
             year_month = request.POST["month"]
             year_month_split = year_month.split('-')
-            # employees = Employee.objects.filter(emp_type=0,active_status=True).values()
-            # employees_list = list(employees)
+            employees = Employee.objects.filter(emp_type=0,active_status=True).values()
+            employees_list = list(employees)
             payslips_record = []
             
-            employees_data = get_process_salary("multiple",year_month_split[1])
-            for employee in employees_data:
-                try :
-                    response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
-                    print(response)
-                    if response == "employee_finance_details_error":
-                        payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
-                    elif response == "Department Empty":
-                        payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
-                    else:
-                        payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
-                except (ValueError,IndexError):
-                    payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
-            return JsonResponse({"data":payslips_record})
-            # for employee in employees_list:
-            #     emp_id = employee["emp_id"]
+            # employees_data = get_process_salary("multiple",year_month_split[1])
+            # for employee in employees_data:
             #     try :
-            #         response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+            #         response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
+            #         # print(response)
             #         if response == "employee_finance_details_error":
-            #             payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":2})
+            #             payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":2})
             #         elif response == "Department Empty":
-            #             payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":3})
+            #             payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":3})
             #         else:
-            #             payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
+            #             payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":0})
             #     except (ValueError,IndexError):
-            #         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":1})
+            #         payslips_record.append({'emp_id':employee[0].emp_id,"name":employee[0].name,"month":year_month,"status":1})
             # return JsonResponse({"data":payslips_record})
+            for employee in employees_list:
+                emp_id = employee["emp_id"]
+                try :
+                    response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                    if response == "employee_finance_details_error":
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":2})
+                    elif response == "Department Empty":
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":3})
+                    else:
+                        payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
+                except (ValueError,IndexError):
+                    payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":1})
+            return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "id":
             # year_month = request.POST["month"]
             # year_month_split = year_month.split('-')

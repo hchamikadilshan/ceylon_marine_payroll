@@ -159,16 +159,19 @@ class BankTranferReport(LoginRequiredMixin,View):
         return JsonResponse({"data":payslips_record})
     
 class BankTranferReportPDF(LoginRequiredMixin,View):
+
     login_url = '/accounts/login'
     def post(self,request):
         year_month = request.POST["month_year"]
         year_month_split = year_month.split('-')
-        employees_data = get_process_salary("multiple",year_month_split[1])
+        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        employees_list = list(employees)
         employee_records = []
-        for employee in employees_data:
+        for employee in employees_list:
+            emp_id = employee.emp_id
             try :
                 
-                response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
+                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     pass
@@ -176,13 +179,33 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     pass
                 elif response[-1] == 0:
                     pass
-                elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
+                elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     pass
                 else:    
 
-                    employee_records.append([employee[0].emp_id,employee[0].bank_acc_name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
+                    employee_records.append([employee.emp_id,employee.bank_acc_name,employee.bank_acc_no,employee.bank.bank_name,employee.branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
+        # employees_data = get_process_salary("multiple",year_month_split[1])
+        # employee_records = []
+        # for employee in employees_data:
+        #     try :
+                
+        #         response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
+        #         net_salary = "{:>9,.2f}".format(response[12])
+        #         if response == "employee_finance_details_error":
+        #             pass
+        #         elif response == "Department Empty":
+        #             pass
+        #         elif response[-1] == 0:
+        #             pass
+        #         elif (employee[0].bank == None or employee[0].branch == None or employee[0].bank_acc_no == "" or employee[0].bank_acc_name == "" ):
+        #             pass
+        #         else:    
+
+        #             employee_records.append([employee[0].emp_id,employee[0].bank_acc_name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
+        #     except (ValueError,IndexError):
+        #         pass
         sorted_employee_data = sorted(employee_records, key=itemgetter(3))
         company_bank_account = Company.objects.get(id=4)
         file_name = "Bank_Transfer_Request.pdf"
@@ -249,7 +272,8 @@ SALARY"""]
         pdf.build(elements,onFirstPage=create_header, onLaterPages=create_header)
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=file_name)
-    
+
+   
 class EpfCForm(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
