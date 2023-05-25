@@ -9,6 +9,33 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from adminapp.models import Department
 from django.core import serializers
 
+# Calculating the  EPF No 
+def get_largest_epf_no():
+    
+    # Get all epf numbers
+    epf_data = Employee.objects.values_list('epf_no', flat=True)
+
+    # Remove empty strings from the list
+    data = [value for value in epf_data if value]
+
+    # Convert strings to integers
+    data = [int(value) for value in data]
+
+    # Find the largest value
+    largest_value = max(data)
+
+    next_epf_number_int = largest_value +1
+
+    #  Convert epf int to string
+    if next_epf_number_int < 100:
+        next_epf_number_str = f"0{next_epf_number_int}"
+    else:
+        next_epf_number_str = str(next_epf_number_int)
+
+
+    return next_epf_number_str
+
+
 # Create your views here.
 class EditEmployee(LoginRequiredMixin,View):
     def post(self,request):
@@ -32,7 +59,6 @@ class EditEmployee(LoginRequiredMixin,View):
         employee = Employee.objects.get(emp_id=emp_id)
         department = Department.objects.get(id=department)
 
-        print(f"Bank - {bank}")
         if bank == "":
             bank_obj = None
         else:
@@ -43,10 +69,6 @@ class EditEmployee(LoginRequiredMixin,View):
             else:
                 branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
                 employee.branch = branch_obj
-
-
-        
-        
 
         employee.name = emp_name
         employee.dprtmnt = department
@@ -69,14 +91,14 @@ class AddEmployeeInAttendance(LoginRequiredMixin,View):
     def post(self,request):
         emp_id = request.POST['emp_id']
         name = request.POST['name']
-        
-        employee = Employee(emp_id=emp_id, name=name)
+        next_epf_no = get_largest_epf_no()
+        employee = Employee(emp_id=emp_id, name=name,epf_no = next_epf_no,dprtmnt=None)
         employee.save()
         return JsonResponse({})
+    
 class CheckEmployeeAvailability(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def post(self,request):
-        print("fdsddddddddddddd")
         emp_id = request.POST['emp_id']
         employee_exists = Employee.objects.filter(emp_id=emp_id).exists()
         if employee_exists == True:
@@ -91,7 +113,8 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         user = request.user
         departments = Department.objects.all()
         banks = Bank.objects.all()
-        return render(request, 'add_new_emp.html',context={'user':user,'departments':departments,'banks':banks})
+        next_epf_no = get_largest_epf_no()
+        return render(request, 'add_new_emp.html',context={'user':user,'departments':departments,'banks':banks,'epf_no':next_epf_no})
 
     # def post(self, request):
     #     print("Inside employee add post")
@@ -122,8 +145,11 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         bank_branch = request.POST.get('bank_branch',"")
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
+
+    # Getting New EPF No
+        next_epf_no = get_largest_epf_no()
         if department == "":
-            pass
+            department = None
         else:
             department = Department.objects.get(id=department)
         if bank == "":
@@ -138,7 +164,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         
 
         employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,bank = bank_obj,branch = branch_obj,
-                            epf_no=epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")

@@ -109,6 +109,15 @@
                                 <input type="text" class="form-control" id="add_employee_emp_name"
                                     name="add_employee_emp_name">
                             </div>
+                            <div class="col-12">
+                                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                                <div class="">
+                                    <select class="form-control" name="emp_type" id="emp_type">
+                                        <option value=0>Normal Employee</option>
+                                        <option value=1>Shift Employee</option>
+                                    </select>
+                                </div>
+                            </div>
                         </form><!-- Vertical Form -->
 
                     </div>
@@ -231,18 +240,21 @@
     function addEmployee() {
             var emp_id = document.getElementById("add_employee_emp_id").value;
             var emp_name = document.getElementById("add_employee_emp_name").value;
+            var emp_type = document.getElementById("emp_type").value;
             $.ajax({
                 type: 'POST',
                 url: "{% url 'add_new_emp_view' %}",
                 data: {
                     emp_id: emp_id,
                     name: emp_name,
+                    emp_type:emp_type,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success: function (response) {
                     $('#add_employee_model').modal('toggle')
                     document.getElementById("attendance_emp_name").value = emp_name
                     document.getElementById("add_employee_emp_name").value = ""
+                    document.getElementById("emp_type").value = 0
                     document.getElementById("attendance_time_in").focus();
 
                 }
