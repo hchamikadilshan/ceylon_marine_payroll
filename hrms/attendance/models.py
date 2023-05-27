@@ -11,5 +11,6 @@ class Attendance(models.Model):
     in_time = models.CharField(max_length=5)
     out_time = models.CharField(max_length=5)
     next_day = models.BooleanField(default=False)
+    night_shift = models.BooleanField(default=False)
 
 

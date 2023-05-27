@@ -18,7 +18,8 @@
     A simple danger alert—check it out!
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div> -->
-<!-- Modal -->
+
+<!--Edit Attendance Modal -->
 <div class="modal fade" id="edit_attendance_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -58,18 +59,25 @@
                                 <label for="inputAddress" class="form-label">Time Out</label>
                                 <input type="text" class="form-control" id="edit_attendance_time_out" name="edit_attendance_time_out">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <legend class="col-form-label">Next Day</legend>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="edit_attendance_next_day" value="1"
                                         name="edit_attendance_next_day">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <legend class="col-form-label">Special Holiday</legend>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="edit_attendance_special_holiday" value="1"
                                         name="edit_attendance_special_holiday">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <legend class="col-form-label">Night Shift</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="edit_attendance_night_shift" value="1"
+                                        name="edit_attendance_night_shift">
                                 </div>
                             </div>
                         </form><!-- Vertical Form -->
@@ -84,6 +92,8 @@
         </div>
     </div>
 </div>
+
+<!--Add Employee Modal -->
 <div class="modal fade" id="add_employee_model" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -130,6 +140,7 @@
         </div>
     </div>
 </div>
+
 <form method="POST">
     {% csrf_token %}
     <div class="card formss">
@@ -178,22 +189,28 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label class=" col-form-label" for="">Time In</label>
                 <div class="">
                     <input class="form-control" type="text" name="attendance_time_in" id="attendance_time_in">
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label class=" col-form-label" for="">Time Out</label>
                 <div class="">
                     <input class="form-control" type="text" name="attendance_time_out" id="attendance_time_out" >
                 </div>
             </div>
             <div class="col-md-2">
-                <label class=" col-form-label" for="">Next Day</label>
+                <label class=" col-form-label" for="">Next Day Out</label>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="attendance_next_day" name="attendance_next_day">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="">Night Shift</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="attendance_night_shift" name="attendance_night_shift">
                 </div>
             </div>
         </div>
@@ -208,7 +225,7 @@
         <table class="table table-hover table_bordered">
             <thead>
                 <tr>
-                    <th scope="col">Employee ID</th>
+                    <th scope="col">Emp ID</th>
                     <th scope="col">Employee Name</th>
                     <th scope="col">Date</th>
                     <th scope="col">Day</th>
@@ -216,6 +233,7 @@
                     <th scope="col">Time Out</th>
                     <th scope="col">Next Day</th>
                     <th scope="col">Special Holiday</th>
+                    <th scope="col">Night Shift</th>
                     <th scope="col">Edit</th>
                 </tr>
             </thead>
@@ -270,6 +288,7 @@
             var day = button.data('day') 
             var next_day = button.data('nextday') 
             var special_holiday = button.data('specialholiday') 
+            var night_shift = button.data('nightshift')
             var time_in = button.data('timein') 
             var time_out = button.data('timeout') 
             var modal = $(this)
@@ -282,6 +301,7 @@
             modal.find('#edit_attendance_time_out').val(time_out)
             modal.find('#edit_attendance_next_day').prop('checked', next_day)
             modal.find('#edit_attendance_special_holiday').prop('checked', special_holiday)
+            modal.find('#edit_attendance_night_shift').prop('checked', night_shift)
         })
     
     function editAttendance(){
@@ -292,6 +312,7 @@
         var day = document.getElementById("edit_attendance_day").value;
         var next_day = document.getElementById("edit_attendance_next_day").checked;
         var special_holiday = document.getElementById("edit_attendance_special_holiday").checked;
+        var night_shift = document.getElementById("edit_attendance_night_shift").checked;
         var time_in = document.getElementById("edit_attendance_time_in").value;
         var time_out =  document.getElementById("edit_attendance_time_out").value;
 
@@ -305,6 +326,7 @@
                 day: day,
                 next_day: next_day,
                 special_holiday: special_holiday,
+                night_shift:night_shift,
                 time_in: time_in,
                 time_out: time_out,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
@@ -384,6 +406,7 @@
                 day= document.getElementById("attendance_day").value;
                 special_holiday = document.getElementById("attendance_special_holiday").checked;
                 next_day = document.getElementById("attendance_next_day").checked;
+                night_shift = document.getElementById("attendance_night_shift").checked;
                 if (next_day === true){
                     next_day_value = "Yes"
                 }else {
@@ -393,6 +416,11 @@
                     special_holiday_value = "Yes"
                 } else {
                     special_holiday_value = "No"
+                }
+                if (night_shift === true) {
+                    night_shift_value = "Yes"
+                } else {
+                    night_shift_value = "No"
                 }
 
 
@@ -413,6 +441,7 @@
                             time_out: time_out,
                             special_holiday: special_holiday,
                             next_day: next_day,
+                            night_shift:night_shift,
                             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                         },
                         success: function (response) {
@@ -421,7 +450,7 @@
                             }else{
                                 $("#messeges_container").empty()
                                 $("#messeges_container").append('<div class="alert alert-success alert-dismissible fade show formss" role="alert"><strong>Attendance Marked!</strong>Employee -'+ emp_name +'<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
-                                $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td>' + next_day_value + '</td><td>' + special_holiday_value + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + emp_id + '" data-empName="' + emp_name + '" data-date="' + date + '" data-day="' + day + '" data-timeIn="' + time_in + '" data-timeOut="' + time_out + '"  data-nextDay="' + next_day + '" data-specialHoliday="' + special_holiday + '">Edit</button></td></tr> ')
+                                $("#attendance_data_table").append('<tr><td>' + emp_id + '</td ><td>' + emp_name + '</td><td>' + date + '</td><td>' + day + '</td><td>' + time_in + '</td><td>' + time_out + '</td><td>' + next_day_value + '</td><td>' + special_holiday_value + '</td><td>' + night_shift_value + '</td><td><button class="btn btn-primary" data-id="' + emp_id + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + emp_id + '" data-empName="' + emp_name + '" data-date="' + date + '" data-day="' + day + '" data-timeIn="' + time_in + '" data-timeOut="' + time_out + '"  data-nextDay="' + next_day + '" data-specialHoliday="' + special_holiday + '" data-nightShift="' + night_shift + '">Edit</button></td></tr> ')
                             }
                         }
                     });
@@ -434,6 +463,7 @@
 
                     document.getElementById("attendance_emp_id").focus();
                     document.getElementById("attendance_next_day").checked = false
+                    document.getElementById("attendance_night_shift").checked = true
                 }
             }
 
@@ -470,7 +500,7 @@
                     while (i < response['attendance_list'].length) {
                         // $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td>')
                         
-                        $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + date + '</td><td>' + day + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td><button class="btn btn-primary" data-id="' + response['attendance_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + response['attendance_list'][i]['employee_id'] + '" data-empName="' + response['attendance_list'][i]['name'] + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '">Edit</button></td></tr> ')
+                        $("#attendance_data_table").append('<tr><td>' + response['attendance_list'][i]['employee_id'] + '</td ><td>' + response['attendance_list'][i]['name'] + '</td><td>' + date + '</td><td>' + day + '</td><td>' + response['attendance_list'][i]['in_time'] + '</td><td>' + response['attendance_list'][i]['out_time'] + '</td><td>' + response['attendance_list'][i]['next_day'] + '</td><td>' + response['attendance_list'][i]['special_holiday'] + '</td><td>' + response['attendance_list'][i]['night_shift'] + '</td><td><button class="btn btn-primary" data-id="' + response['attendance_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_attendance_data_model" data-empID="' + response['attendance_list'][i]['employee_id'] + '" data-empName="' + response['attendance_list'][i]['name'] + '" data-date="' + response['attendance_list'][i]['date'] + '" data-day="' + response['attendance_list'][i]['day'] + '" data-timeIn="' + response['attendance_list'][i]['in_time'] + '" data-timeOut="' + response['attendance_list'][i]['out_time'] + '"  data-nextDay="' + response['attendance_list'][i]['next_day'] + '" data-specialHoliday="' + response['attendance_list'][i]['special_holiday'] + '" data-nightShift="' + response['attendance_list'][i]['night_shift'] + '">Edit</button></td></tr> ')
 
                         i++
                     

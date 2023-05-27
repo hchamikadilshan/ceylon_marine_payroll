@@ -21,12 +21,13 @@ class MarkAttendanceMainView(LoginRequiredMixin,View):
         out_time = request.POST['time_out']
         special_holiday = request.POST['special_holiday']
         next_day = request.POST['next_day']
+        night_shift = request.POST['night_shift']
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
             employee=emp, date=date).exists()
         if attendance_record == False:
             attendance = Attendance(employee=emp, date=date, day=day, in_time=in_time,
-                                    out_time=out_time, special_holiday=True if special_holiday == "true" else False, next_day=True if next_day == "true" else False)
+                                    out_time=out_time, special_holiday=True if special_holiday == "true" else False, next_day=True if next_day == "true" else False, night_shift=True if night_shift == "true" else False)
             attendance.save() 
             response = 1 
         else:
@@ -81,6 +82,7 @@ class EditAttendance(LoginRequiredMixin,View):
         out_time = request.POST['time_out']
         special_holiday = request.POST['special_holiday']
         next_day = request.POST['next_day']
+        night_shift = request.POST['night_shift']
         emp = Employee.objects.get(emp_id=emp_id)
         attendance = Attendance.objects.get(employee=emp,date=date)
         attendance.date = date
@@ -89,6 +91,7 @@ class EditAttendance(LoginRequiredMixin,View):
         attendance.out_time = out_time
         attendance.special_holiday = True if special_holiday == "true" else False
         attendance.next_day = True if next_day == "true" else False
+        attendance.night_shift = True if night_shift == "true" else False
 
         attendance.save()
         return JsonResponse({})

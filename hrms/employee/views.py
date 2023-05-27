@@ -234,11 +234,28 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         br_payment = request.POST["emp_br_payment"]
         epf = request.POST["emp_EPF"]
 
+        employee = Employee.objects.get(emp_id=emp_id)
+
+    #  Changin No EPF Employee to EPF
+        if epf_type == "1":
+        # Checking wether have a EPF No and
+            if employee.epf_no == "":
+                next_epf_no = get_largest_epf_no()
+                employee.epf_no = next_epf_no
+                employee.save()
+            else:
+                pass
+    # Making EPF No empty
+        elif epf_type == "2":
+            if employee.epf_no != "":
+                employee.epf_no = ""
+                employee.save()
+
         # advance_limit = request.POST["emp_advances_limit"]
         room_charge = request.POST["emp_room_charges"]
         staff_welf_contribution = request.POST["emp_staff_welf_contribution"]
 
-        employee = Employee.objects.get(emp_id=emp_id)
+        
 
         emplyee_finance_record = EmployeeFinance(
             employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now())
