@@ -1155,10 +1155,10 @@ class PayslipPdfView(LoginRequiredMixin,View):
 
 
 
-            table = Table(table_data,colWidths=[1.2*inch,0*inch,0.8*inch,0.75*inch])
+            table = Table(table_data,colWidths=[1.35*inch,0*inch,0.8*inch,0.55*inch])
             table_style = TableStyle([
                 # ("GRID",(0,0),(-1,-1),1,colors.black),
-                ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
+                ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
                 ('BOLD', (0, 0), (-1, -1)),
 
                 ('SPAN', (0, 0), (-1, 0)), # Company Name Row
@@ -1344,7 +1344,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     table = Table(table_data,colWidths=[1.35*inch,0*inch,0.8*inch,0.55*inch])
                     table_style = TableStyle([
                         # ("GRID",(0,0),(-1,-1),1,colors.black),
-                        ('FONT', (0, 0), (-1, -1), 'Helvetica',font_size),
+                        ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
                         ('BOLD', (0, 0), (-1, -1)),
 
                         ('SPAN', (0, 0), (-1, 0)), # Company Name Row
