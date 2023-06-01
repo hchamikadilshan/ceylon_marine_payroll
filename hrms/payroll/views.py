@@ -678,7 +678,7 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
 def get_final_salary_details(emp_id="",month="",emp_type=""):
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
-
+        print("at least inside")
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
                 employee=emp,date__month=month).order_by('date').values()
@@ -695,7 +695,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         
             normal_working_hours = 9.0
             ot_hours = 0
-            
             date = str(record['date']).split('-')
             in_time = str(record['in_time']).split('.')
             out_time = str(record['out_time']).split('.')
@@ -711,10 +710,9 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 int(date[0]), int(date[1]), int(date[2]), 12, 00)
             attendance_out_time_mid_night = datetime(
                 int(date[0]), int(date[1]), int(date[2]), 00, 00)
+        
 
-            if record['next_day'] == 0:
-                if emp_id == "A04456" or emp_id == "A04455":
-                    print(f"intime outtime {in_time_obj}-{out_time_obj}:")
+            if record['next_day'] == 0 and record['night_shift'] == False:
                 if (in_time_obj == attendance_in_time and out_time_obj == attendance_out_time):
                     pass
 # Deducting the punishment hours
@@ -778,8 +776,31 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     ot_hours = ot_hours + 4
                 elif (record['special_holiday'] == 1 and ((out_time_obj - in_time_obj).total_seconds()/(60*60) >=8) and (in_time_obj <= attendance_in_time and out_time_obj >= attendance_out_time)):
                     ot_hours = ot_hours + 4
+# Night Shift
+            elif record['night_shift'] == True:
+                print("night_shiftttt")
+                print(in_time_obj,out_time_obj,attendance_out_time_mid_night)
+                if (in_time_obj > out_time_obj):
+                    normal_working_hours = normal_working_hours - 1
+                    worked_hours_before_12 = 24-((in_time_obj -attendance_out_time_mid_night).total_seconds()/(60*60))
+                    worked_hours_after_12 = -(attendance_out_time_mid_night - out_time_obj).total_seconds()/(60*60)
+                    total_worked_hours = worked_hours_before_12 + worked_hours_after_12
+                    if total_worked_hours <= 8:
+                        normal_working_hours = total_worked_hours
+                    else:
+                        normal_working_hours = 8
+                        ot_hours = total_worked_hours - 8
+                    if (record['day'] == "Saturday" and (total_worked_hours >= 8) and (record['special_holiday'] != 1 )):
+                        ot_hours = ot_hours + 3
+                    elif (record['day'] == "Sunday" and (total_worked_hours >= 8) and (record['special_holiday'] != 1 )):
+                        ot_hours = ot_hours + 4
+                    elif (record['special_holiday'] == 1 and (total_worked_hours >= 8) ):
+                        ot_hours = ot_hours + 4
+                    print(worked_hours_before_12,worked_hours_after_12)
+                    
+
 # Next Day Out
-            else: 
+            elif record["next_day"]== True and record["night_shift"] ==  False: 
                 
 # Out time O/T Hours Calculation
                 if (in_time_obj <= attendance_in_time) and (out_time_obj >= attendance_in_time):
@@ -935,18 +956,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 fixed_allowance = 0.0
             
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
-        if emp_id == "A04456" or emp_id == "A04455":
-            print(f"employee:{emp_id}")   
-            print(f"total_salary:{net_salary}") 
-            print(f"attendance_payment : {basic_salary}")
-            print(f"worked_hourse:{total_working_hours}")
-            print(f"ot_payment :{ot_payment}")
-            print(f"room_charge:{room_charge}")
-            print(f"total_advance_amount:{total_advance_amount}")
-            print(f"epf:{epf}")
-            print(f"total_allowance{total_allowance}")
-            print(f"attendance_allowance:{attendance_allowance}")
-            print("--------------")
 
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
@@ -1018,6 +1027,8 @@ class PayslipInfo(LoginRequiredMixin,View):
                         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":2})
                     elif response == "Department Empty":
                         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":3})
+                    elif response[-1] == 0: # Ignoring Employees Who haven't worked for atleast 1 day
+                        pass
                     else:
                         payslips_record.append({'emp_id':emp_id,"name":employee["name"],"month":year_month,"status":0})
                 except (ValueError,IndexError):
