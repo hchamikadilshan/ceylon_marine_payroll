@@ -167,6 +167,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         employees = Employee.objects.filter(emp_type=0,active_status=True)
         employees_list = list(employees)
         employee_records = []
+        toatl_salary = 0
         for employee in employees_list:
             emp_id = employee.emp_id
             try :
@@ -182,7 +183,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     pass
                 else:    
-
+                    toatl_salary += response[12]
                     employee_records.append([employee.emp_id,employee.bank_acc_name,employee.bank_acc_no,employee.bank.bank_name,employee.branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
@@ -206,11 +207,12 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         #             employee_records.append([employee[0].emp_id,employee[0].bank_acc_name,employee[0].bank_acc_no,employee[0].bank.bank_name,employee[0].branch.branch_name,net_salary])
         #     except (ValueError,IndexError):
         #         pass
+        total_salary_formated = "{:>9,.2f}".format(toatl_salary)
         sorted_employee_data = sorted(employee_records, key=itemgetter(3))
         company_bank_account = Company.objects.get(id=4)
         file_name = "Bank_Transfer_Request.pdf"
         buffer = io.BytesIO() 
-        pdf = SimpleDocTemplate(buffer,pagesize = A4, title="SPECIMEN Bank Transfer List",showBoundary=0,leftMargin=0, rightMargin=0, topMargin=1.795*inch, bottomMargin=1.15*inch,)
+        pdf = SimpleDocTemplate(buffer,pagesize = A4, title="SPECIMEN Bank Transfer List",showBoundary=0,leftMargin=0, rightMargin=0, topMargin=2.9*inch, bottomMargin=1.15*inch,)
         table_data = []
 
         header_style = ParagraphStyle(name='HeaderStyle', fontSize=14, leading=16)
@@ -259,10 +261,10 @@ SALARY"""]
         attendance_table.setStyle(attendance_table_styles)
 
         def create_header(canvas, doc):
-            header_text = f"Please transfer the following amounts to the respective accounts of my employees listed below from my account ({company_bank_account.bank_account_no})"
+            header_text = f"I am writing to formally request the transfer of salary amounts for my employees to their respective accounts as specified below. As the employer of ({company_bank_account.name}), I kindly ask you to transfer the total amount of (Rs.{total_salary_formated}) from my bank account ({company_bank_account.bank_account_no}) to the individual accounts of my employees "
             header = Paragraph(header_text, header_style)
-            header.wrapOn(canvas, doc.width - 1*inch, doc.topMargin)
-            header.drawOn(canvas, doc.leftMargin + 0.5*inch, doc.height + doc.topMargin - header.height)
+            header.wrapOn(canvas, doc.width - 1*inch, doc.topMargin )
+            header.drawOn(canvas, doc.leftMargin + 0.5*inch, doc.height + doc.topMargin - header.height - 0.7*inch)
 
             frame = Frame(0, 1.15*inch, pdf.width, pdf.height - 1.13*inch, id='normal')
             frame.addFromList([attendance_table], canvas)
