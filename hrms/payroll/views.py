@@ -678,7 +678,7 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
 def get_final_salary_details(emp_id="",month="",emp_type=""):
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
-        print("at least inside")
+        print(month)
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
                 employee=emp,date__month=month).order_by('date').values()
@@ -739,8 +739,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         elif out_time_difference_hours > 0.5:
                             normal_working_hours = normal_working_hours - \
                                 (0.5 * a) - (0.5 if b != 0 else 0)
-                        if emp_id == "A04456" or emp_id == "A04455":
-                            print(f"dedction_working_hour:{out_time_obj} - {normal_working_hours}")
                 if ((out_time_obj <= attendance_out_time_noon)):
                     pass
                 else:
@@ -778,8 +776,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     ot_hours = ot_hours + 4
 # Night Shift
             elif record['night_shift'] == True:
-                print("night_shiftttt")
-                print(in_time_obj,out_time_obj,attendance_out_time_mid_night)
                 if (in_time_obj > out_time_obj):
                     normal_working_hours = normal_working_hours - 1
                     worked_hours_before_12 = 24-((in_time_obj -attendance_out_time_mid_night).total_seconds()/(60*60))
@@ -796,7 +792,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         ot_hours = ot_hours + 4
                     elif (record['special_holiday'] == 1 and (total_worked_hours >= 8) ):
                         ot_hours = ot_hours + 4
-                    print(worked_hours_before_12,worked_hours_after_12)
                     
 
 # Next Day Out
@@ -848,14 +843,12 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             # total_working_hours = total_working_hours + normal_working_hours
             # total_ot_hours = total_ot_hours + ot_hours
         for record in attendance_record_list:
-            if emp_id == "A04456" or emp_id == "A04455":
-                print(record["working_hours"])
             total_working_hours = total_working_hours + record['working_hours']
             total_ot_hours = total_ot_hours + record['ot_hours']
 # Advance Payment Calculation
         try:
             employee_finance = EmployeeFinance.objects.filter(
-                employee=emp).order_by('-submit_date').first()
+                employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
             if (employee_finance is not None) and (employee_finance.daily_payment != 0.0 and employee_finance.ot_payment_rate != 0.0 and employee_finance.basic_salary != 0.0):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate

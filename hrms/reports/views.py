@@ -261,7 +261,7 @@ SALARY"""]
         attendance_table.setStyle(attendance_table_styles)
 
         def create_header(canvas, doc):
-            header_text = f"I am writing to formally request the transfer of salary amounts for my employees to their respective accounts as specified below. As the employer of ({company_bank_account.name}), I kindly ask you to transfer the total amount of (Rs.{total_salary_formated}) from my bank account ({company_bank_account.bank_account_no}) to the individual accounts of my employees "
+            header_text = f"I am writing to formally request the transfer of salary amounts for my employees to their respective accounts as specified below on (____/__/__). As the employer of ({company_bank_account.name}), I kindly ask you to transfer the total amount of (Rs.{total_salary_formated}) from my bank account ({company_bank_account.bank_account_no}) to the individual accounts of my employees "
             header = Paragraph(header_text, header_style)
             header.wrapOn(canvas, doc.width - 1*inch, doc.topMargin )
             header.drawOn(canvas, doc.leftMargin + 0.5*inch, doc.height + doc.topMargin - header.height - 0.7*inch)

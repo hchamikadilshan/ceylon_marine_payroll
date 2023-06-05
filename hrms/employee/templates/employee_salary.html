@@ -12,6 +12,79 @@
 {% block username %}{{user.username}} {% endblock %}
 
 {% block content %}
+
+<!--Edit Employee Salary Details Modal -->
+<div class="modal fade" id="edit_employee_salary_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Attendance Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Effective From</label>
+                                <input type="Date" data-recordID="" data-empId="" class="form-control" id="edit_effective_from_date" name="edit_effective_from_date" onchange="getDateNameEdit();">
+                            </div>
+                            <div class="col-6">
+                                <label class=" col-form-label" for="epf_type">EPF Type</label>
+                                <div class="">
+                                    <select class="form-control" name="edit_epf_type" id="edit_epf_type">
+                                        <option value="1">Have EPF</option>
+                                        <option value="2">No EPF</option>
+                            
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label for="inputNanme4" class="form-label">Daily Payment</label>
+                                <input type="text" class="form-control" id="edit_daily_payment" name="edit_daily_payment" >
+                            </div>
+                            <div class="col-6">
+                                <label for="inputEmail4" class="form-label">OT Rate</label>
+                                <input type="text" class="form-control" id="edit_ot_rate" name="edit_ot_rate" >
+                            </div>
+                            
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Basic Salary</label>
+                                <input type="text" class="form-control" id="edit_basic_salary" name="edit_basic_salary" >
+                            </div>
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">B/R Payment</label>
+                                <input type="text" class="form-control" id="edit_br_payment" name="edit_br_payment">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">EPF</label>
+                                <input type="text" class="form-control" id="edit_epf" name="edit_epf">
+                            </div>
+                            <div class="col-md-6">
+                                <legend class="col-form-label">Room Charge</legend>
+                                <input type="text" class="form-control" id="edit_room_charge" name="edit_room_charge">
+                            </div>
+                            <div class="col-md-12">
+                                <legend class="col-form-label">Reason</legend>
+                                <input type="text" class="form-control" id="edit_reason" name="edit_reason">
+                            </div>
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editEmployeeFinanceData();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form method="POST" class=" ">
 {% csrf_token %}
 <div class="card formss">
@@ -23,13 +96,13 @@
                 </div>
             </div>
 
-            <div class="col-md-7">
+            <div class="col-md-3">
                 <label class=" col-form-label" for="emp_name_salary">Employee Name</label>
                 <div class="">
                     <input class="form-control " type="text" name="emp_name_salary" id="emp_name_salary" disabled>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class=" col-form-label" for="epf_type">EPF Type</label>
                 <div class="">
                     <select class="form-control" name="epf_type" id="epf_type">
@@ -37,6 +110,18 @@
                         <option value="2">No EPF</option>
             
                     </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_name_salary">Effective From</label>
+                <div class="">
+                    <input class="form-control " type="date" name="effective_from" id="effective_from">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="col-form-label" for="emp_id_salary">Reason</label>
+                <div class="">
+                    <input class="form-control" type="text" name="reason" id="reason">
                 </div>
             </div>
        
@@ -126,8 +211,149 @@
 
 </form>
 
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Employee Salary Data Table</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover table_bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Modified Date</th>
+                    <th scope="col">Effective From</th>
+                    <th scope="col">EPF Type</th>
+                    <th scope="col">Daily Payment</th>
+                    <th scope="col">OT Rate</th>
+                    <th scope="col">Basic Salary</th>
+                    <th scope="col">B/R Payment</th>
+                    <th scope="col">EPF</th>
+                    <th scope="col">Room Charges</th>
+                    <th scope="col">Edit</th>
+                </tr>
+            </thead>
+            <tbody id="employee_salary_details_data_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
 <script>
 
+    $('#edit_employee_salary_data_model').on('show.bs.modal', function (event) {
+
+                
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var modified_date = button.data('modifieddate') 
+    var effective_from_date = button.data('effectivefromdate') 
+    var epf_type = button.data('epftype') 
+    var daily_payment = button.data('dailypayment') 
+    var ot_rate = button.data('otrate') 
+    var basic_salary = button.data('basicsalary') 
+    var br_payment = button.data('brpayment')
+    var epf = button.data('epf') 
+    var room_charge = button.data('roomcharge') 
+    var reason = button.data('reason') 
+    var record_id = button.data('recordid') 
+    var emp_id = button.data('empid')
+    var modal = $(this)
+    
+
+    modal.find('#edit_effective_from_date').val(effective_from_date)
+    modal.find('#edit_epf_type').val(epf_type)
+    modal.find('#edit_daily_payment').val(daily_payment)
+    modal.find('#edit_ot_rate').val(ot_rate)
+    modal.find('#edit_basic_salary').val(basic_salary)
+    modal.find('#edit_br_payment').val(br_payment)
+    modal.find('#edit_epf').val(epf)
+    modal.find('#edit_room_charge').val(room_charge)
+    modal.find('#edit_reason').val(reason)
+    modal.find('#edit_effective_from_date').attr('data-recordid', record_id)
+    modal.find('#edit_effective_from_date').attr('data-empid', emp_id)
+})
+
+function editEmployeeFinanceData(){
+        var effective_from_date = document.getElementById("edit_effective_from_date").value;
+        var epf_type = document.getElementById("edit_epf_type").value;
+        var daily_payment = document.getElementById("edit_daily_payment").value;
+        var ot_rate = document.getElementById("edit_ot_rate").value;
+        var basic_salary = document.getElementById("edit_basic_salary").value;
+        var br_payment = document.getElementById("edit_br_payment").value;
+        var epf = document.getElementById("edit_epf").value;
+        var room_charge = document.getElementById("edit_room_charge").value;
+        var reason =  document.getElementById("edit_reason").value;
+        var record_id= document.getElementById("edit_effective_from_date").getAttribute("data-recordid")
+        var emp_id= document.getElementById("edit_effective_from_date").getAttribute("data-empid")
+
+
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_employee_finance' %}",
+            data: {
+                effective_from_date: effective_from_date,
+                epf_type: epf_type,
+                daily_payment: daily_payment,
+                ot_rate: ot_rate,
+                basic_salary: basic_salary,
+                br_payment:br_payment,
+                epf: epf,
+                room_charge: room_charge,
+                reason:reason,
+                record_id:record_id,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_employee_salary_data_model').modal('toggle')
+                getEmployeSalaryData(emp_id);
+            }
+        });
+    }
+    function getEmployeSalaryData(emp_id){
+        $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emplopyee_salary_details_view' %}",
+                data: {
+                    name: emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    if (response["status"] === 0){
+                        
+                    }else{
+                        console.log(response['employee_data_list'])
+                        document.getElementById("epf_type").value = response['epf']
+                        document.getElementById("emp_daily_payment").value = response['daily_payment']
+                        document.getElementById("emp_ot_rate").value = response['ot_payment']
+                        // document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
+                        document.getElementById("emp_basic_salary").value = response['basic_salary']
+                        document.getElementById("emp_br_payment").value = response['br_payment']
+                        // document.getElementById("emp_advances_limit").value = response['adavance']
+                        document.getElementById("emp_room_charges").value = response['room_charge']
+                        document.getElementById("emp_staff_welf_contribution").value = response['staff_welf']
+                        document.getElementById("effective_from").value = response['effective_from']
+                        document.getElementById("reason").value = response['reason']
+
+                        $("#employee_salary_details_data_table").empty()
+                        var i = 0;
+                        while (i < response['employee_data_list'].length) {
+                            // $("#attendance_data_table").append('<tr><td>' + response['employee_data_list'][i]['employee_id'] + '</td ><td>' + response['employee_data_list'][i]['name'] + '</td><td>' + response['employee_data_list'][i]['in_time'] + '</td><td>' + response['employee_data_list'][i]['out_time'] + '</td>')
+                            if(response['employee_data_list'][i]['epf_type'] == "1"){
+                                epf_type = "Have EPF"
+                            }else{
+                                epf_type = "No EPF"
+                            }
+                            console.log(response['employee_data_list'][i])
+                            $("#employee_salary_details_data_table").append('<tr><td>' + response['employee_data_list'][i]['submit_date'].slice(0,10) + '</td ><td>' + response['employee_data_list'][i]['effective_from'] + '</td ><td>' + epf_type + '</td><td>' + response['employee_data_list'][i]['daily_payment'] + '</td><td>' + response['employee_data_list'][i]['ot_payment_rate'] + '</td><td>' + response['employee_data_list'][i]['basic_salary'] + '</td><td>' + response['employee_data_list'][i]['br_payment'] + '</td><td>' + response['employee_data_list'][i]['epf'] + '</td><td>' + response['employee_data_list'][i]['room_charge'] + '</td><td><button class="btn btn-primary" data-id="' + response['employee_data_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_salary_data_model" data-modifiedDate="' + response['employee_data_list'][i]['submit_date'] + '" data-effectiveFromDate="' + response['employee_data_list'][i]['effective_from'] + '" data-epfType="' + response['employee_data_list'][i]['epf_type'] + '" data-dailyPayment="' + response['employee_data_list'][i]['daily_payment'] + '" data-otRate="' + response['employee_data_list'][i]['ot_payment_rate'] + '" data-basicSalary="' + response['employee_data_list'][i]['basic_salary'] + '"  data-brPayment="' + response['employee_data_list'][i]['br_payment'] + '" data-epf="' + response['employee_data_list'][i]['epf'] + '" data-roomCharge="' + response['employee_data_list'][i]['room_charge'] + '"data-recordId="' + response['employee_data_list'][i]['id'] + '"data-empId="' + response['employee_data_list'][i]['employee_id'] + '">Edit</button></td></tr> ')
+
+                            i++
+                        
+                    }
+                    }
+                }
+            });
+    }
     // Get Employee Name and Data
     var emp_salary_id_input = document.getElementById("emp_id_salary");
     var emp_salary_name_input = document.getElementById("emp_name_salary");
@@ -152,30 +378,8 @@
                     
                 }
             });
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'get_emplopyee_salary_details_view' %}",
-                data: {
-                    name: emp_id_salary,
-                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                },
-                success: function (response) {
-                    if (response["status"] === 0){
-                        
-                    }else{
-                        console.log(response['epf'])
-                        document.getElementById("epf_type").value = response['epf']
-                        document.getElementById("emp_daily_payment").value = response['daily_payment']
-                        document.getElementById("emp_ot_rate").value = response['ot_payment']
-                        // document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
-                        document.getElementById("emp_basic_salary").value = response['basic_salary']
-                        document.getElementById("emp_br_payment").value = response['br_payment']
-                        // document.getElementById("emp_advances_limit").value = response['adavance']
-                        document.getElementById("emp_room_charges").value = response['room_charge']
-                        document.getElementById("emp_staff_welf_contribution").value = response['staff_welf']
-                    }
-                }
-            });
+            getEmployeSalaryData(emp_id_salary)
+            
         }
         });
 </script>

@@ -1,6 +1,6 @@
 from django.db import models
 from adminapp.models import Department
-
+import datetime
 
 # Create your models here.
 class Bank(models.Model):
@@ -37,6 +37,7 @@ class Employee(models.Model):
     bank_acc_no = models.CharField(max_length=15,default="")
     active_status = models.IntegerField(default=1)
 
+
 class EmployeeFinance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     daily_payment = models.FloatField(default=0)
@@ -50,6 +51,8 @@ class EmployeeFinance(models.Model):
     room_charge =models.FloatField()
     staff_welf_contribution = models.FloatField()
     submit_date = models.DateTimeField()
+    effective_from = models.DateField(default=datetime.date(2023, 1, 1))
+    reason = models.CharField(max_length=100,default="")
 
 
 
