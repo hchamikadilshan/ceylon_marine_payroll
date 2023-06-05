@@ -240,6 +240,8 @@ SALARY"""]
                     new_table_row.append(cell_content)
                 table_data.append(new_table_row)
                 no = no + 1
+        sub_total_row = ["Total","","","","","",total_salary_formated]
+        table_data.append(sub_total_row)
         
 
 
@@ -252,8 +254,10 @@ SALARY"""]
                 ('ALIGN', (0, 2), (-1, 2),'CENTER'),
                 ('VALIGN', (0, 2), (-1, 2),'MIDDLE'),
                 ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',12),
-                ('ALIGN', (-1, 3), (-1, -1),'RIGHT'),
+                ('ALIGN', (6, 2), (6, -1),'RIGHT'),
                 ('SPAN', (0,0), (0, 1)),
+                ('SPAN', (0,-1), (5, -1)),
+                ('ALIGN', (0, -11), (5, -1),'CENTER'),
                 ]
             
         )
