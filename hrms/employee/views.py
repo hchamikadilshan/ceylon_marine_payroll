@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from adminapp.models import Department
 from django.core import serializers
 
+
 # Calculating the  EPF No 
 def get_largest_epf_no():
     
