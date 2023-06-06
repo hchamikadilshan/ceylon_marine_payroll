@@ -792,6 +792,20 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         ot_hours = ot_hours + 4
                     elif (record['special_holiday'] == 1 and (total_worked_hours >= 8) ):
                         ot_hours = ot_hours + 4
+                elif(in_time_obj < out_time_obj):
+                    normal_working_hours = normal_working_hours - 1
+                    worked_hours = (out_time_obj - in_time_obj).total_seconds()/(60*60)
+                    if worked_hours <= 8:
+                        normal_working_hours = worked_hours
+                    else:
+                        normal_working_hours = 8
+                        ot_hours = worked_hours - 8 
+                    if (record['day'] == "Saturday" and (worked_hours >= 8) and (record['special_holiday'] != 1 )):
+                        ot_hours = ot_hours + 3
+                    elif (record['day'] == "Sunday" and (worked_hours >= 8) and (record['special_holiday'] != 1 )):
+                        ot_hours = ot_hours + 4
+                    elif (record['special_holiday'] == 1 and (worked_hours >= 8) ):
+                        ot_hours = ot_hours + 4
                     
 
 # Next Day Out
