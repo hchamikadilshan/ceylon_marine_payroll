@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Deductions {% endblock%}
+
+{% block top_heading %}Payroll Management{% endblock %}
+{% block sub_heading %} Deductions{% endblock %}
+{% block sub_heading2 %} Deductions{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+<div class="modal fade" id="edit_deduction_data_model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit deduction Data</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Vertical Form -->
+                        <form method="POST" class="row g-3" action="{% url 'edit_attendance_view' %}">
+                            <div class="col-6">
+                                <label for="inputPassword4" class="form-label">Date</label>
+                                <input type="Date" class="form-control" id="edit_deduction_date" name="edit_deduction_date" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="inputPassword4" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="edit_deduction_description" name="edit_attendance_time_in">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Payment Amount</label>
+                                <input type="text" class="form-control" id="edit_deduction_deduction_amount" name="edit_attendance_time_out">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">deduction status</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="edit_deduction_status" >
+                                    <label class="form-check-label" for="edit_deduction_payment_amount">Click to cancel or activate payment</label>
+                                  </div>
+                            </div>
+                            
+                            
+                        </form><!-- Vertical Form -->
+                
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button  class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                <button onclick="editDeduction();"  class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form method="POST" id="deduction_form">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <h5 class="card-title">Add Deduction</h5>
+            <div class="col-md-2">
+                <label class="col-form-label" for="deduction_view_emp_id">Employee ID</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="deduction_view_emp_id" id="deduction_view_emp_id" required>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class=" col-form-label" for="deduction_emp_name">Name</label>
+                <div class="">
+                    <input class="form-control" type="text" name="deduction_emp_name"
+                        id="deduction_emp_name" disabled required>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label class=" col-form-label" for="deduction_date">Date</label>
+                <div class="">
+                    <input class="form-control" type="date" name="deduction_date" id="deduction_date"
+                        required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="deduction_description">Description</label>
+                <div class="">
+                    <input class="form-control" type="text" name="deduction_description" id="deduction_description" required>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="col-form-label" for="deduction_amount">Deduction Amount</label>
+                <div class="">
+                    <input data-url="{% url 'get_emp_name_view' %}" class="form-control" type="text"
+                        name="deduction_amount" id="deduction_amount" required>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="card formss">
+    <div class="card-body ">
+        <h5 class="card-title">Deductions</h5>
+
+        <!-- Table with hoverable rows -->
+        <table class="table table-hover table_bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Dascription</th>
+                    <th scope="col">Deduction Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Edit</th>
+
+                </tr>
+            </thead>
+            <tbody id="deduction_table">
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+
+    </div>
+</div>
+
+
+<script>
+    $('#edit_deduction_data_model').on('show.bs.modal', function (event) {
+
+            
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var date = button.data('date') 
+            var description = button.data('description') 
+            var amount = button.data('amount') 
+            var status = button.data('status') 
+            var id = button.data('id') 
+            var modal = $(this)
+
+            modal.find('#edit_deduction_date').val(date)
+            modal.find('#edit_deduction_description').val(description)
+            modal.find('#edit_deduction_description').data('id',id)
+            modal.find('#edit_deduction_deduction_amount').val(amount)
+            modal.find('#edit_deduction_status').prop('checked', status)
+        })
+
+    //Get employee name and Data
+    var deduction_emp_id_input = document.getElementById("deduction_view_emp_id");
+    var deduction_emp_name_input = document.getElementById("deduction_emp_name");
+    deduction_emp_id_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            deduction_emp_name_input.value = "";
+            deduction_emp_id = deduction_emp_id_input.value;
+
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_emp_name_view' %}",
+                data: {
+                    name: deduction_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    deduction_emp_name_input.value = response.name
+
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'get_deduction_data' %}",
+                data: {
+                    emp_id: deduction_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#deduction_table").empty()
+                    var i = 0;
+                    while (i < response['deduction_data_list'].length) {
+                        if(response["deduction_data_list"][i]['status'] === true){
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=true data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=false data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        
+                        i++
+                    }
+                }
+            });
+        }
+    });
+    function editDeduction(){
+        var emp_id = document.getElementById("deduction_view_emp_id").value;
+        var date = document.getElementById("edit_deduction_date").value;
+        var description = document.getElementById("edit_deduction_description").value;
+        var amount = document.getElementById("edit_deduction_deduction_amount").value;
+        var status = document.getElementById("edit_deduction_status").checked;
+        var id = $('#edit_deduction_description').data('id')
+        console.log(id)
+       
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'edit_deduction' %}",
+            data: {
+                id:id,
+                emp_id:emp_id,
+                date: date,
+                description: description,
+                amount: amount,
+                status: status,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (response) {
+                $('#edit_deduction_data_model').modal('toggle')
+                $.ajax({
+                type: 'POST',
+                url: "{% url 'get_deduction_data' %}",
+                data: {
+                    emp_id: deduction_emp_id,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#deduction_table").empty()
+                    var i = 0;
+                    while (i < response['deduction_data_list'].length) {
+                        if(response["deduction_data_list"][i]['status'] === true){
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=true data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=false data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        
+                        i++
+                    }
+                }
+            });
+            }
+        });
+    }
+
+    //Submit deduction Payment
+    var deduction_input = document.getElementById("deduction_amount");
+    var deduction_view_emp_id_input = document.getElementById("deduction_view_emp_id");
+    var deduction_date_input = document.getElementById("deduction_date");
+    var deduction_description_input = document.getElementById("deduction_description");
+    deduction_input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            emp_id = deduction_view_emp_id_input.value
+            date = deduction_date_input.value
+            deduction_value = deduction_input.value
+            description = deduction_description_input.value
+            console.log("dsfsdfdsfds")
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'deductions_view' %}",
+                data: {
+                    emp_id: emp_id,
+                    date: date,
+                    amount: deduction_value,
+                    description : description,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'get_deduction_data' %}",
+                        data: {
+                            emp_id: deduction_emp_id,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function (response) {
+                    $("#deduction_table").empty()
+                    var i = 0;
+                    while (i < response['deduction_data_list'].length) {
+                        if(response["deduction_data_list"][i]['status'] === true){
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-success">Payed</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=true data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }else{
+                            $("#deduction_table").append('<tr><td>' + response["deduction_data_list"][i]['date'] + '</td><td>' + response["deduction_data_list"][i]['description'] + '</td><td>' + response["deduction_data_list"][i]['amount'] + '</td><td><span class="badge bg-danger">Canceled</span></td><td><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_deduction_data_model" data-date="' + response["deduction_data_list"][i]['date'] + '" data-description="' + response["deduction_data_list"][i]['description'] + '" data-amount="' + response["deduction_data_list"][i]['amount'] + '" data-status=false data-id="' + response["deduction_data_list"][i]['id'] + '">Edit</button></td></tr> ')
+                        }
+                        
+                        i++
+                    }
+                    deduction_input.value = ""
+                    deduction_description_input.value = ""
+                }
+            });
+            }
+                })}})
+          
+        
+ 
+
+</script>
+
+
+{% endblock %}

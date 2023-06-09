@@ -5,7 +5,7 @@ from employee.models import Employee, EmployeeFinance
 from attendance.models import Attendance
 from django.db.models import Avg, Case, Count, F,Subquery
 from datetime import  datetime
-from .models import SalaryAdvance,Alllowance
+from .models import SalaryAdvance,Alllowance,Deduction
 from django.db.models.functions import Coalesce
 import locale
 import io
@@ -905,6 +905,18 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     total_allowance = total_allowance + allowance["amount"]
             except Alllowance.DoesNotExist:
                 print("No Allowance")
+#  Deduction Calculation 
+            try:
+                deduction_data = Deduction.objects.filter(
+                    employee=emp, date__month=month,status =True).order_by('date').values()
+                deduction_data_list = list(deduction_data)
+                total_deduction = 0
+                deductions = []
+                for deduction in deduction_data_list:
+                    deductions.append([deduction["description"],deduction["amount"]])
+                    total_deduction = total_deduction + deduction["amount"]
+            except Deduction.DoesNotExist:
+                print("No Allowance")
 # Calculating Attendance Allowance
             attendance_allowance_26 = 0
             extra_days = 0
@@ -930,7 +942,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     epf_12 = epf_12 + (min_salary_amount * 0.12)
             elif employee_finance.epf_type == "2":
                 pass
-            net_salary = net_salary - epf + total_allowance + attendance_allowance
+            net_salary = net_salary - epf + total_allowance + attendance_allowance - total_deduction
 
             
         except EmployeeFinance.DoesNotExist:
@@ -962,9 +974,9 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             else:
                 fixed_allowance = 0.0
             
-            net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance
+            net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance - total_deduction
 
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -1059,6 +1071,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             return JsonResponse({})
             
 class PayslipPdfView(LoginRequiredMixin,View):
+
     login_url = '/accounts/login'
     def post(self,request):
         emp_id = request.POST["emp_id"]
@@ -1095,10 +1108,11 @@ class PayslipPdfView(LoginRequiredMixin,View):
             ot_payment_rate = response[9]
             ot_hours= response[15]
             total_allowance = response[7]
+            total_deduction = response[-9]
             epf=response[5]
             salary_advance = response[6]
             room_charge = response[4]
-            total_deduction = epf + salary_advance + room_charge
+            total_deduction = epf + salary_advance + room_charge + total_deduction
             net_payment=response[12]
             attendance_allowance_26 = response[16]
             extra_days = response[17]
@@ -1137,7 +1151,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             row20 = ["Net Payment","","",f"{net_payment:9.2f}"]
             row21 = ["Total OT Hours","",f"{ot_hours:>9} Hrs",""]
             row22 = ["Total Worked Days","",f"{total_worked_days:>9} Days",""]
-
+            deduction_line = -9
             table_data.append(row1)
             table_data.append(row2)
             table_data.append(empty_row1)
@@ -1164,6 +1178,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table_data.append(row15)
             table_data.append(row16)
             table_data.append(row17)
+            for deduction in response[-10]:
+                deduction_line += -1
+                table_data.append([f"{deduction[0]} ","",f"{deduction[1]:>9.2f}"])
             table_data.append(row18)
             table_data.append(row19)
             table_data.append(empty_row4)
@@ -1172,13 +1189,13 @@ class PayslipPdfView(LoginRequiredMixin,View):
             table_data.append(row22)
 
 
-
+            print(deduction_line)
             table = Table(table_data,colWidths=[1.35*inch,0*inch,0.8*inch,0.55*inch])
             table_style = TableStyle([
                 # ("GRID",(0,0),(-1,-1),1,colors.black),
                 ('FONT', (0, 0), (-1, -1), 'Helvetica',7.0),
                 ('BOLD', (0, 0), (-1, -1)),
-
+                
                 ('SPAN', (0, 0), (-1, 0)), # Company Name Row
                 ('SPAN', (0, 1), (-1,1 )), # Month Row
                 ('SPAN', (0, 3), (1,3 )), # Name Column 
@@ -1189,9 +1206,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                 ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
                 ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
-                ('LINEBELOW', (0, -9), (0, -9),1,colors.black),
+                ('LINEBELOW', (0, deduction_line), (0, deduction_line),1,colors.black),
                 # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
-                ('LINEBELOW', (2, -12), (3, -12),1,colors.black),
+                ('LINEBELOW', (2, -13), (3, -13),1,colors.black),
                 ('LINEBELOW', (2, -6), (3,-6),1,colors.black),
                 ('LINEBELOW', (0, -3), (-1, -3),1,colors.black),
                 ('LINEBELOW', (0, -1), (-1, -1),1,colors.black),
@@ -1281,10 +1298,11 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     ot_payment_rate = response[9]
                     ot_hours= response[15]
                     total_allowance = response[7]
+                    total_deduction = response[-9]
                     epf=response[5]
                     salary_advance = response[6]
                     room_charge = response[4]
-                    total_deduction = epf + salary_advance + room_charge
+                    total_deduction = epf + salary_advance + room_charge + total_deduction
                     net_payment=response[12]
                     attendance_allowance_26 = response[16]
                     extra_days = response[17]
@@ -1324,6 +1342,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     row21 = ["Total OT Hours","",f"{ot_hours:>9} Hrs",""]
                     row22 = ["Total Worked Days","",f"{total_worked_days:>9} Days",""]
 
+                    deduction_line = -9
                     table_data.append(row1)
                     table_data.append(row2)
                     table_data.append(empty_row1)
@@ -1350,6 +1369,9 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     table_data.append(row15)
                     table_data.append(row16)
                     table_data.append(row17)
+                    for deduction in response[-10]:
+                        deduction_line += -1
+                        table_data.append([f"{deduction[0]} ","",f"{deduction[1]:>9.2f}"])
                     table_data.append(row18)
                     table_data.append(row19)
                     table_data.append(empty_row4)
@@ -1375,7 +1397,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                         ('ALIGN', (2, 8), (-1, -1),'RIGHT'),
                         ('LINEABOVE', (0, 8), (-1, 8),1,colors.black),
                         ('LINEBELOW', (0, 12), (0, 12),1,colors.black),
-                        ('LINEBELOW', (0, -9), (0, -9),1,colors.black),
+                        ('LINEBELOW', (0, deduction_line), (0, deduction_line),1,colors.black),
                         # ('LINEBELOW', (2, 10), (3, 10),1,colors.black),
                         ('LINEBELOW', (2, -12), (3, -12),1,colors.black),
                         ('LINEBELOW', (2, -6), (3,-6),1,colors.black),
@@ -1401,7 +1423,56 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 buffer.seek(0)   
                 print("end")
                 return FileResponse(buffer, as_attachment=True, filename=f"payslip.pdf")
-            
+
+class DeductionsView(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def get(self,request):
+        user = request.user
+        return render(request,'deductions.html',context={'user':user})
+    
+    def post(self,request):
+        print("inside deduction payment")
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        deduction = Deduction(
+            employee=emp, date=date,description=description, amount=amount, time_stamp=time_stamp)
+        deduction.save()
+        return  JsonResponse({})     
+class GetDeductionData(LoginRequiredMixin,View):
+    login_url = '/accounts/login'
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id=emp_id)
+        deduction_data = Deduction.objects.filter(
+            employee=emp).order_by('date').values()
+        deduction_data_list = list(deduction_data)
+        return JsonResponse({'deduction_data_list': deduction_data_list})   
+    
+class EditDeduction(LoginRequiredMixin,View):
+    def post(self,request):
+        emp_id = request.POST['emp_id']
+        date = request.POST['date']
+        amount = request.POST['amount']
+        description = request.POST['description']
+        status = request.POST['status']
+        id = request.POST["id"]
+        emp = Employee.objects.get(emp_id=emp_id)
+        time_stamp = datetime.now()
+
+        deduction_record = Deduction.objects.get(
+            employee=emp, id=id)
+        deduction_record.date = date
+        deduction_record.amount=amount
+        deduction_record.description=description
+        deduction_record.status= (True if status == "true" else False)
+        deduction_record.time_stamp = time_stamp
+        deduction_record.save()
+        return JsonResponse({})
 
 class AllowancesView(LoginRequiredMixin,View):
     login_url = '/accounts/login'
@@ -1433,6 +1504,7 @@ class GetAllowanceData(LoginRequiredMixin,View):
             employee=emp).order_by('date').values()
         allowance_data_list = list(allowance_data)
         return JsonResponse({'allowance_data_list': allowance_data_list})
+    
 class EditAllowance(LoginRequiredMixin,View):
     def post(self,request):
         emp_id = request.POST['emp_id']
@@ -1528,11 +1600,12 @@ class SalaryReportView(LoginRequiredMixin,View):
             epf = "{:>9.2f}".format(response[5])
             total_advance_amount = "{:>9.2f}".format(response[6])
             total_allowance = "{:>9.2f}".format(response[7])
+            total_deduction = "{:>9.2f}".format(response[-9])
             ot_payment = "{:>9.2f}".format(response[8])
             ot_payment_rate = "{:>9.2f}".format(response[9])
             hourly_payment_rate = "{:>9.2f}".format(response[10])
             basic_salary = "{:>9.2f}".format(response[11])
             net_salary = "{:>9.2f}".format(response[12])
 
-            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final}, status=200)
+            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final,'total_deduction':total_deduction}, status=200)
         

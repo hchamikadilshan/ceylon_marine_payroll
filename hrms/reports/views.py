@@ -50,7 +50,6 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     br_allowance = employee_response[2]
                    
                     epf_8 =employee_response[5]
-                    print(epf_8)
                     if epf_8 == 0:
                         epf_12 = 0
                     else:
