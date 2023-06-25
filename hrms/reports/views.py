@@ -335,91 +335,134 @@ class EpfCForm(LoginRequiredMixin,View):
         frame1.addFromList(flow_obj,pdf)
 
 
-
+        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        employees_list = list(employees)
+        employee_records = []
+        for employee in employees_list:
+            emp_id = employee.emp_id
+            try :
+                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                if response == "employee_finance_details_error":
+                    pass
+                elif response == "Department Empty":
+                    pass
+                elif response[-1] == 0:
+                    pass
+                elif response[-3]=="":
+                    pass
+                else:   
+                    employee_records.append(response)
+            except (ValueError,IndexError):
+                pass
         
+        total_contribution = 0
+        data_list = []
+        for response in employee_records:
+            net_salary = "{:>9,.2f}".format(response[12])
+            fixed_basic_salary = response[2] + response[3]
+            total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
+            employees = fixed_basic_salary * 0.08
+            employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+            employees_int = int(fixed_basic_salary * 0.08)
+            employees_float = employees_string[-2:]
+
+            employers = fixed_basic_salary * 0.12
+            employers_string = "{:>9.2f}".format(employers)
+            employers_int = int(employers)
+            employers_float = employers_string[-2:]
+
+            total_epf =  employers + employees
+            total_epf_string = "{:>9.2f}".format(total_epf)
+            total_epf_int = int(total_epf)
+            total_rpf_float = total_epf_string[-2:]
+            total_contribution += total_epf    
+            name = response[-5]
+            epf_no = response[-3]
+            nic_no = response[-7]
+            data_list.append([name,nic_no,epf_no,total_epf_int,total_rpf_float,employers_int,employers_float,employees_int,employees_float,total_earning])
 
         # Employee Data Table Frame
-        employees_data = get_process_salary("multiple",month)
-        data_list = []
-        i=1
-        total_contribution = 0
-        for employee in employees_data:
-            try:
-                if employee[2]["epf_type"] == "1": # type: ignore
+        # employees_data = get_process_salary("multiple",month)
+        # data_list = []
+        # i=1
+        # total_contribution = 0
+        # for employee in employees_data:
+        #     try:
+        #         if employee[2]["epf_type"] == "1": # type: ignore
                     
-                    try :
-                        response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
-                        net_salary = "{:>9,.2f}".format(response[12])
-                        if response == "employee_finance_details_error":
-                            pass
-                        elif response == "Department Empty":
-                            pass
-                        elif response[-1] == 0:
-                            pass
-                        else:
-                            fixed_basic_salary = response[2] + response[3]
-                            total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+        #             try :
+        #                 response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
+        #                 net_salary = "{:>9,.2f}".format(response[12])
+        #                 if response == "employee_finance_details_error":
+        #                     pass
+        #                 elif response == "Department Empty":
+        #                     pass
+        #                 elif response[-1] == 0:
+        #                     pass
+        #                 else:
+        #                     fixed_basic_salary = response[2] + response[3]
+        #                     total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
-                            employees = fixed_basic_salary * 0.08
-                            employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
-                            employees_int = int(fixed_basic_salary * 0.08)
-                            employees_float = employees_string[-2:]
+        #                     employees = fixed_basic_salary * 0.08
+        #                     employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+        #                     employees_int = int(fixed_basic_salary * 0.08)
+        #                     employees_float = employees_string[-2:]
 
-                            employers = fixed_basic_salary * 0.12
-                            employers_string = "{:>9.2f}".format(employers)
-                            employers_int = int(employers)
-                            employers_float = employers_string[-2:]
+        #                     employers = fixed_basic_salary * 0.12
+        #                     employers_string = "{:>9.2f}".format(employers)
+        #                     employers_int = int(employers)
+        #                     employers_float = employers_string[-2:]
 
-                            total_epf =  employers + employees
-                            total_epf_string = "{:>9.2f}".format(total_epf)
-                            total_epf_int = int(total_epf)
-                            total_rpf_float = total_epf_string[-2:]
-                            # if response[11] > fixed_basic_salary:
-                            #     total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+        #                     total_epf =  employers + employees
+        #                     total_epf_string = "{:>9.2f}".format(total_epf)
+        #                     total_epf_int = int(total_epf)
+        #                     total_rpf_float = total_epf_string[-2:]
+        #                     # if response[11] > fixed_basic_salary:
+        #                     #     total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
-                            #     employees = fixed_basic_salary * 0.08
-                            #     employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
-                            #     employees_int = int(fixed_basic_salary * 0.08)
-                            #     employees_float = employees_string[-2:]
+        #                     #     employees = fixed_basic_salary * 0.08
+        #                     #     employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+        #                     #     employees_int = int(fixed_basic_salary * 0.08)
+        #                     #     employees_float = employees_string[-2:]
 
-                            #     employers = fixed_basic_salary * 0.12
-                            #     employers_string = "{:>9.2f}".format(employers)
-                            #     employers_int = int(employers)
-                            #     employers_float = employers_string[-2:]
+        #                     #     employers = fixed_basic_salary * 0.12
+        #                     #     employers_string = "{:>9.2f}".format(employers)
+        #                     #     employers_int = int(employers)
+        #                     #     employers_float = employers_string[-2:]
 
-                            #     total_epf =  employers + employees
-                            #     total_epf_string = "{:>9.2f}".format(total_epf)
-                            #     total_epf_int = int(total_epf)
-                            #     total_rpf_float = total_epf_string[-2:]
+        #                     #     total_epf =  employers + employees
+        #                     #     total_epf_string = "{:>9.2f}".format(total_epf)
+        #                     #     total_epf_int = int(total_epf)
+        #                     #     total_rpf_float = total_epf_string[-2:]
                                 
-                            # else:
-                            #     total_earning = "{:>9,.2f}".format(response[11])
+        #                     # else:
+        #                     #     total_earning = "{:>9,.2f}".format(response[11])
 
-                            #     employees = response[11] * 0.08
-                            #     employees_string = "{:>9.2f}".format(employees)
-                            #     employees_int = int(response[11] * 0.08)
-                            #     employees_float = employees_string[-2:]
+        #                     #     employees = response[11] * 0.08
+        #                     #     employees_string = "{:>9.2f}".format(employees)
+        #                     #     employees_int = int(response[11] * 0.08)
+        #                     #     employees_float = employees_string[-2:]
                                 
-                            #     employers = response[11] * 0.12
-                            #     employers_string = "{:>9.2f}".format(employers)
-                            #     employers_int = int(employers)
-                            #     employers_float = employers_string[-2:]
+        #                     #     employers = response[11] * 0.12
+        #                     #     employers_string = "{:>9.2f}".format(employers)
+        #                     #     employers_int = int(employers)
+        #                     #     employers_float = employers_string[-2:]
 
-                            #     total_epf =  employers + employees
-                            #     total_epf_string = "{:>9.2f}".format(total_epf)
-                            #     total_epf_int = int(total_epf)
-                            #     total_rpf_float = total_epf_string[-2:]
-                            total_contribution += total_epf    
-                            name = response[-5]
-                            epf_no = response[-3]
-                            nic_no = response[-7]
-                            data_list.append([name,nic_no,epf_no,total_epf_int,total_rpf_float,employers_int,employers_float,employees_int,employees_float,total_earning])
-                            i +=1
-                    except (ValueError,IndexError):
-                        pass
-            except TypeError:
-                pass
+        #                     #     total_epf =  employers + employees
+        #                     #     total_epf_string = "{:>9.2f}".format(total_epf)
+        #                     #     total_epf_int = int(total_epf)
+        #                     #     total_rpf_float = total_epf_string[-2:]
+        #                     total_contribution += total_epf    
+        #                     name = response[-5]
+        #                     epf_no = response[-3]
+        #                     nic_no = response[-7]
+        #                     data_list.append([name,nic_no,epf_no,total_epf_int,total_rpf_float,employers_int,employers_float,employees_int,employees_float,total_earning])
+        #                     i +=1
+        #             except (ValueError,IndexError):
+        #                 pass
+        #     except TypeError:
+        #         pass
         # Right Frame 
         flow_obj = []
         table_data = []
@@ -469,12 +512,13 @@ class EpfCForm(LoginRequiredMixin,View):
         table_data.append(row2)  
         for employee in data_list:
             row = [employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8],employee[9]]
-            table_data.append(row)       
+            table_data.append(row) 
+            print(row)
         table = Table(table_data,colWidths=[2.7*inch,1.1*inch,0.7*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.8*inch])
         table_styles = TableStyle(
             [
                 ('FONT', (0, 0), (-1, -1), 'Helvetica',9.1),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold',10),
+                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold',8),
                 ('GRID', (0, 0), (-1,-1), 1, colors.black),
                 ('SPAN', (0, 0), (0, 1)),
                 ('SPAN', (1, 0), (1, 1)),

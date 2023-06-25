@@ -678,7 +678,6 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
 def get_final_salary_details(emp_id="",month="",emp_type=""):
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
-        print(month)
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
                 employee=emp,date__month=month).order_by('date').values()
@@ -727,8 +726,6 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                         elif in_time_difference_hours > 0.5:
                             normal_working_hours = normal_working_hours - \
                                 (0.5 * a) - (0.5 if b != 0 else 0)
-                        if emp_id == "A04456" or emp_id == "A04455":
-                            print(f"dedction_working_hour:{in_time_obj} - {normal_working_hours}")
                     if out_time_obj < attendance_out_time:
                         out_time_difference = attendance_out_time - out_time_obj
                         out_time_difference_hours = out_time_difference.total_seconds()/(60*60)
