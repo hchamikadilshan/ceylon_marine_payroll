@@ -689,6 +689,11 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         epf_12 =0
         attendance_allowance = 0
         over_night_days = 0
+        try :
+            employee_finance = EmployeeFinance.objects.filter(
+                employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
+        except EmployeeFinance.DoesNotExist:
+            print("Employee Finance Does not exists")
 
         for record in attendance_record_list:
         
@@ -746,7 +751,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                     if emp.dprtmnt is None:
                         return "Department Empty"
                     else:
-                        if (in_time_obj <= attendance_in_time) and emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLOOR"] :
+                        if (in_time_obj <= attendance_in_time) and (emp.dprtmnt.department in ["TRANSPORT","BUFFE","TEA CENTRE","WELFARE","KITCHEN","3RD FLOOR"] or employee_finance.morning_ot == "1") :
                             
                             in_time_difference_ot = attendance_in_time - in_time_obj
                             in_time_difference_ot_hours = in_time_difference_ot.total_seconds()/(60*60)

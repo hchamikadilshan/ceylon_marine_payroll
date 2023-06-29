@@ -44,6 +44,16 @@
                                 </div>
                             </div>
                             <div class="col-6">
+                                <label class=" col-form-label" for="morning_ot">Morning OT</label>
+                                <div class="">
+                                    <select class="form-control" name="edit_morning_ot" id="edit_morning_ot">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                            
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
                                 <label for="inputNanme4" class="form-label">Daily Payment</label>
                                 <input type="text" class="form-control" id="edit_daily_payment" name="edit_daily_payment" >
                             </div>
@@ -125,6 +135,30 @@
                 </div>
             </div>
        
+    </div>
+</div>
+<div class="card formss">
+    <div class="card-body row g-3"> 
+            <div class="col-md-2">
+                <label class=" col-form-label" for="epf_type">EPF Type</label>
+                <div class="">
+                    <select class="form-control" name="epf_type" id="epf_type">
+                        <option value="1">Have EPF</option>
+                        <option value="2">No EPF</option>
+            
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="morning_ot">Morning O\T</label>
+                <div class="">
+                    <select class="form-control" name="morning_ot" id="morning_ot">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+            
+                    </select>
+                </div>
+            </div>
     </div>
 </div>
 <h3 class="h11">Earnings</h3>
@@ -211,7 +245,7 @@
 
 </form>
 
-<div class="card formss">
+<div class="card formss overflow-auto">
     <div class="card-body ">
         <h5 class="card-title">Employee Salary Data Table</h5>
 
@@ -225,6 +259,7 @@
                     <th scope="col">Daily Payment</th>
                     <th scope="col">OT Rate</th>
                     <th scope="col">Basic Salary</th>
+                    <th scope="col">Morning O\T</th>
                     <th scope="col">B/R Payment</th>
                     <th scope="col">EPF</th>
                     <th scope="col">Room Charges</th>
@@ -248,6 +283,7 @@
     var modified_date = button.data('modifieddate') 
     var effective_from_date = button.data('effectivefromdate') 
     var epf_type = button.data('epftype') 
+    var morning_ot = button.data('morningot') 
     var daily_payment = button.data('dailypayment') 
     var ot_rate = button.data('otrate') 
     var basic_salary = button.data('basicsalary') 
@@ -262,6 +298,7 @@
 
     modal.find('#edit_effective_from_date').val(effective_from_date)
     modal.find('#edit_epf_type').val(epf_type)
+    modal.find('#edit_morning_ot').val(morning_ot)
     modal.find('#edit_daily_payment').val(daily_payment)
     modal.find('#edit_ot_rate').val(ot_rate)
     modal.find('#edit_basic_salary').val(basic_salary)
@@ -276,6 +313,7 @@
 function editEmployeeFinanceData(){
         var effective_from_date = document.getElementById("edit_effective_from_date").value;
         var epf_type = document.getElementById("edit_epf_type").value;
+        var morning_ot = document.getElementById("edit_morning_ot").value;
         var daily_payment = document.getElementById("edit_daily_payment").value;
         var ot_rate = document.getElementById("edit_ot_rate").value;
         var basic_salary = document.getElementById("edit_basic_salary").value;
@@ -302,6 +340,7 @@ function editEmployeeFinanceData(){
                 room_charge: room_charge,
                 reason:reason,
                 record_id:record_id,
+                morning_ot:morning_ot,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
@@ -324,6 +363,7 @@ function editEmployeeFinanceData(){
                     }else{
                         console.log(response['employee_data_list'])
                         document.getElementById("epf_type").value = response['epf']
+                        document.getElementById("morning_ot").value = response['morning_ot']
                         document.getElementById("emp_daily_payment").value = response['daily_payment']
                         document.getElementById("emp_ot_rate").value = response['ot_payment']
                         // document.getElementById("emp_fixed_allowance").value = response['fixed_allowance']
@@ -344,8 +384,13 @@ function editEmployeeFinanceData(){
                             }else{
                                 epf_type = "No EPF"
                             }
+                            if(response['employee_data_list'][i]['morning_ot'] == "1"){
+                                morning_ot = "Yes"
+                            }else{
+                                morning_ot = "No"
+                            }
                             console.log(response['employee_data_list'][i])
-                            $("#employee_salary_details_data_table").append('<tr><td>' + response['employee_data_list'][i]['submit_date'].slice(0,10) + '</td ><td>' + response['employee_data_list'][i]['effective_from'] + '</td ><td>' + epf_type + '</td><td>' + response['employee_data_list'][i]['daily_payment'] + '</td><td>' + response['employee_data_list'][i]['ot_payment_rate'] + '</td><td>' + response['employee_data_list'][i]['basic_salary'] + '</td><td>' + response['employee_data_list'][i]['br_payment'] + '</td><td>' + response['employee_data_list'][i]['epf'] + '</td><td>' + response['employee_data_list'][i]['room_charge'] + '</td><td><button class="btn btn-primary" data-id="' + response['employee_data_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_salary_data_model" data-modifiedDate="' + response['employee_data_list'][i]['submit_date'] + '" data-effectiveFromDate="' + response['employee_data_list'][i]['effective_from'] + '" data-epfType="' + response['employee_data_list'][i]['epf_type'] + '" data-dailyPayment="' + response['employee_data_list'][i]['daily_payment'] + '" data-otRate="' + response['employee_data_list'][i]['ot_payment_rate'] + '" data-basicSalary="' + response['employee_data_list'][i]['basic_salary'] + '"  data-brPayment="' + response['employee_data_list'][i]['br_payment'] + '" data-epf="' + response['employee_data_list'][i]['epf'] + '" data-roomCharge="' + response['employee_data_list'][i]['room_charge'] + '"data-recordId="' + response['employee_data_list'][i]['id'] + '"data-empId="' + response['employee_data_list'][i]['employee_id'] + '">Edit</button></td></tr> ')
+                            $("#employee_salary_details_data_table").append('<tr><td>' + response['employee_data_list'][i]['submit_date'].slice(0,10) + '</td ><td>' + response['employee_data_list'][i]['effective_from'] + '</td ><td>' + epf_type + '</td><td>' + response['employee_data_list'][i]['daily_payment'] + '</td><td>' + response['employee_data_list'][i]['ot_payment_rate'] + '</td><td>' + response['employee_data_list'][i]['basic_salary'] + '</td><td>' + morning_ot + '</td><td>' + response['employee_data_list'][i]['br_payment'] + '</td><td>' + response['employee_data_list'][i]['epf'] + '</td><td>' + response['employee_data_list'][i]['room_charge'] + '</td><td><button class="btn btn-primary" data-id="' + response['employee_data_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_salary_data_model" data-modifiedDate="' + response['employee_data_list'][i]['submit_date'] + '" data-effectiveFromDate="' + response['employee_data_list'][i]['effective_from'] + '" data-epfType="' + response['employee_data_list'][i]['epf_type'] + '" data-dailyPayment="' + response['employee_data_list'][i]['daily_payment'] + '" data-otRate="' + response['employee_data_list'][i]['ot_payment_rate'] + '" data-basicSalary="' + response['employee_data_list'][i]['basic_salary'] + '"  data-brPayment="' + response['employee_data_list'][i]['br_payment'] + '" data-epf="' + response['employee_data_list'][i]['epf'] + '" data-roomCharge="' + response['employee_data_list'][i]['room_charge'] + '"data-recordId="' + response['employee_data_list'][i]['id'] + '"data-empId="' + response['employee_data_list'][i]['employee_id'] + '"data-morningOt="'+  response['employee_data_list'][i]['morning_ot'] +'">Edit</button></td></tr> ')
 
                             i++
                         
