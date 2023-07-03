@@ -58,7 +58,10 @@ class EditEmployee(LoginRequiredMixin,View):
         bank_acc_no = request.POST.get('bank_acc_no',"")
 
         employee = Employee.objects.get(emp_id=emp_id)
-        department = Department.objects.get(id=department)
+        if department == "":
+            department = None
+        else:
+            department = Department.objects.get(id=department)
 
         if bank == "":
             bank_obj = None
@@ -70,7 +73,9 @@ class EditEmployee(LoginRequiredMixin,View):
             else:
                 branch_obj = BankBranch.objects.filter(bank = bank_obj,branch_id = branch).first()
                 employee.branch = branch_obj
-
+        if emp_id[0] == "a":
+            emp_id = emp_id[0].upper() + emp_id[1:]
+            employee.emp_id = emp_id
         employee.name = emp_name
         employee.dprtmnt = department
         employee.epf_no = epf_no
@@ -93,6 +98,7 @@ class AddEmployeeInAttendance(LoginRequiredMixin,View):
         emp_id = request.POST['emp_id']
         name = request.POST['name']
         next_epf_no = get_largest_epf_no()
+        emp_id = emp_id[0].upper() + emp_id[1:]
         employee = Employee(emp_id=emp_id, name=name,epf_no = next_epf_no,dprtmnt=None)
         employee.save()
         return JsonResponse({})
@@ -117,18 +123,10 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         next_epf_no = get_largest_epf_no()
         return render(request, 'add_new_emp.html',context={'user':user,'departments':departments,'banks':banks,'epf_no':next_epf_no})
 
-    # def post(self, request):
-    #     print("Inside employee add post")
-    #     emp_form = EmployeeForm(request.POST)
-    #     if emp_form.is_valid():
-    #         print("Form is valid")
-    #         new_emp = emp_form.save()
-    #     else:
-    #         print(emp_form.errors.as_data())
-    #     return redirect("add_new_emp_view")
     def post(self,request):
 
         emp_id = request.POST.get('emp_id')
+        emp_id = emp_id[0].upper() + emp_id[1:]
         emp_type = request.POST.get('emp_type')
         emp_active = request.POST.get('edit_emp_active',1)
         name = request.POST.get('name')
