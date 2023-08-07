@@ -1,7 +1,7 @@
 asgiref==3.6.0
 asttokens==2.2.1
 backcall==0.2.0
-Camelot==12.6.29
+
 cffi==1.15.1
 chardet==5.1.0
 charset-normalizer==3.1.0
