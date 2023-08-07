@@ -76,6 +76,7 @@ class EditEmployee(LoginRequiredMixin,View):
         if emp_id[0] == "a":
             emp_id = emp_id[0].upper() + emp_id[1:]
             employee.emp_id = emp_id
+        print(emp_id)
         employee.name = emp_name
         employee.dprtmnt = department
         employee.epf_no = epf_no

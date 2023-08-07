@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} ETF Report {% endblock%}
+
+{% block top_heading %}Reports{% endblock %}
+{% block sub_heading %} ETF Report {% endblock %}
+{% block sub_heading2 %} ETF Report {% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'etf_report' %}">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="emp_type" id="emp_type">
+                        <option value=0>Normal Employee</option>
+                        <option value=1>Shift Employee</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type">Year</label>
+                <div class="">
+                    <select class="form-control" name="year" id="year">
+                        <option value=2023>2023</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="year_quarter" id="year_quarter">
+                        <option value=0>Year Beginning</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- <div class="col-md-4">
+                <label class=" col-form-label" for="month_year">From</label>
+                <div class="">
+                    <input required class="form-control" type="month" name="month_year"
+                        id="month_year">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class=" col-form-label" for="month_year">To</label>
+                <div class="">
+                    <input required class="form-control" type="month" name="month_year"
+                        id="month_year">
+                </div>
+            </div> -->
+            <div class="col-md-6">
+                <label class=" col-form-label" for="payslip_emp_name">Download ETF Report</label>
+                <div class="">
+                    <button  id="payroll_employee_salary_pdf_generate_button" class="btn btn-success"><i class ="bi bi-download"></i> Download PDF</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <label class=" col-form-label" for="emp_type">Cheque No</label>
+                    
+                </div>
+                <div class="col-md-2">
+                    <label class="col-form-label" for="emp_type">Payment Date</label>
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month1_cheque_no" id="month1_cheque_no" placeholder="Cheque No for Month 1" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month1_payment_date" id="month1_payment_date" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month2_cheque_no" id="month2_cheque_no" placeholder="Cheque No for Month 2" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month2_payment_date" id="month2_payment_date" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month3_cheque_no" id="month3_cheque_no" placeholder="Cheque No for Month 3" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month3_payment_date" id="month3_payment_date" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month4_cheque_no" id="month4_cheque_no" placeholder="Cheque No for Month 4" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month4_payment_date" id="month4_payment_date" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month5_cheque_no" id="month5_cheque_no"  placeholder="Cheque No for Month 5" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month5_payment_date" id="month5_payment_date" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" type="text" name="month6_cheque_no" id="month6_cheque_no" placeholder="Cheque No for Month 6" required>
+                </div>
+                <div class="col-md-2">
+                    <input class="form-control" type="date" name="month6_payment_date" id="month6_payment_date" required>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</form>
+<script>
+    
+</script>
+
+
+{% endblock %}
