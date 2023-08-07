@@ -55,7 +55,7 @@ pytz==2022.7.1
 pyzmq==25.0.0
 reportlab==3.6.12
 six==1.16.0
-SQLAlchemy==0.7.10
+
 
 sqlparse==0.4.3
 stack-data==0.6.2
