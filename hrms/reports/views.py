@@ -297,45 +297,6 @@ class EpfCForm(LoginRequiredMixin,View):
         year_month_split = year_month.split('-')
         month = year_month_split[1]
         buffer = io.BytesIO()
-        # pdf = canvas.Canvas(buffer)
-        pdf = canvas.Canvas(buffer,pagesize = A4)
-
-        flow_obj = []
-        # Top Frame Table
-
-
-        row1 = ["C","FORM EPF Act No of 1958"]
-
-        table_data = []
-
-
-
-        table_data.append(row1)
-
-        table = Table(table_data,colWidths=[1.5*inch,3.5*inch,3*inch],rowHeights=[0.6*inch])
-        table_styles = TableStyle(
-            [
-                ('ALIGN', (0, 0), (0, 0),'RIGHT'),
-                ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',22),
-                ('BOX', (0, 0), (-1, -1), 3, colors.black),
-                ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
-                ('FONT', (0, 0), (0, 0), 'Helvetica-Bold'),
-
-                ('FONT', (2, 1), (2, 1), 'Helvetica',13),
-                ('ALIGN', (2, 1), (2, 1),'CENTER'),
-                ('ALIGN', (1, 1), (1, 1),'CENTER'),
-                ('VALIGN', (0, 1), (-1, 1),'MIDDLE'),
-                ]
-            
-        )
-        table.setStyle(table_styles)
-
-        frame1 = Frame(0*inch,10.68*inch,8.3*inch,0.8*inch,showBoundary=0)
-
-
-        flow_obj.append(table)
-        frame1.addFromList(flow_obj,pdf)
-
 
         employees = Employee.objects.filter(emp_type=0,active_status=True)
         employees_list = list(employees)
@@ -466,112 +427,293 @@ class EpfCForm(LoginRequiredMixin,View):
         #     except TypeError:
         #         pass
         # Right Frame 
-        flow_obj = []
-        table_data = []
-        total_contribution = "{:>9,.2f}".format(total_contribution)
-        row1 = ["EPF Registration No","",company_epf_no]
-        row2 = ["Contribution for the Month of","",year_month]
-        row3 = ["Contributions","",f"Rs {total_contribution}"]
-        row4 = ["Surcharge","",""]
-        row6 = ["Total Remittance","",f"Rs {total_contribution}"]
-        row7 = ["Cheque No","",""]
-        row8 = ["Bank & Branch","",bank_branch]
+        no_of_pages = (len(data_list)//22) + 1
 
-        table_data.append(row1)
-        table_data.append(row2)
-        table_data.append(row3)
-        table_data.append(row4)
-        table_data.append(row6)
-        table_data.append(row7)
-        table_data.append(row8)
-        table = Table(table_data)
-        table_styles = TableStyle(
-            [
-                ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
-                ('GRID', (0, 0), (-1,-1), 1, colors.black),
-                ('SPAN', (0, 2), (1, 2)),
-                ('SPAN', (0, 3), (1, 3)),
-                ('SPAN', (0, 4), (1, 4)),
-                ('SPAN', (0, 5), (1, 5)),
-                ('SPAN', (0, 6), (1, 6)),
-                ('SPAN', (0, 7), (1, 7)),
-                ('SPAN', (0, 0), (1, 0)),
-                ('SPAN', (0, 1), (1, 1)),
+        if no_of_pages == 1:
+            pdf = canvas.Canvas(buffer,pagesize = A4)
+
+            flow_obj = []
+
+            # Top Frame Table
+            row1 = ["C","FORM EPF Act No of 1958"]
+
+            table_data = []
+
+
+
+            table_data.append(row1)
+
+            table = Table(table_data,colWidths=[1.5*inch,3.5*inch,3*inch],rowHeights=[0.6*inch])
+            table_styles = TableStyle(
+                [
+                    ('ALIGN', (0, 0), (0, 0),'RIGHT'),
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',22),
+                    ('BOX', (0, 0), (-1, -1), 3, colors.black),
+                    ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold'),
+
+                    ('FONT', (2, 1), (2, 1), 'Helvetica',13),
+                    ('ALIGN', (2, 1), (2, 1),'CENTER'),
+                    ('ALIGN', (1, 1), (1, 1),'CENTER'),
+                    ('VALIGN', (0, 1), (-1, 1),'MIDDLE'),
+                    ]
                 
-                ]
-        )
-        table.setStyle(table_styles)
-        flow_obj.append(table)
-        frame3 = Frame(0*inch,7.65*inch,8.3*inch,3*inch,showBoundary=0)
-        frame3.addFromList(flow_obj,pdf)
-        flow_obj = []
-        table_data = []   
-        row1 = ["Employee Name","NIC No","""Member 
-    No""","Contibution","","","","","","""Total 
-    Earnings"""]
-        row2 = ["","","","Total","","Employer","","Employee","",""]   
-        table_data.append(row1)
-        table_data.append(row2)  
-        for employee in data_list:
-            row = [employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8],employee[9]]
-            table_data.append(row) 
-            print(row)
-        table = Table(table_data,colWidths=[2.7*inch,1.1*inch,0.7*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.8*inch])
-        table_styles = TableStyle(
-            [
-                ('FONT', (0, 0), (-1, -1), 'Helvetica',9.1),
-                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold',8),
-                ('GRID', (0, 0), (-1,-1), 1, colors.black),
-                ('SPAN', (0, 0), (0, 1)),
-                ('SPAN', (1, 0), (1, 1)),
-                ('SPAN', (2, 0), (2, 1)),
-                ('SPAN', (3, 1), (4, 1)),
-                ('SPAN', (5, 1), (6, 1)),
-                ('SPAN', (7, 1), (8, 1)),
-                ('SPAN', (3, 0), (8, 0)), #Contributon
-                ('SPAN', (9, 0), (9, 1)),
-                ('ALIGN', (0, 0), (-1, 0),'CENTER'),
-                ('VALIGN', (0, 0), (-1, 0),'MIDDLE'),
+            )
+            table.setStyle(table_styles)
+
+            frame1 = Frame(0*inch,10.68*inch,8.3*inch,0.8*inch,showBoundary=0)
+
+
+            flow_obj.append(table)
+            frame1.addFromList(flow_obj,pdf)
+
+            flow_obj = []
+            table_data = []
+            total_contribution = "{:>9,.2f}".format(total_contribution)
+            row1 = ["EPF Registration No","",company_epf_no]
+            row2 = ["Contribution for the Month of","",year_month]
+            row3 = ["Contributions","",f"Rs {total_contribution}"]
+            row4 = ["Surcharge","",""]
+            row6 = ["Total Remittance","",f"Rs {total_contribution}"]
+            row7 = ["Cheque No","",""]
+            row8 = ["Bank & Branch","",bank_branch]
+
+            table_data.append(row1)
+            table_data.append(row2)
+            table_data.append(row3)
+            table_data.append(row4)
+            table_data.append(row6)
+            table_data.append(row7)
+            table_data.append(row8)
+            table = Table(table_data)
+            table_styles = TableStyle(
+                [
+                    ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
+                    ('GRID', (0, 0), (-1,-1), 1, colors.black),
+                    ('SPAN', (0, 2), (1, 2)),
+                    ('SPAN', (0, 3), (1, 3)),
+                    ('SPAN', (0, 4), (1, 4)),
+                    ('SPAN', (0, 5), (1, 5)),
+                    ('SPAN', (0, 6), (1, 6)),
+                    ('SPAN', (0, 7), (1, 7)),
+                    ('SPAN', (0, 0), (1, 0)),
+                    ('SPAN', (0, 1), (1, 1)),
+                    
+                    ]
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
+            frame3 = Frame(0*inch,7.65*inch,8.3*inch,3*inch,showBoundary=0)
+            frame3.addFromList(flow_obj,pdf)
+            flow_obj = []
+            table_data = []   
+            row1 = ["Employee Name","NIC No","""Member 
+        No""","Contibution","","","","","","""Total 
+        Earnings"""]
+            row2 = ["","","","Total","","Employer","","Employee","",""]   
+            table_data.append(row1)
+            table_data.append(row2)  
+            for employee in data_list:
+                row = [employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8],employee[9]]
+                table_data.append(row) 
+                print(row)
+            table = Table(table_data,colWidths=[2.7*inch,1.1*inch,0.7*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.8*inch])
+            table_styles = TableStyle(
+                [
+                    ('FONT', (0, 0), (-1, -1), 'Helvetica',9.1),
+                    ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold',8),
+                    ('GRID', (0, 0), (-1,-1), 1, colors.black),
+                    ('SPAN', (0, 0), (0, 1)),
+                    ('SPAN', (1, 0), (1, 1)),
+                    ('SPAN', (2, 0), (2, 1)),
+                    ('SPAN', (3, 1), (4, 1)),
+                    ('SPAN', (5, 1), (6, 1)),
+                    ('SPAN', (7, 1), (8, 1)),
+                    ('SPAN', (3, 0), (8, 0)), #Contributon
+                    ('SPAN', (9, 0), (9, 1)),
+                    ('ALIGN', (0, 0), (-1, 0),'CENTER'),
+                    ('VALIGN', (0, 0), (-1, 0),'MIDDLE'),
+                    
+                    ]
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
+            frame4 = Frame(0.08*inch,1.7*inch,8.1*inch,7.2*inch,showBoundary=0)
+            frame4.addFromList(flow_obj,pdf)
+
+            # Footer Part
+            flow_obj = []
+            table_data = []
+
+            row1 = ["""Please write Employer's E.P.F Registration Number on the reverse if the cheque""","",""]
+            row2 = ["I certify that information given above is correct","","","","",""]
+            row3 = [f"Telephone No:{contact_no}",f"E-mail Address {email}","","","",""]
+            rowEmpty = ["","","","","",""]
+            row4 = ["                                      ..........................................................","                                 ..........................","","","",""]
+            row5 = ["                                           Signature of the Employer","                                          Date","","","",""]
+
+            table_data.append(row1)
+            table_data.append(row2)
+            table_data.append(row3)
+            table_data.append(rowEmpty)
+            table_data.append(row4)
+            table_data.append(row5)
+            table = Table(table_data,colWidths=[4*inch,4.0*inch,0*inch,0*inch,0*inch,0*inch])
+            table_styles = TableStyle(
+                [
+                    ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
+                    # ('GRID', (0, 0), (-1,-1), 1, colors.black),
+                    # ('SPAN', (1, 0), (2, 0)),
+                    ]
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
+            frame5 = Frame(0.08*inch,0.08*inch,8.1*inch,1.6*inch,showBoundary=0)
+            frame5.addFromList(flow_obj,pdf)
+            pdf.setTitle(f"{year_month}-EPF C FORM")
+            pdf.save()
+        else:
+            title = f"{year_month} EPF C Form"
+            pdf = SimpleDocTemplate(buffer,pagesize =A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+            flow_obj = []
+
+            # Top Frame Table
+            row1 = ["C","FORM EPF Act No of 1958"]
+
+
+
+            table_data = []
+
+            table_data.append(row1)
+
+            table = Table(table_data,colWidths=[1.5*inch,3.5*inch,3*inch],rowHeights=[0.6*inch])
+            table_styles = TableStyle(
+                [
+                    ('ALIGN', (0, 0), (0, 0),'RIGHT'),
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',22),
+                    ('BOX', (0, 0), (-1, -1), 3, colors.black),
+                    ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold'),
+
+                    ('FONT', (2, 1), (2, 1), 'Helvetica',13),
+                    ('ALIGN', (2, 1), (2, 1),'CENTER'),
+                    ('ALIGN', (1, 1), (1, 1),'CENTER'),
+                    ('VALIGN', (0, 1), (-1, 1),'MIDDLE'),
+                    ]
                 
-                ]
-        )
-        table.setStyle(table_styles)
-        flow_obj.append(table)
-        frame4 = Frame(0.08*inch,1.7*inch,8.1*inch,7.2*inch,showBoundary=0)
-        frame4.addFromList(flow_obj,pdf)
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
 
-        # Footer Part
-        flow_obj = []
-        table_data = []
+            
 
-        row1 = ["""Please write Employer's E.P.F Registration Number on the reverse if the cheque""","",""]
-        row2 = ["I certify that information given above is correct","","","","",""]
-        row3 = [f"Telephone No:{contact_no}",f"E-mail Address {email}","","","",""]
-        rowEmpty = ["","","","","",""]
-        row4 = ["                                      ..........................................................","                                 ..........................","","","",""]
-        row5 = ["                                           Signature of the Employer","                                          Date","","","",""]
+            table_data = []
+            total_contribution = "{:>9,.2f}".format(total_contribution)
+            empty_row = [""]
+            row1 = ["EPF Registration No","",company_epf_no]
+            row2 = ["Contribution for the Month of","",year_month]
+            row3 = ["Contributions","",f"Rs {total_contribution}"]
+            row4 = ["Surcharge","",""]
+            row6 = ["Total Remittance","",f"Rs {total_contribution}"]
+            row7 = ["Cheque No","",""]
+            row8 = ["Bank & Branch","",bank_branch]
+            empty_row = [""]
 
-        table_data.append(row1)
-        table_data.append(row2)
-        table_data.append(row3)
-        table_data.append(rowEmpty)
-        table_data.append(row4)
-        table_data.append(row5)
-        table = Table(table_data,colWidths=[4*inch,4.0*inch,0*inch,0*inch,0*inch,0*inch])
-        table_styles = TableStyle(
-            [
-                ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
-                # ('GRID', (0, 0), (-1,-1), 1, colors.black),
-                # ('SPAN', (1, 0), (2, 0)),
-                ]
-        )
-        table.setStyle(table_styles)
-        flow_obj.append(table)
-        frame5 = Frame(0.08*inch,0.08*inch,8.1*inch,1.6*inch,showBoundary=0)
-        frame5.addFromList(flow_obj,pdf)
+            table_data.append(empty_row)
+            table_data.append(row1)
+            table_data.append(row2)
+            table_data.append(row3)
+            table_data.append(row4)
+            table_data.append(row6)
+            table_data.append(row7)
+            table_data.append(row8)
+            table_data.append(empty_row)
+            table = Table(table_data)
+            table_styles = TableStyle(
+                [
+                    ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
+                    ('GRID', (0, 1), (-1,-2), 1, colors.black),
+                    ('SPAN', (0, 2), (1, 2)),
+                    ('SPAN', (0, 3), (1, 3)),
+                    ('SPAN', (0, 4), (1, 4)),
+                    ('SPAN', (0, 5), (1, 5)),
+                    ('SPAN', (0, 6), (1, 6)),
+                    ('SPAN', (0, 7), (1, 7)),
+                    ('SPAN', (0, 0), (1, 0)),
+                    ('SPAN', (0, 1), (1, 1)),
+                    
+                    ]
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
 
-        pdf.setTitle(f"{year_month}-EPF C FORM")
-        pdf.save()
+            table_data= []
+
+            data_table_row1 = ["Employee Name","NIC No","""Member 
+No""","Contibution","","","","","","""Total 
+Earnings"""]
+            data_table_row2 = ["","","","Total","","Employer","","Employee","",""]   
+            table_data.append(data_table_row1)
+            table_data.append(data_table_row2) 
+
+            for employee in data_list:
+                row = [employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8],employee[9]]
+                table_data.append(row)  
+            empty_row = [""]
+            table_data.append(empty_row)
+
+            table = Table(table_data,colWidths=[2.7*inch,1.1*inch,0.7*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.4*inch,0.3*inch,0.8*inch])
+            table_styles = TableStyle(
+                [
+                    ('GRID', (0, 0), (-1,-2), 1, colors.black), # data table
+
+                    ('SPAN', (0, 0), (-1, 0)),
+                    ('ALIGN', (0, 0), (-1, 0),'CENTER'),
+
+                    ('SPAN', (0, 0), (0, 1)), #Employee No
+                    ('SPAN', (1, 0), (1, 1)), #NIC No
+                    ('SPAN', (2, 0), (2, 1)), #Member No
+                    ('SPAN', (3, 1), (4, 1)), 
+                    ('SPAN', (5, 1), (6, 1)), #Member No
+                    ('SPAN', (7, 1), (8, 1)), #Member No
+                    ('SPAN', (3, 0), (8, 0)), #Contributon
+                    ('SPAN', (9, 0), (9, 1)), #Total Earning
+                    ]
+                
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
+
+            table_data = []
+
+            row1 = ["""Please write Employer's E.P.F Registration Number on the reverse if the cheque""","",""]
+            row2 = ["I certify that information given above is correct","","","","",""]
+            row3 = [f"Telephone No:{contact_no}",f"E-mail Address {email}","","","",""]
+            rowEmpty = ["","","","","",""]
+            row4 = ["                                      ..........................................................","                                 ..........................","","","",""]
+            row5 = ["                                           Signature of the Employer","                                          Date","","","",""]
+
+            table_data.append(row1)
+            table_data.append(row2)
+            table_data.append(row3)
+            table_data.append(rowEmpty)
+            table_data.append(row4)
+            table_data.append(row5)
+            table = Table(table_data,colWidths=[4*inch,4.0*inch,0*inch,0*inch,0*inch,0*inch])
+            table_styles = TableStyle(
+                [
+                    ('FONT', (0, 0), (-1, -1), 'Helvetica',9),
+                    # ('GRID', (0, 0), (-1,-1), 1, colors.black),
+                    # ('SPAN', (1, 0), (2, 0)),
+                    ]
+            )
+            table.setStyle(table_styles)
+            flow_obj.append(table)
+            pdf.build(flow_obj)
+
+            
+
+        
         buffer.seek(0)
         return FileResponse(buffer, as_attachment=True, filename=f"{year_month}-epf-C-Form.pdf")
  
