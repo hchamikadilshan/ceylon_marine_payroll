@@ -142,7 +142,7 @@ $( document ).ready(function() {
             new ApexCharts(document.querySelector("#columnChart"), {
               series: [ {
                 name: 'Net Salary',
-                data: [response["monthly_net_salary_payed_record"][0][2], response["monthly_net_salary_payed_record"][1][2], response["monthly_net_salary_payed_record"][2][2], response["monthly_net_salary_payed_record"][3][2], response["monthly_net_salary_payed_record"][4][2]]
+                data: [response["monthly_net_salary_payed_record"][0][2], response["monthly_net_salary_payed_record"][1][2], response["monthly_net_salary_payed_record"][2][2], response["monthly_net_salary_payed_record"][3][2], response["monthly_net_salary_payed_record"][4][2], response["monthly_net_salary_payed_record"][5][2]]
               }],
               chart: {
                 type: 'bar',
@@ -165,7 +165,7 @@ $( document ).ready(function() {
                 colors: ['transparent']
               },
               xaxis: {
-                categories: [response["monthly_net_salary_payed_record"][0][1], response["monthly_net_salary_payed_record"][1][1], response["monthly_net_salary_payed_record"][2][1], response["monthly_net_salary_payed_record"][3][1], response["monthly_net_salary_payed_record"][4][1]],
+                categories: [response["monthly_net_salary_payed_record"][0][1], response["monthly_net_salary_payed_record"][1][1], response["monthly_net_salary_payed_record"][2][1], response["monthly_net_salary_payed_record"][3][1], response["monthly_net_salary_payed_record"][4][1], response["monthly_net_salary_payed_record"][5][1]],
               },
               yaxis: {
                 title: {
@@ -188,7 +188,7 @@ $( document ).ready(function() {
                         series: [{
                           name: 'Employees',
                           // data: [31, 40, 28, 51, 42, 82],
-                          data: [response["monthly_net_salary_payed_record"][0][3], response["monthly_net_salary_payed_record"][1][3], response["monthly_net_salary_payed_record"][2][3], response["monthly_net_salary_payed_record"][3][3], response["monthly_net_salary_payed_record"][4][3]],
+                          data: [response["monthly_net_salary_payed_record"][0][3], response["monthly_net_salary_payed_record"][1][3], response["monthly_net_salary_payed_record"][2][3], response["monthly_net_salary_payed_record"][3][3], response["monthly_net_salary_payed_record"][4][3], response["monthly_net_salary_payed_record"][5][3]],
                         }],
                         chart: {
                           height: 350,
