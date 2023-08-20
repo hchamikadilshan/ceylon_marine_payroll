@@ -39,7 +39,6 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     def get(self,request):
-        print("inside")
         today = datetime.now()
         current_month = today.month
         months = []
@@ -52,7 +51,6 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
 
         monthly_net_salary_payed_record = []
         for month in months:
-            print("inside calculation")
             response_list = []
             total_net_salary = 0
             employees = 0
@@ -73,7 +71,6 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
                 except (ValueError,IndexError):
                     pass
             monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees])
-            print(monthly_net_salary_payed_record)
         
         return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record})
     
