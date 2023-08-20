@@ -718,560 +718,560 @@ Earnings"""]
         return FileResponse(buffer, as_attachment=True, filename=f"{year_month}-epf-C-Form.pdf")
  
         
-# class EtfReport(LoginRequiredMixin,View):
-#     def get(self,request):
-#         return render(request,"etf_report.html")
-#     def post(self,request):
-#         year = request.POST["year"]
-#         year_quater = request.POST["year_quarter"]
-#         month1_cheque_no = request.POST["month1_cheque_no"]
-#         month2_cheque_no = request.POST["month2_cheque_no"]
-#         month3_cheque_no = request.POST["month3_cheque_no"]
-#         month4_cheque_no = request.POST["month4_cheque_no"]
-#         month5_cheque_no = request.POST["month5_cheque_no"]
-#         month6_cheque_no = request.POST["month6_cheque_no"]
-#         month1_payment_date = request.POST["month1_payment_date"]
-#         month2_payment_date = request.POST["month2_payment_date"]
-#         month3_payment_date = request.POST["month3_payment_date"]
-#         month4_payment_date = request.POST["month4_payment_date"]
-#         month5_payment_date = request.POST["month5_payment_date"]
-#         month6_payment_date = request.POST["month6_payment_date"]
-#         if year_quater == "0":
-#             months = ["01","02","03","04","05","06"]
-#         else :
-#             months = ["07","08","09","10","11","12"]
-#         employees = Employee.objects.filter(emp_type=0,active_status=True)
-#         employees_list = list(employees)
-#         employee_records = []
-#         for month in months:
-#             for employee in employees_list:
-#                 emp_id = employee.emp_id
-#                 try :
-#                     response = get_final_salary_details(emp_id=emp_id,month=month)
-#                     if response == "employee_finance_details_error":
-#                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#                     elif response == "Department Empty":
-#                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#                     elif response[-1] == 0:
-#                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#                     elif response[-3]=="":
-#                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#                     elif response[-11] == None or response[-11] == "2":
-#                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#                     else:  
-#                         response.append(month) 
-#                         employee_records.append(response)
-#                 except (ValueError,IndexError,AttributeError):
-#                     employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-#         data_list = {}
-#         total_contribution = 0
-#         for response in employee_records:
-#             if response[-1] == "no_record":
-#                 epf_no = response[1]
-#                 name = response[0]
-#                 nic_no = response[2]
-#                 etf = 0.0
-#                 total_earning = 0.0
-#                 month = response[-3]
-#                 if epf_no in data_list:
+class EtfReport(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,"etf_report.html")
+    def post(self,request):
+        year = request.POST["year"]
+        year_quater = request.POST["year_quarter"]
+        month1_cheque_no = request.POST["month1_cheque_no"]
+        month2_cheque_no = request.POST["month2_cheque_no"]
+        month3_cheque_no = request.POST["month3_cheque_no"]
+        month4_cheque_no = request.POST["month4_cheque_no"]
+        month5_cheque_no = request.POST["month5_cheque_no"]
+        month6_cheque_no = request.POST["month6_cheque_no"]
+        month1_payment_date = request.POST["month1_payment_date"]
+        month2_payment_date = request.POST["month2_payment_date"]
+        month3_payment_date = request.POST["month3_payment_date"]
+        month4_payment_date = request.POST["month4_payment_date"]
+        month5_payment_date = request.POST["month5_payment_date"]
+        month6_payment_date = request.POST["month6_payment_date"]
+        if year_quater == "0":
+            months = ["01","02","03","04","05","06"]
+        else :
+            months = ["07","08","09","10","11","12"]
+        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        employees_list = list(employees)
+        employee_records = []
+        for month in months:
+            for employee in employees_list:
+                emp_id = employee.emp_id
+                try :
+                    response = get_final_salary_details(emp_id=emp_id,month=month)
+                    if response == "employee_finance_details_error":
+                        employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+                    elif response == "Department Empty":
+                        employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+                    elif response[-1] == 0:
+                        employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+                    elif response[-3]=="":
+                        employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+                    elif response[-11] == None or response[-11] == "2":
+                        employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+                    else:  
+                        response.append(month) 
+                        employee_records.append(response)
+                except (ValueError,IndexError,AttributeError):
+                    employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
+        data_list = {}
+        total_contribution = 0
+        for response in employee_records:
+            if response[-1] == "no_record":
+                epf_no = response[1]
+                name = response[0]
+                nic_no = response[2]
+                etf = 0.0
+                total_earning = 0.0
+                month = response[-3]
+                if epf_no in data_list:
         
-#                     new_records = []
-#                     records = data_list[epf_no]
-#                     for record in records:
-#                         new_records.append(record)
-#                     new_records.append([name,nic_no,epf_no,etf,month,total_earning])
-#                     data_list[epf_no] = new_records
+                    new_records = []
+                    records = data_list[epf_no]
+                    for record in records:
+                        new_records.append(record)
+                    new_records.append([name,nic_no,epf_no,etf,month,total_earning])
+                    data_list[epf_no] = new_records
                     
-#                 else:
-#                     data_list[epf_no] = [[name,nic_no,epf_no,etf,month,total_earning]]
-#             else:
-#                 net_salary = "{:>9,.2f}".format(response[12])
-#                 fixed_basic_salary = response[2] + response[3]
-#                 total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+                else:
+                    data_list[epf_no] = [[name,nic_no,epf_no,etf,month,total_earning]]
+            else:
+                net_salary = "{:>9,.2f}".format(response[12])
+                fixed_basic_salary = response[2] + response[3]
+                total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
-#                 etf = fixed_basic_salary * 0.03
-#                 etf_string = "{:>9.2f}".format(fixed_basic_salary * 0.03)
-#                 etf_int = int(fixed_basic_salary * 0.08)
-#                 etf_float = etf_string[-2:]
+                etf = fixed_basic_salary * 0.03
+                etf_string = "{:>9.2f}".format(fixed_basic_salary * 0.03)
+                etf_int = int(fixed_basic_salary * 0.08)
+                etf_float = etf_string[-2:]
 
-#                 name = response[-6]
-#                 epf_no = response[-4]
-#                 nic_no = response[-8]
+                name = response[-6]
+                epf_no = response[-4]
+                nic_no = response[-8]
 
-#                 if epf_no in data_list:
-#                     new_records = []
-#                     records = data_list[epf_no]
-#                     for record in records:
-#                         new_records.append(record)
-#                     new_records.append([name,nic_no,epf_no,etf,response[-1],fixed_basic_salary])
-#                     data_list[epf_no] = new_records
+                if epf_no in data_list:
+                    new_records = []
+                    records = data_list[epf_no]
+                    for record in records:
+                        new_records.append(record)
+                    new_records.append([name,nic_no,epf_no,etf,response[-1],fixed_basic_salary])
+                    data_list[epf_no] = new_records
 
                     
-#                 else:
-#                     data_list[epf_no] = [[name,nic_no,epf_no,etf,response[-1],fixed_basic_salary]]
+                else:
+                    data_list[epf_no] = [[name,nic_no,epf_no,etf,response[-1],fixed_basic_salary]]
         
-#         data  = []
-#         all_total_contribution = 0
-#         month1_earning_total = 0
-#         month1_contribution_total = 0
-#         month2_earning_total = 0
-#         month2_contribution_total = 0
-#         month3_earning_total = 0
-#         month3_contribution_total = 0
-#         month4_earning_total = 0
-#         month4_contribution_total = 0
-#         month5_earning_total = 0
-#         month5_contribution_total = 0
-#         month6_earning_total = 0
-#         month6_contribution_total = 0
-#         for emp in data_list:
-#             name = data_list[emp][0][0]
-#             epf_no =  data_list[emp][0][2]
-#             nic_no = data_list[emp][0][1]
-#             total_contribution = data_list[emp][0][3] + data_list[emp][1][3] + data_list[emp][2][3]+ data_list[emp][3][3] + data_list[emp][5][3] 
-#             all_total_contribution += total_contribution
-#             all_total_contribution_formated = "{:>9,.2f}".format(all_total_contribution)
-#             total_contribution_formated = "{:>9,.2f}".format(total_contribution)
+        data  = []
+        all_total_contribution = 0
+        month1_earning_total = 0
+        month1_contribution_total = 0
+        month2_earning_total = 0
+        month2_contribution_total = 0
+        month3_earning_total = 0
+        month3_contribution_total = 0
+        month4_earning_total = 0
+        month4_contribution_total = 0
+        month5_earning_total = 0
+        month5_contribution_total = 0
+        month6_earning_total = 0
+        month6_contribution_total = 0
+        for emp in data_list:
+            name = data_list[emp][0][0]
+            epf_no =  data_list[emp][0][2]
+            nic_no = data_list[emp][0][1]
+            total_contribution = data_list[emp][0][3] + data_list[emp][1][3] + data_list[emp][2][3]+ data_list[emp][3][3] + data_list[emp][5][3] 
+            all_total_contribution += total_contribution
+            all_total_contribution_formated = "{:>9,.2f}".format(all_total_contribution)
+            total_contribution_formated = "{:>9,.2f}".format(total_contribution)
 
-#             month1_earning = data_list[emp][0][5]
-#             month1_earning_formated = "{:>9,.2f}".format(month1_earning)
-#             month1_contribution = data_list[emp][0][3]
-#             month1_contribution_formated = "{:>9,.2f}".format(month1_contribution)
-#             month1_earning_total += month1_earning
-#             month1_contribution_total += month1_contribution
-#             month1_contribution_total_formatted = "{:>9,.2f}".format(month1_contribution_total)
-#             month1_earning_total_formatted = "{:>9,.2f}".format(month1_earning_total)
+            month1_earning = data_list[emp][0][5]
+            month1_earning_formated = "{:>9,.2f}".format(month1_earning)
+            month1_contribution = data_list[emp][0][3]
+            month1_contribution_formated = "{:>9,.2f}".format(month1_contribution)
+            month1_earning_total += month1_earning
+            month1_contribution_total += month1_contribution
+            month1_contribution_total_formatted = "{:>9,.2f}".format(month1_contribution_total)
+            month1_earning_total_formatted = "{:>9,.2f}".format(month1_earning_total)
 
-#             month2_earning = data_list[emp][1][5]
-#             month2_earning_formated = "{:>9,.2f}".format(month2_earning)
-#             month2_contribution = data_list[emp][1][3]
-#             month2_contribution_formated = "{:>9,.2f}".format(month2_contribution)
-#             month2_earning_total += month2_earning
-#             month2_contribution_total += month2_contribution
-#             month2_contribution_total_formatted = "{:>9,.2f}".format(month2_contribution_total)
-#             month2_earning_total_formatted = "{:>9,.2f}".format(month2_earning_total)
+            month2_earning = data_list[emp][1][5]
+            month2_earning_formated = "{:>9,.2f}".format(month2_earning)
+            month2_contribution = data_list[emp][1][3]
+            month2_contribution_formated = "{:>9,.2f}".format(month2_contribution)
+            month2_earning_total += month2_earning
+            month2_contribution_total += month2_contribution
+            month2_contribution_total_formatted = "{:>9,.2f}".format(month2_contribution_total)
+            month2_earning_total_formatted = "{:>9,.2f}".format(month2_earning_total)
 
-#             month3_earning = data_list[emp][2][5]
-#             month3_earning_formated = "{:>9,.2f}".format(month3_earning)
-#             month3_contribution = data_list[emp][2][3]
-#             month3_contribution_formated = "{:>9,.2f}".format(month3_contribution)
-#             month3_earning_total += month3_earning
-#             month3_contribution_total += month3_contribution
-#             month3_contribution_total_formatted = "{:>9,.2f}".format(month3_contribution_total)
-#             month3_earning_total_formatted = "{:>9,.2f}".format(month3_earning_total)
+            month3_earning = data_list[emp][2][5]
+            month3_earning_formated = "{:>9,.2f}".format(month3_earning)
+            month3_contribution = data_list[emp][2][3]
+            month3_contribution_formated = "{:>9,.2f}".format(month3_contribution)
+            month3_earning_total += month3_earning
+            month3_contribution_total += month3_contribution
+            month3_contribution_total_formatted = "{:>9,.2f}".format(month3_contribution_total)
+            month3_earning_total_formatted = "{:>9,.2f}".format(month3_earning_total)
 
-#             month4_earning = data_list[emp][3][5]
-#             month4_earning_formated = "{:>9,.2f}".format(month4_earning)
-#             month4_contribution = data_list[emp][3][3]
-#             month4_contribution_formated = "{:>9,.2f}".format(month4_contribution)
-#             month4_earning_total += month4_earning
-#             month4_contribution_total += month4_contribution
-#             month4_contribution_total_formatted = "{:>9,.2f}".format(month4_contribution_total)
-#             month4_earning_total_formatted = "{:>9,.2f}".format(month4_earning_total)
+            month4_earning = data_list[emp][3][5]
+            month4_earning_formated = "{:>9,.2f}".format(month4_earning)
+            month4_contribution = data_list[emp][3][3]
+            month4_contribution_formated = "{:>9,.2f}".format(month4_contribution)
+            month4_earning_total += month4_earning
+            month4_contribution_total += month4_contribution
+            month4_contribution_total_formatted = "{:>9,.2f}".format(month4_contribution_total)
+            month4_earning_total_formatted = "{:>9,.2f}".format(month4_earning_total)
 
-#             month5_earning = data_list[emp][4][5]
-#             month5_earning_formated = "{:>9,.2f}".format(month5_earning)
-#             month5_contribution = data_list[emp][4][3]
-#             month5_contribution_formated = "{:>9,.2f}".format(month5_contribution)
-#             month5_earning_total += month5_earning
-#             month5_contribution_total += month5_contribution
-#             month5_contribution_total_formatted = "{:>9,.2f}".format(month5_contribution_total)
-#             month5_earning_total_formatted = "{:>9,.2f}".format(month5_earning_total)
+            month5_earning = data_list[emp][4][5]
+            month5_earning_formated = "{:>9,.2f}".format(month5_earning)
+            month5_contribution = data_list[emp][4][3]
+            month5_contribution_formated = "{:>9,.2f}".format(month5_contribution)
+            month5_earning_total += month5_earning
+            month5_contribution_total += month5_contribution
+            month5_contribution_total_formatted = "{:>9,.2f}".format(month5_contribution_total)
+            month5_earning_total_formatted = "{:>9,.2f}".format(month5_earning_total)
 
-#             month6_earning = data_list[emp][5][5]
-#             month6_earning_formated = "{:>9,.2f}".format(month6_earning)
-#             month6_contribution = data_list[emp][5][3]
-#             month6_contribution_formated = "{:>9,.2f}".format(month6_contribution)
-#             month6_earning_total += month6_earning
-#             month6_contribution_total += month6_contribution
-#             month6_contribution_total_formatted = "{:>9,.2f}".format(month6_contribution_total)
-#             month6_earning_total_formatted = "{:>9,.2f}".format(month6_earning_total)
-#             if total_contribution == 0 or epf_no == "":
-#                 pass
-#             else:
-#                 data.append([name,epf_no,nic_no,total_contribution_formated,month1_earning_formated,month1_contribution_formated,month2_earning_formated,month2_contribution_formated,month3_earning_formated,month3_contribution_formated,month4_earning_formated,month4_contribution_formated,month5_earning_formated,month5_contribution_formated,month6_earning_formated,month6_contribution_formated])
+            month6_earning = data_list[emp][5][5]
+            month6_earning_formated = "{:>9,.2f}".format(month6_earning)
+            month6_contribution = data_list[emp][5][3]
+            month6_contribution_formated = "{:>9,.2f}".format(month6_contribution)
+            month6_earning_total += month6_earning
+            month6_contribution_total += month6_contribution
+            month6_contribution_total_formatted = "{:>9,.2f}".format(month6_contribution_total)
+            month6_earning_total_formatted = "{:>9,.2f}".format(month6_earning_total)
+            if total_contribution == 0 or epf_no == "":
+                pass
+            else:
+                data.append([name,epf_no,nic_no,total_contribution_formated,month1_earning_formated,month1_contribution_formated,month2_earning_formated,month2_contribution_formated,month3_earning_formated,month3_contribution_formated,month4_earning_formated,month4_contribution_formated,month5_earning_formated,month5_contribution_formated,month6_earning_formated,month6_contribution_formated])
 
-#         no_of_employees = len(data)
-#         title="ETF EMPLOYEE SUMMARY REPORT"
-#         buffer = io.BytesIO() 
-#         buffer2 = io.BytesIO() 
-#         elements = []
-#         pdf = SimpleDocTemplate(buffer,pagesize = landscape(legal), title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
-#         cell_style = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
-#         document_heading = [f"EMPLOYEE TRUST FUND BOARD"]
-#         empty_row_heading =[""]
-#         table_row_heading2 = ["FORM 11 RETURN","Return for period January to June 2023","","","","","","","","","","","",f"Total No of Employees:{no_of_employees}"]
-#         table_heading1 = ["""NAME
-# OF 
-# MEMBER""", """MEMBER
-# NUMBER""",'NIC',"""TOTAL 
-# CONTRI
-# BUTIONS""","""TOTAL GROSS WAGES AND CONTRIBUTION""","","","","","","","","","","",""]
-#         table_heading2 = ["","","","","JAN","","FEB","","MARCH","","APRIL","","MAY","","JUNE",""]
-#         table_row_empty = ["","","","","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS""","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS""","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS""","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS""","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS""","""TOTAL
-# EARNINGS""","""CONTRI
-# BUTIONS"""]
+        no_of_employees = len(data)
+        title="ETF EMPLOYEE SUMMARY REPORT"
+        buffer = io.BytesIO() 
+        buffer2 = io.BytesIO() 
+        elements = []
+        pdf = SimpleDocTemplate(buffer,pagesize = landscape(legal), title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        cell_style = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
+        document_heading = [f"EMPLOYEE TRUST FUND BOARD"]
+        empty_row_heading =[""]
+        table_row_heading2 = ["FORM 11 RETURN","Return for period January to June 2023","","","","","","","","","","","",f"Total No of Employees:{no_of_employees}"]
+        table_heading1 = ["""NAME
+OF 
+MEMBER""", """MEMBER
+NUMBER""",'NIC',"""TOTAL 
+CONTRI
+BUTIONS""","""TOTAL GROSS WAGES AND CONTRIBUTION""","","","","","","","","","","",""]
+        table_heading2 = ["","","","","JAN","","FEB","","MARCH","","APRIL","","MAY","","JUNE",""]
+        table_row_empty = ["","","","","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS""","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS""","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS""","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS""","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS""","""TOTAL
+EARNINGS""","""CONTRI
+BUTIONS"""]
 
-#         table_total_row = ["Total","99,000.00","999,000.00",all_total_contribution_formated,month1_earning_total_formatted,month1_contribution_total_formatted,month2_earning_total_formatted,month2_contribution_total_formatted,month3_earning_total_formatted,month3_contribution_total_formatted,month4_earning_total_formatted,month4_contribution_total_formatted,month5_earning_total_formatted,month5_contribution_total_formatted,month6_earning_total_formatted,month6_contribution_total_formatted]
-#         table_bottom_row1 = ["EMPLOYER REGISTRATION NO","","A/56108","I certify that all the particulars given above are correct and that no part of the contributions that should be paid by us has been deducted from any emploees's earnings"]
-#         table_bottom_row2 = ["COMPANY NAME","","CEYLON MARINE SERVICES HOLDINGS PVT LTD",""]
-#         table_bottom_row3 = ["ADDRESS","","No.72, St. Andrews Road, Modera, Colombo 15","","","","_________________________","","","____________________________________________________"]
-#         table_bottom_row4 = ["TELEPHONE","","0772594469","","","","Date","","","Signature of the Employer"]
-#         table_bottom_empty_row = [""]
+        table_total_row = ["Total","99,000.00","999,000.00",all_total_contribution_formated,month1_earning_total_formatted,month1_contribution_total_formatted,month2_earning_total_formatted,month2_contribution_total_formatted,month3_earning_total_formatted,month3_contribution_total_formatted,month4_earning_total_formatted,month4_contribution_total_formatted,month5_earning_total_formatted,month5_contribution_total_formatted,month6_earning_total_formatted,month6_contribution_total_formatted]
+        table_bottom_row1 = ["EMPLOYER REGISTRATION NO","","A/56108","I certify that all the particulars given above are correct and that no part of the contributions that should be paid by us has been deducted from any emploees's earnings"]
+        table_bottom_row2 = ["COMPANY NAME","","CEYLON MARINE SERVICES HOLDINGS PVT LTD",""]
+        table_bottom_row3 = ["ADDRESS","","No.72, St. Andrews Road, Modera, Colombo 15","","","","_________________________","","","____________________________________________________"]
+        table_bottom_row4 = ["TELEPHONE","","0772594469","","","","Date","","","Signature of the Employer"]
+        table_bottom_empty_row = [""]
 
-#         no_of_pages = (len(data)//22) + 1
-#         print(len(data),no_of_pages)
+        no_of_pages = (len(data)//22) + 1
+        print(len(data),no_of_pages)
         
 
-#         if no_of_pages == 1:
-#             table_data = []
-#             print("inside")
-#             table_data.append(document_heading)
-#             table_data.append(empty_row_heading)
-#             table_data.append(table_row_heading2)
-#             table_data.append(table_heading1)
-#             table_data.append(table_heading2)
-#             table_data.append(table_row_empty)
-#             for table_row in data:
-#                 table_data.append(table_row)
+        if no_of_pages == 1:
+            table_data = []
+            print("inside")
+            table_data.append(document_heading)
+            table_data.append(empty_row_heading)
+            table_data.append(table_row_heading2)
+            table_data.append(table_heading1)
+            table_data.append(table_heading2)
+            table_data.append(table_row_empty)
+            for table_row in data:
+                table_data.append(table_row)
 
-#             table_data.append(table_total_row)
-#             table_data.append(table_bottom_empty_row)
-#             table_data.append(table_bottom_row1)
-#             table_data.append(table_bottom_row2)
-#             table_data.append(table_bottom_row3)
-#             table_data.append(table_bottom_row4)
-#             attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
-#             attendance_table_styles = TableStyle(
-#                 [
-#                     ('GRID', (0, 3), (-1, -6), 1, colors.black),
-#                     ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
-#                     ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
-#                     ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
-#                     ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
-#                     ('FONT', (2, 4), (2, 7), 'Helvetica',10),
-#                     ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
-#                     ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
-#                     ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
-#                     ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
-#                     ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
-#                     ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
-#                     ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
-#                     ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
-#                     ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
-#                     ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
-#                     ('SPAN', (0, -6), (2, -6)), # Horozontal Span "Total"
-#                     ('SPAN', (0, -3), (1, -3)), # Horozontal Span "NAME TITLE"
-#                     ('SPAN', (0, -2), (1, -2)), # Horozontal Span "ADDRESS TITLE"
-#                     ('SPAN', (2, -2), (3, -2)), # ADDRESS"
-#                     ('SPAN', (2, -3), (3, -3)), # TITILE"
-#                     ('SPAN', (6, -2), (8, -2)), # Date ....... "
-#                     ('SPAN', (6, -1), (8, -1)), # Date"
-#                     ('SPAN', (9, -2), (-1, -2)), # Signature ....... "
-#                     ('SPAN', (9, -1), (-1, -1)), # Signature"
-#                     ('SPAN', (0, 3), (0, 5)),
-#                     ('SPAN', (1, 3), (1, 5)),
-#                     ('SPAN', (2, 3), (2, 5)),
-#                     ('SPAN', (3, 3), (3, 5)),
-#                     ('ALIGN', (0, -5), (3, -5),'RIGHT'), # Total
-#                     ('ALIGN', (0, 0), (-1, 3),'CENTER'),
-#                     ('ALIGN', (0, 5), (-1,5),'CENTER'),
-#                     ('ALIGN', (2, 3), (2, -1),'RIGHT'),
-#                     ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
-#                     ('ALIGN', (2, -3), (-1, -3),'LEFT'), # Telephone
-#                     ('ALIGN', (2, -2), (-1, -2),'LEFT'), # Address
-#                     ('ALIGN', (2, -1), (-1, -1),'LEFT'), # TELEPHONE
-#                     ('ALIGN', (6, -2), (8, -2),'CENTER'), # DATE ......
-#                     ('ALIGN', (6, -1), (8, -1),'CENTER'), # DATE
-#                     ('ALIGN', (9, -2), (-1, -2),'CENTER'), # DATE ......
-#                     ('ALIGN', (9, -1), (-1, -1),'CENTER'), # DATE
-#                     ]
+            table_data.append(table_total_row)
+            table_data.append(table_bottom_empty_row)
+            table_data.append(table_bottom_row1)
+            table_data.append(table_bottom_row2)
+            table_data.append(table_bottom_row3)
+            table_data.append(table_bottom_row4)
+            attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
+            attendance_table_styles = TableStyle(
+                [
+                    ('GRID', (0, 3), (-1, -6), 1, colors.black),
+                    ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
+                    ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
+                    ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
+                    ('FONT', (2, 4), (2, 7), 'Helvetica',10),
+                    ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
+                    ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
+                    ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
+                    ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
+                    ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
+                    ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
+                    ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
+                    ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
+                    ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
+                    ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
+                    ('SPAN', (0, -6), (2, -6)), # Horozontal Span "Total"
+                    ('SPAN', (0, -3), (1, -3)), # Horozontal Span "NAME TITLE"
+                    ('SPAN', (0, -2), (1, -2)), # Horozontal Span "ADDRESS TITLE"
+                    ('SPAN', (2, -2), (3, -2)), # ADDRESS"
+                    ('SPAN', (2, -3), (3, -3)), # TITILE"
+                    ('SPAN', (6, -2), (8, -2)), # Date ....... "
+                    ('SPAN', (6, -1), (8, -1)), # Date"
+                    ('SPAN', (9, -2), (-1, -2)), # Signature ....... "
+                    ('SPAN', (9, -1), (-1, -1)), # Signature"
+                    ('SPAN', (0, 3), (0, 5)),
+                    ('SPAN', (1, 3), (1, 5)),
+                    ('SPAN', (2, 3), (2, 5)),
+                    ('SPAN', (3, 3), (3, 5)),
+                    ('ALIGN', (0, -5), (3, -5),'RIGHT'), # Total
+                    ('ALIGN', (0, 0), (-1, 3),'CENTER'),
+                    ('ALIGN', (0, 5), (-1,5),'CENTER'),
+                    ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+                    ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+                    ('ALIGN', (2, -3), (-1, -3),'LEFT'), # Telephone
+                    ('ALIGN', (2, -2), (-1, -2),'LEFT'), # Address
+                    ('ALIGN', (2, -1), (-1, -1),'LEFT'), # TELEPHONE
+                    ('ALIGN', (6, -2), (8, -2),'CENTER'), # DATE ......
+                    ('ALIGN', (6, -1), (8, -1),'CENTER'), # DATE
+                    ('ALIGN', (9, -2), (-1, -2),'CENTER'), # DATE ......
+                    ('ALIGN', (9, -1), (-1, -1),'CENTER'), # DATE
+                    ]
                 
-#             )
-#             attendance_table.setStyle(attendance_table_styles)
-#             elements.append(attendance_table)
-#         else:
-#             start = 0
-#             for page in range(no_of_pages):
-#                 table_data = []
-#                 end = start + 28
-#                 table_data.append(document_heading)
-#                 table_data.append(empty_row_heading)
-#                 table_data.append(table_row_heading2)
-#                 table_data.append(table_heading1)
-#                 table_data.append(table_heading2)
-#                 table_data.append(table_row_empty)
-#                 if page != (range(no_of_pages)[-1]):
-#                     print(start,end)
-#                     for table_row in data[start:end]:
-#                         table_data.append(table_row)
-#                     attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
-#                     attendance_table_styles = TableStyle(
-#                     [
-#                         ('GRID', (0, 3), (-1, -1), 1, colors.black),
-#                         ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
-#                         ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
-#                         ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
-#                         ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
-#                         ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
-#                         ('FONT', (2, 4), (2, -1), 'Helvetica',8),
-#                         ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
-#                         ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
-#                         ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
-#                         ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
-#                         ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
-#                         ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
-#                         ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
-#                         ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
-#                         ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
-#                         ('SPAN', (0, 3), (0, 5)),
-#                         ('SPAN', (1, 3), (1, 5)),
-#                         ('SPAN', (2, 3), (2, 5)),
-#                         ('SPAN', (3, 3), (3, 5)),
-#                         ('ALIGN', (0, 0), (-1, 3),'CENTER'),
-#                         ('ALIGN', (0, 5), (-1,5),'CENTER'),
-#                         ('ALIGN', (2, 3), (2, -1),'RIGHT'),
-#                         ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
-#                     ]
+            )
+            attendance_table.setStyle(attendance_table_styles)
+            elements.append(attendance_table)
+        else:
+            start = 0
+            for page in range(no_of_pages):
+                table_data = []
+                end = start + 28
+                table_data.append(document_heading)
+                table_data.append(empty_row_heading)
+                table_data.append(table_row_heading2)
+                table_data.append(table_heading1)
+                table_data.append(table_heading2)
+                table_data.append(table_row_empty)
+                if page != (range(no_of_pages)[-1]):
+                    print(start,end)
+                    for table_row in data[start:end]:
+                        table_data.append(table_row)
+                    attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
+                    attendance_table_styles = TableStyle(
+                    [
+                        ('GRID', (0, 3), (-1, -1), 1, colors.black),
+                        ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
+                        ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
+                        ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
+                        ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
+                        ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
+                        ('FONT', (2, 4), (2, -1), 'Helvetica',8),
+                        ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
+                        ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
+                        ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
+                        ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
+                        ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
+                        ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
+                        ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
+                        ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
+                        ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
+                        ('SPAN', (0, 3), (0, 5)),
+                        ('SPAN', (1, 3), (1, 5)),
+                        ('SPAN', (2, 3), (2, 5)),
+                        ('SPAN', (3, 3), (3, 5)),
+                        ('ALIGN', (0, 0), (-1, 3),'CENTER'),
+                        ('ALIGN', (0, 5), (-1,5),'CENTER'),
+                        ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+                        ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+                    ]
                 
-#                     )
-#                     attendance_table.setStyle(attendance_table_styles)
-#                 else:
-#                     print("last_page ",start,end)
-#                     table_data = []
-#                     table_data.append(document_heading)
-#                     table_data.append(empty_row_heading)
-#                     table_data.append(table_row_heading2)
-#                     table_data.append(table_heading1)
-#                     table_data.append(table_heading2)
-#                     table_data.append(table_row_empty)
-#                     for table_row in data[start:end]:
-#                         table_data.append(table_row)
-#                     table_data.append(table_total_row)
-#                     table_data.append(table_bottom_empty_row)
-#                     table_data.append(table_bottom_row1)
-#                     table_data.append(table_bottom_row2)
-#                     table_data.append(table_bottom_row3)
-#                     table_data.append(table_bottom_row4)
-#                     attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
-#                     attendance_table_styles = TableStyle(
-#                     [
-#                         ('GRID', (0, 3), (-1, -6), 1, colors.black),
-#                     ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
-#                     ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
-#                     ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
-#                     ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
-#                     ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
-#                     ('FONT', (2, 4), (2, -7), 'Helvetica',8),
-#                     ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
-#                     ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
-#                     ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
-#                     ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
-#                     ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
-#                     ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
-#                     ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
-#                     ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
-#                     ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
-#                     ('SPAN', (0, -6), (2, -6)), # Horozontal Span "Total"
-#                     ('SPAN', (0, -3), (1, -3)), # Horozontal Span "NAME TITLE"
-#                     ('SPAN', (0, -2), (1, -2)), # Horozontal Span "ADDRESS TITLE"
-#                     ('SPAN', (2, -2), (3, -2)), # ADDRESS"
-#                     ('SPAN', (2, -3), (3, -3)), # TITILE"
-#                     ('SPAN', (6, -2), (8, -2)), # Date ....... "
-#                     ('SPAN', (6, -1), (8, -1)), # Date"
-#                     ('SPAN', (9, -2), (-1, -2)), # Signature ....... "
-#                     ('SPAN', (9, -1), (-1, -1)), # Signature"
-#                     ('SPAN', (0, 3), (0, 5)),
-#                     ('SPAN', (1, 3), (1, 5)),
-#                     ('SPAN', (2, 3), (2, 5)),
-#                     ('SPAN', (3, 3), (3, 5)),
-#                     ('ALIGN', (0, -5), (3, -5),'RIGHT'), # Total
-#                     ('ALIGN', (0, 0), (-1, 3),'CENTER'),
-#                     ('ALIGN', (0, 5), (-1,5),'CENTER'),
-#                     ('ALIGN', (2, 3), (2, -1),'RIGHT'),
-#                     ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
-#                     ('ALIGN', (2, -3), (-1, -3),'LEFT'), # Telephone
-#                     ('ALIGN', (2, -2), (-1, -2),'LEFT'), # Address
-#                     ('ALIGN', (2, -1), (-1, -1),'LEFT'), # TELEPHONE
-#                     ('ALIGN', (6, -2), (8, -2),'CENTER'), # DATE ......
-#                     ('ALIGN', (6, -1), (8, -1),'CENTER'), # DATE
-#                     ('ALIGN', (9, -2), (-1, -2),'CENTER'), # DATE ......
-#                     ('ALIGN', (9, -1), (-1, -1),'CENTER'), # DATE
-#                     ]
+                    )
+                    attendance_table.setStyle(attendance_table_styles)
+                else:
+                    print("last_page ",start,end)
+                    table_data = []
+                    table_data.append(document_heading)
+                    table_data.append(empty_row_heading)
+                    table_data.append(table_row_heading2)
+                    table_data.append(table_heading1)
+                    table_data.append(table_heading2)
+                    table_data.append(table_row_empty)
+                    for table_row in data[start:end]:
+                        table_data.append(table_row)
+                    table_data.append(table_total_row)
+                    table_data.append(table_bottom_empty_row)
+                    table_data.append(table_bottom_row1)
+                    table_data.append(table_bottom_row2)
+                    table_data.append(table_bottom_row3)
+                    table_data.append(table_bottom_row4)
+                    attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
+                    attendance_table_styles = TableStyle(
+                    [
+                        ('GRID', (0, 3), (-1, -6), 1, colors.black),
+                    ('GRID', (4,-6), (-1, -6), 1, colors.black), # Total
+                    ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
+                    ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
+                    ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
+                    ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
+                    ('FONT', (2, 4), (2, -7), 'Helvetica',8),
+                    ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
+                    ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
+                    ('SPAN', (4, 3), (-1, 3)), # Horozontal Span "Total Gross Wages colum 1st row"
+                    ('SPAN', (4, 4), (5, 4)), # Horozontal Span "July"
+                    ('SPAN', (6, 4), (7, 4)), # Horozontal Span "AUG"
+                    ('SPAN', (8, 4), (9, 4)), # Horozontal Span "SEP"
+                    ('SPAN', (10, 4), (11, 4)), # Horozontal Span "OCT"
+                    ('SPAN', (12, 4), (13, 4)), # Horozontal Span "NOV"
+                    ('SPAN', (14, 4), (15, 4)), # Horozontal Span "DEC"
+                    ('SPAN', (0, -6), (2, -6)), # Horozontal Span "Total"
+                    ('SPAN', (0, -3), (1, -3)), # Horozontal Span "NAME TITLE"
+                    ('SPAN', (0, -2), (1, -2)), # Horozontal Span "ADDRESS TITLE"
+                    ('SPAN', (2, -2), (3, -2)), # ADDRESS"
+                    ('SPAN', (2, -3), (3, -3)), # TITILE"
+                    ('SPAN', (6, -2), (8, -2)), # Date ....... "
+                    ('SPAN', (6, -1), (8, -1)), # Date"
+                    ('SPAN', (9, -2), (-1, -2)), # Signature ....... "
+                    ('SPAN', (9, -1), (-1, -1)), # Signature"
+                    ('SPAN', (0, 3), (0, 5)),
+                    ('SPAN', (1, 3), (1, 5)),
+                    ('SPAN', (2, 3), (2, 5)),
+                    ('SPAN', (3, 3), (3, 5)),
+                    ('ALIGN', (0, -5), (3, -5),'RIGHT'), # Total
+                    ('ALIGN', (0, 0), (-1, 3),'CENTER'),
+                    ('ALIGN', (0, 5), (-1,5),'CENTER'),
+                    ('ALIGN', (2, 3), (2, -1),'RIGHT'),
+                    ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+                    ('ALIGN', (2, -3), (-1, -3),'LEFT'), # Telephone
+                    ('ALIGN', (2, -2), (-1, -2),'LEFT'), # Address
+                    ('ALIGN', (2, -1), (-1, -1),'LEFT'), # TELEPHONE
+                    ('ALIGN', (6, -2), (8, -2),'CENTER'), # DATE ......
+                    ('ALIGN', (6, -1), (8, -1),'CENTER'), # DATE
+                    ('ALIGN', (9, -2), (-1, -2),'CENTER'), # DATE ......
+                    ('ALIGN', (9, -1), (-1, -1),'CENTER'), # DATE
+                    ]
                 
-#                     )
-#                     attendance_table.setStyle(attendance_table_styles)
-#                 start = end 
-#                 elements.append(attendance_table)
-#                 elements.append(PageBreak())
+                    )
+                    attendance_table.setStyle(attendance_table_styles)
+                start = end 
+                elements.append(attendance_table)
+                elements.append(PageBreak())
 
 
 
 
 
-#         attendance_table.setStyle(TableStyle([('STYLE', (0,0), (-1,-1), 'my_cell_style')]))
+        attendance_table.setStyle(TableStyle([('STYLE', (0,0), (-1,-1), 'my_cell_style')]))
 
-#         pdf.build(elements)
-#         buffer.seek(0)
-
-
-#         pdf2 = SimpleDocTemplate(buffer2,pagesize = landscape(A4), title="2023-03_Salary_Signature Sheet",showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
-#         table_data2 = []
-#         cell_style2 = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
-#         document_heading1 = [f"EMPLOYEE TRUST FUND BOARD"]
-#         document_heading2 =["RETURN OF THE HALF - YEAR BEGINNING 31st June 2023"]
-#         document_heading3 =["CONTRIBUTOR'S RECONCILATION STATEMENT"]
-#         document_sub_heading1 =["1. DETAILS OF PAYMENTS"]
-#         table_data2.append(document_heading)
-#         table_data2.append(document_heading2)
-#         table_data2.append(document_heading3)
-#         table_data2.append(document_sub_heading1)
-#         table_heading1 = ["""Month""", """Total Monthly 
-# Contributions 
-# Payable as per 
-# Form II Return""","""Amount 
-# Remitted 
-# Monthly""","""Over/Under""","""Cheque No""","""Cheque 
-# Amont""","""Name & Branch 
-# of Bank Where 
-# Payment was 
-# made (If paid by 
-# cash)""","""Date of Payment"""]
-#         table_data2.append(table_heading1)
-#         # for emp in response_employees:
-#         #     table_row = [emp[0], emp[1], emp[2],'']
-#         #     table_data.append(table_row)
-
-#         data = [["Jan",month1_contribution_total_formatted,month1_contribution_total_formatted,"",month1_cheque_no,month1_contribution_total_formatted,"",month1_payment_date],
-#                 ["Feb",month2_contribution_total_formatted,month2_contribution_total_formatted,"",month2_cheque_no,month2_contribution_total_formatted,"",month2_payment_date],
-#                 ["March",month3_contribution_total_formatted,month3_contribution_total_formatted,"",month3_cheque_no,month3_contribution_total_formatted,"",month3_payment_date],
-#                 ["April",month4_contribution_total_formatted,month4_contribution_total_formatted,"",month4_cheque_no,month4_contribution_total_formatted,"",month4_payment_date],
-#                 ["May",month5_contribution_total_formatted,month5_contribution_total_formatted,"",month5_cheque_no,month5_contribution_total_formatted,"",month5_payment_date],
-#                 ["June",month6_contribution_total_formatted,month6_contribution_total_formatted,"",month6_cheque_no,month6_contribution_total_formatted,"",month6_payment_date],
-#                 ["Total",all_total_contribution_formated,all_total_contribution_formated,"","",""],
-#                 ]
-#         for table_row in data:
-#             table_data2.append(table_row)
-#         # table_row = ["A.B.C.D.E. Hapuarachchi","200","200113902674","3500.00","15,000.00"]
-#         table_total_row = ["2.SUMMARY OF RETURN"]
-#         table_bottom_row1 = ["Employer Registratrion No","","A/56108"]
-#         table_bottom_row2 = ["Half Year Period","","Jan to Dec 2023",""]
-#         table_bottom_row3 = ["No of Members","",no_of_employees,""]
-#         table_bottom_row4 = ["""Total Contribution 
-#         of Six Months""","",all_total_contribution_formated]
-#         table_bottom_row5 = ["No of Pages","",no_of_pages]
-#         table_bottom_row6 = ["Name of the Company","","""Ceylon Marine Services Holding Pvt Ltd"""]
-#         table_bottom_row7 = ["Address of the Company","","""No.72, St. Andrews Road, Modera, Colombo 15"""]
-#         table_bottom_row8 = ["Telephone No","","""0772594469"""]
-
-#         table_bottom_empty_row_1 = [""]
-
-#         table_bottom_row9 = ["I certify that all the particulars given above are true and correct"]
-#         table_bottom_empty_row_2 = [""]
-#         table_bottom_empty_row_3 = [""]
-#         table_bottom_row10 = ["...................................................................."]
-#         table_bottom_row11 = ["Signature of Employer and Official Seal"]
-#         table_bottom_row12 = ["Date __/__/___"]
+        pdf.build(elements)
+        buffer.seek(0)
 
 
-#         # table_data.append(table_row)
-#         table_data2.append(table_total_row)
+        pdf2 = SimpleDocTemplate(buffer2,pagesize = landscape(A4), title="2023-03_Salary_Signature Sheet",showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        table_data2 = []
+        cell_style2 = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
+        document_heading1 = [f"EMPLOYEE TRUST FUND BOARD"]
+        document_heading2 =["RETURN OF THE HALF - YEAR BEGINNING 31st June 2023"]
+        document_heading3 =["CONTRIBUTOR'S RECONCILATION STATEMENT"]
+        document_sub_heading1 =["1. DETAILS OF PAYMENTS"]
+        table_data2.append(document_heading)
+        table_data2.append(document_heading2)
+        table_data2.append(document_heading3)
+        table_data2.append(document_sub_heading1)
+        table_heading1 = ["""Month""", """Total Monthly 
+Contributions 
+Payable as per 
+Form II Return""","""Amount 
+Remitted 
+Monthly""","""Over/Under""","""Cheque No""","""Cheque 
+Amont""","""Name & Branch 
+of Bank Where 
+Payment was 
+made (If paid by 
+cash)""","""Date of Payment"""]
+        table_data2.append(table_heading1)
+        # for emp in response_employees:
+        #     table_row = [emp[0], emp[1], emp[2],'']
+        #     table_data.append(table_row)
 
-#         table_data2.append(table_bottom_row1)
-#         table_data2.append(table_bottom_row2)
-#         table_data2.append(table_bottom_row3)
-#         table_data2.append(table_bottom_row4)
-#         table_data2.append(table_bottom_row5)
-#         table_data2.append(table_bottom_row6)
-#         table_data2.append(table_bottom_row7)
-#         table_data2.append(table_bottom_row8)
-#         table_data2.append(table_bottom_empty_row_1)
-#         table_data2.append(table_bottom_row9)
-#         table_data2.append(table_bottom_empty_row_2)
-#         table_data2.append(table_bottom_empty_row_3)
-#         table_data2.append(table_bottom_row10)
-#         table_data2.append(table_bottom_row11)
-#         table_data2.append(table_bottom_row12)
-#         elements2 = []
-#         row_heights = [1*inch for i in range(4)]
-#         attendance_table = Table(table_data2,colWidths=[0.7*inch,1.2*inch,0.8*inch,0.9*inch,2.0*inch,0.8*inch,1.2*inch])
-#         attendance_table_styles = TableStyle(
-#             [
-#                 ('GRID', (0, 4), (-1, 11), 1, colors.black), #Details Table
-#                 ('GRID', (0, 13), (5, 20), 1, colors.black), #Summary Table
-#                 ('FONT', (0, 0), (-1, 2), 'Helvetica-Bold',11),
-#                 ('ALIGN', (0, 0), (-1, 2),'CENTER'), # Headings Center
-#                 ('ALIGN', (0, 22), (-1, 22),'CENTER'), # I certify
-#                 ('ALIGN', (0, 25), (-1, 25),'CENTER'), # ...........
-#                 ('ALIGN', (0, 26), (-1, 26),'CENTER'), # Sign
-#                 ('ALIGN', (0, 27), (-1, 27),'CENTER'), # Date
+        data = [["Jan",month1_contribution_total_formatted,month1_contribution_total_formatted,"",month1_cheque_no,month1_contribution_total_formatted,"",month1_payment_date],
+                ["Feb",month2_contribution_total_formatted,month2_contribution_total_formatted,"",month2_cheque_no,month2_contribution_total_formatted,"",month2_payment_date],
+                ["March",month3_contribution_total_formatted,month3_contribution_total_formatted,"",month3_cheque_no,month3_contribution_total_formatted,"",month3_payment_date],
+                ["April",month4_contribution_total_formatted,month4_contribution_total_formatted,"",month4_cheque_no,month4_contribution_total_formatted,"",month4_payment_date],
+                ["May",month5_contribution_total_formatted,month5_contribution_total_formatted,"",month5_cheque_no,month5_contribution_total_formatted,"",month5_payment_date],
+                ["June",month6_contribution_total_formatted,month6_contribution_total_formatted,"",month6_cheque_no,month6_contribution_total_formatted,"",month6_payment_date],
+                ["Total",all_total_contribution_formated,all_total_contribution_formated,"","",""],
+                ]
+        for table_row in data:
+            table_data2.append(table_row)
+        # table_row = ["A.B.C.D.E. Hapuarachchi","200","200113902674","3500.00","15,000.00"]
+        table_total_row = ["2.SUMMARY OF RETURN"]
+        table_bottom_row1 = ["Employer Registratrion No","","A/56108"]
+        table_bottom_row2 = ["Half Year Period","","Jan to Dec 2023",""]
+        table_bottom_row3 = ["No of Members","",no_of_employees,""]
+        table_bottom_row4 = ["""Total Contribution 
+        of Six Months""","",all_total_contribution_formated]
+        table_bottom_row5 = ["No of Pages","",no_of_pages]
+        table_bottom_row6 = ["Name of the Company","","""Ceylon Marine Services Holding Pvt Ltd"""]
+        table_bottom_row7 = ["Address of the Company","","""No.72, St. Andrews Road, Modera, Colombo 15"""]
+        table_bottom_row8 = ["Telephone No","","""0772594469"""]
 
-#                 ('SPAN', (0, 0), (-1, 0)),
-#                 ('SPAN', (0, 1), (-1, 1)),
-#                 ('SPAN', (0, 2), (-1, 2)),
-#                 ('SPAN', (0, 3), (-1, 3)),
+        table_bottom_empty_row_1 = [""]
+
+        table_bottom_row9 = ["I certify that all the particulars given above are true and correct"]
+        table_bottom_empty_row_2 = [""]
+        table_bottom_empty_row_3 = [""]
+        table_bottom_row10 = ["...................................................................."]
+        table_bottom_row11 = ["Signature of Employer and Official Seal"]
+        table_bottom_row12 = ["Date __/__/___"]
 
 
-#                 ('SPAN', (0, 13), (1, 13)),
-#                 ('SPAN', (0, 14), (1, 14)),
-#                 ('SPAN', (0, 15), (1, 15)),
-#                 ('SPAN', (0, 16), (1, 16)),
-#                 ('SPAN', (0, 17), (1, 17)),
-#                 ('SPAN', (0, 18), (1, 18)),
-#                 ('SPAN', (0, 19), (1, 19)),
-#                 ('SPAN', (0, 20), (1, 20)),
+        # table_data.append(table_row)
+        table_data2.append(table_total_row)
+
+        table_data2.append(table_bottom_row1)
+        table_data2.append(table_bottom_row2)
+        table_data2.append(table_bottom_row3)
+        table_data2.append(table_bottom_row4)
+        table_data2.append(table_bottom_row5)
+        table_data2.append(table_bottom_row6)
+        table_data2.append(table_bottom_row7)
+        table_data2.append(table_bottom_row8)
+        table_data2.append(table_bottom_empty_row_1)
+        table_data2.append(table_bottom_row9)
+        table_data2.append(table_bottom_empty_row_2)
+        table_data2.append(table_bottom_empty_row_3)
+        table_data2.append(table_bottom_row10)
+        table_data2.append(table_bottom_row11)
+        table_data2.append(table_bottom_row12)
+        elements2 = []
+        row_heights = [1*inch for i in range(4)]
+        attendance_table = Table(table_data2,colWidths=[0.7*inch,1.2*inch,0.8*inch,0.9*inch,2.0*inch,0.8*inch,1.2*inch])
+        attendance_table_styles = TableStyle(
+            [
+                ('GRID', (0, 4), (-1, 11), 1, colors.black), #Details Table
+                ('GRID', (0, 13), (5, 20), 1, colors.black), #Summary Table
+                ('FONT', (0, 0), (-1, 2), 'Helvetica-Bold',11),
+                ('ALIGN', (0, 0), (-1, 2),'CENTER'), # Headings Center
+                ('ALIGN', (0, 22), (-1, 22),'CENTER'), # I certify
+                ('ALIGN', (0, 25), (-1, 25),'CENTER'), # ...........
+                ('ALIGN', (0, 26), (-1, 26),'CENTER'), # Sign
+                ('ALIGN', (0, 27), (-1, 27),'CENTER'), # Date
+
+                ('SPAN', (0, 0), (-1, 0)),
+                ('SPAN', (0, 1), (-1, 1)),
+                ('SPAN', (0, 2), (-1, 2)),
+                ('SPAN', (0, 3), (-1, 3)),
 
 
-#                 ('SPAN', (2, 13), (5, 13)),
-#                 ('SPAN', (2, 14), (5, 14)),
-#                 ('SPAN', (2, 15), (5, 15)),
-#                 ('SPAN', (2, 16), (5, 16)),
-#                 ('SPAN', (2, 17), (5, 17)),
-#                 ('SPAN', (2, 18), (5, 18)),
-#                 ('SPAN', (2, 19), (5, 19)),
-#                 ('SPAN', (2, 20), (5, 20)),
+                ('SPAN', (0, 13), (1, 13)),
+                ('SPAN', (0, 14), (1, 14)),
+                ('SPAN', (0, 15), (1, 15)),
+                ('SPAN', (0, 16), (1, 16)),
+                ('SPAN', (0, 17), (1, 17)),
+                ('SPAN', (0, 18), (1, 18)),
+                ('SPAN', (0, 19), (1, 19)),
+                ('SPAN', (0, 20), (1, 20)),
 
-#                 ('SPAN', (0, 22), (-1, 22)),
-#                 ('SPAN', (0, 25), (-1, 25)),
-#                 ('SPAN', (0, 26), (-1, 26)),
-#                 ('SPAN', (0, 27), (-1, 27)),
 
-#                 ]
+                ('SPAN', (2, 13), (5, 13)),
+                ('SPAN', (2, 14), (5, 14)),
+                ('SPAN', (2, 15), (5, 15)),
+                ('SPAN', (2, 16), (5, 16)),
+                ('SPAN', (2, 17), (5, 17)),
+                ('SPAN', (2, 18), (5, 18)),
+                ('SPAN', (2, 19), (5, 19)),
+                ('SPAN', (2, 20), (5, 20)),
+
+                ('SPAN', (0, 22), (-1, 22)),
+                ('SPAN', (0, 25), (-1, 25)),
+                ('SPAN', (0, 26), (-1, 26)),
+                ('SPAN', (0, 27), (-1, 27)),
+
+                ]
             
-#         )
-#         attendance_table.setStyle(attendance_table_styles)
-#         attendance_table.setStyle(TableStyle([('STYLE', (0,0), (-1,-1), 'my_cell_style')]))
-#         elements2.append(attendance_table)
-#         pdf2.build(elements2)
-#         buffer2.seek(0)
+        )
+        attendance_table.setStyle(attendance_table_styles)
+        attendance_table.setStyle(TableStyle([('STYLE', (0,0), (-1,-1), 'my_cell_style')]))
+        elements2.append(attendance_table)
+        pdf2.build(elements2)
+        buffer2.seek(0)
 
 
 
-#         merged_buffer = io.BytesIO()
-#         pdf_writer = PdfWriter()
-#         pdf1_reader = PdfReader(buffer)
-#         pdf2_reader = PdfReader(buffer2)
+        merged_buffer = io.BytesIO()
+        pdf_writer = PdfWriter()
+        pdf1_reader = PdfReader(buffer)
+        pdf2_reader = PdfReader(buffer2)
 
-#         for page_num in range(len(pdf1_reader.pages)):
-#             page = pdf1_reader.pages[page_num]
-#             pdf_writer.add_page(page)
+        for page_num in range(len(pdf1_reader.pages)):
+            page = pdf1_reader.pages[page_num]
+            pdf_writer.add_page(page)
 
-#         for page_num in range(len(pdf2_reader.pages)):
-#             page = pdf2_reader.pages[page_num]
-#             pdf_writer.add_page(page)
+        for page_num in range(len(pdf2_reader.pages)):
+            page = pdf2_reader.pages[page_num]
+            pdf_writer.add_page(page)
 
-#         pdf_writer.write(merged_buffer)
-#         merged_buffer.seek(0)
+        pdf_writer.write(merged_buffer)
+        merged_buffer.seek(0)
 
 
-#         return FileResponse(merged_buffer, as_attachment=True, filename=f"etf_report.pdf")
+        return FileResponse(merged_buffer, as_attachment=True, filename=f"etf_report.pdf")

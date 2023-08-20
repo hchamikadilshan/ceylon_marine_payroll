@@ -92,23 +92,23 @@ WSGI_APPLICATION = 'hrms.wsgi.application'
 #     }
 # }
 
-import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-}
-
+# import dj_database_url
 
 # DATABASES = {
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.mysql',
-# 		'NAME': 'heroku_224badc376eea21',
-# 		'USER': 'bff5e7e4628e19',
-# 		'PASSWORD': '01625560',
-# 		'HOST': 'us-cdbr-east-06.cleardb.net',
-# 		'PORT':'3306',
-# 	}
+#     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 # }
+
+
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'heroku_224badc376eea21',
+		'USER': 'bff5e7e4628e19',
+		'PASSWORD': '01625560',
+		'HOST': 'us-cdbr-east-06.cleardb.net',
+		'PORT':'3306',
+	}
+}
 
 # DATABASES = {
 # 	'default': {
