@@ -25,11 +25,11 @@
                         <h5 class="card-title">Normal Employees <span></span></h5>
 
                         <div class="d-flex align-items-center">
-                          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                               <i class="bi bi-people-fill"></i>
-                          </div>
+                          </div> -->
                           <div class="ps-3">
-                              <h6 class ="value" akhi="{{no_of_normal_employees}}">0</h6>
+                              <h6 class ="value" akhi="{{no_of_normal_employees}}">{{no_of_normal_employees}}</h6>
                               <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                           </div>
@@ -45,11 +45,11 @@
                       <h5 class="card-title">shift Employees <span></span></h5>
 
                       <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                             <i class="bi bi-people-fill"></i>
-                        </div>
+                        </div> -->
                         <div class="ps-3">
-                            <h6 class ="value" akhi="{{no_of_shift_employees}}">0</h6>
+                            <h6 class ="value" akhi="{{no_of_shift_employees}}">{{no_of_shift_employees}}</h6>
                             <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                         </div>
@@ -66,11 +66,11 @@
                         <h5 class="card-title">Last Month Total Salary <span></span></h5>
 
                         <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                             <i class="bi bi-currency-dollar"></i>
-                        </div>
+                        </div> -->
                         <div class="ps-3">
-                            <h6 class ="value" akhi="156000.0">0</h6>
+                            <h6 id="dashboard_last_month_salary" class ="value" akhi="156000.00">0</h6>
                             <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
 
                         </div>
@@ -113,32 +113,33 @@
 </section>
 
 <script>
-  const counters = document.querySelectorAll('.value');
-  const speed = 200;
+//   const counters = document.querySelectorAll('.value');
+//   const speed = 200;
 
-  counters.forEach( counter => {
-    const animate = () => {
-        const value = +counter.getAttribute('akhi');
-        const data = +counter.innerText;
+//   counters.forEach( counter => {
+//     const animate = () => {
+//         const value = +counter.getAttribute('akhi');
+//         const data = +counter.innerText;
       
-        const time = value / speed;
-      if(data < value) {
-            counter.innerText = Math.ceil(data + time);
-            setTimeout(animate, 1);
-          }else{
-            counter.innerText = value;
-          }
+//         const time = value / speed;
+//       if(data < value) {
+//             counter.innerText = Math.ceil(data + time);
+//             setTimeout(animate, 1);
+//           }else{
+//             counter.innerText = value;
+//           }
       
-    }
+//     }
     
-    animate();
-});
+//     animate();
+// });
 $( document ).ready(function() {
   console.log("Inside")
   $.ajax({
         type: 'GET',
         url: "{% url 'get_salary_summary_data' %}",
         success: function (response) { 
+            document.getElementById("dashboard_last_month_salary").innerHTML = response["last_month_salary"]
             new ApexCharts(document.querySelector("#columnChart"), {
               series: [ {
                 name: 'Net Salary',
@@ -229,7 +230,6 @@ $( document ).ready(function() {
                       }).render();
         }
     });
-  
 });
 
 </script>

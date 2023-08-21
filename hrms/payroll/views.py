@@ -676,6 +676,7 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
 
 
 def get_final_salary_details(emp_id="",month="",emp_type=""):
+    print(emp_id,month)
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
         emp = Employee.objects.get(emp_id=emp_id)

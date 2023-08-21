@@ -53,25 +53,52 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
         for month in months:
             response_list = []
             total_net_salary = 0
-            employees = 0
-            employee_data = get_process_salary("multiple",month[0])
-            for employee in employee_data:
+            employees_count = 0
+            # employee_data = get_process_salary("multiple",month[0])
+            # for employee in employee_data:
+            #     try :
+            #         response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],month[0])
+            #         if response == "employee_finance_details_error":
+            #             pass
+            #         elif response == "Department Empty":
+            #             pass
+            #         elif response[-1] == 0:
+            #             pass
+            #         else:
+            #             total_net_salary = total_net_salary + response[12]
+            #             employees += 1
+                    
+            #     except (ValueError,IndexError):
+            #         pass
+            # monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees])
+
+            employees = Employee.objects.filter(emp_type=0)
+            employees_list = list(employees)
+            total_net_salary = 0
+            for employee in employees_list:
+                emp_id = employee.emp_id
                 try :
-                    response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],month[0])
+                    
+                    response = get_final_salary_details(emp_id=emp_id,month=month[0])
+                    net_salary = "{:>9,.2f}".format(response[12])
                     if response == "employee_finance_details_error":
                         pass
                     elif response == "Department Empty":
                         pass
                     elif response[-1] == 0:
                         pass
-                    else:
-                        total_net_salary = total_net_salary + response[12]
-                        employees += 1
-                    
+                    elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
+                        pass
+                    else:    
+                        total_net_salary += response[12]
+                        employees_count += 1
                 except (ValueError,IndexError):
                     pass
-            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees])
+            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees_count])
+        last_month_total = monthly_net_salary_payed_record[4][2]
+        last_month_total_formatted = "{:>9,.2f}".format(last_month_total)
         
-        return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record})
+        
+        return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record,"last_month_salary":last_month_total_formatted})
     
 
