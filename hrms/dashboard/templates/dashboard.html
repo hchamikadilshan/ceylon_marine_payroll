@@ -15,10 +15,10 @@
     <div class="row">
 
       <!-- Left side columns -->
-      <div class="col-lg-8">
+      <div class="col-lg-12">
         <div class="row">
 
-            <div class="col-xxl-4 col-md-6">
+            <div class="col-md-6">
                 <div class="card info-card sales-card">
 
                     <div class="card-body">
@@ -38,11 +38,11 @@
                 
                 </div>
             </div><!-- End Sales Card -->
-            <div class="col-xxl-4 col-md-6">
+            <div class="col-md-6">
               <div class="card info-card sales-card">
 
                   <div class="card-body">
-                      <h5 class="card-title">shift Employees <span></span></h5>
+                      <h5 class="card-title">Shift Employees <span></span></h5>
 
                       <div class="d-flex align-items-center">
                         <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -59,7 +59,7 @@
               </div>
           </div><!-- End Sales Card -->
             
-            <div class="col-xxl-4 col-md-6">
+            <div class="col-md-3">
                 <div class="card info-card sales-card">
 
                     <div class="card-body">
@@ -79,11 +79,71 @@
                 
                 </div>
             </div><!-- End Sales Card -->
+            <div class="col-md-3">
+                <div class="card info-card sales-card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Last Month Salary Advance<span></span></h5>
+
+                        <div class="d-flex align-items-center">
+                        <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div> -->
+                        <div class="ps-3">
+                            <h6 id="dashboard_last_month_salary_advance" class ="value" akhi="156000.00">0</h6>
+                            <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
+
+                        </div>
+                        </div>
+                    </div>
+                
+                </div>
+            </div><!-- End Sales Card -->
+            <div class="col-md-3">
+              <div class="card info-card sales-card">
+
+                  <div class="card-body">
+                      <h5 class="card-title">Last Month Total Allowance<span></span></h5>
+
+                      <div class="d-flex align-items-center">
+                      <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <i class="bi bi-currency-dollar"></i>
+                      </div> -->
+                      <div class="ps-3">
+                          <h6 id="dashboard_last_month_allowance" class ="value" akhi="156000.00">0</h6>
+                          <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
+
+                      </div>
+                      </div>
+                  </div>
+              
+              </div>
+          </div><!-- End Sales Card -->
+            <div class="col-md-3">
+              <div class="card info-card sales-card">
+
+                  <div class="card-body">
+                      <h5 class="card-title">Last Month Total EPF<span></span></h5>
+
+                      <div class="d-flex align-items-center">
+                      <!-- <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                          <i class="bi bi-currency-dollar"></i>
+                      </div> -->
+                      <div class="ps-3">
+                          <h6 id="dashboard_last_month_epf" class ="value" akhi="156000.00">0</h6>
+                          <!-- <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span> -->
+
+                      </div>
+                      </div>
+                  </div>
+              
+              </div>
+          </div><!-- End Sales Card -->
         </div>
     </div>
 </div>
 <div class="row">
-  <div class="col-6">
+  <div class="col-8">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Salary Summary Chart</h5>
@@ -95,7 +155,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6">
+  <div class="col-4">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Employee Growth</h5>
@@ -140,16 +200,28 @@ $( document ).ready(function() {
         url: "{% url 'get_salary_summary_data' %}",
         success: function (response) { 
             document.getElementById("dashboard_last_month_salary").innerHTML = response["last_month_salary"]
+            document.getElementById("dashboard_last_month_salary_advance").innerHTML = response["last_month_salary_advance"]
+            document.getElementById("dashboard_last_month_allowance").innerHTML = response["last_month_allowance"]
+            document.getElementById("dashboard_last_month_epf").innerHTML = response["last_month_epf"]
             new ApexCharts(document.querySelector("#columnChart"), {
               series: [ {
                 name: 'Net Salary',
                 data: [response["monthly_net_salary_payed_record"][0][2], response["monthly_net_salary_payed_record"][1][2], response["monthly_net_salary_payed_record"][2][2], response["monthly_net_salary_payed_record"][3][2], response["monthly_net_salary_payed_record"][4][2], response["monthly_net_salary_payed_record"][5][2]]
+              },{
+                name: 'Salary Advance',
+                data: [response["monthly_net_salary_payed_record"][0][4], response["monthly_net_salary_payed_record"][1][4], response["monthly_net_salary_payed_record"][2][4], response["monthly_net_salary_payed_record"][3][4], response["monthly_net_salary_payed_record"][4][4], response["monthly_net_salary_payed_record"][5][4]]
+              },{
+                name: 'EPF',
+                data: [response["monthly_net_salary_payed_record"][0][5], response["monthly_net_salary_payed_record"][1][5], response["monthly_net_salary_payed_record"][2][5], response["monthly_net_salary_payed_record"][3][5], response["monthly_net_salary_payed_record"][4][5], response["monthly_net_salary_payed_record"][5][5]]
+              },{
+                name: 'Alowance',
+                data: [response["monthly_net_salary_payed_record"][0][6], response["monthly_net_salary_payed_record"][1][6], response["monthly_net_salary_payed_record"][2][6], response["monthly_net_salary_payed_record"][3][6], response["monthly_net_salary_payed_record"][4][6], response["monthly_net_salary_payed_record"][5][6]]
               }],
               chart: {
                 type: 'bar',
                 height: 350
               },
-              colors: ['#4154f1'],
+              // colors: ['#4154f1'],
               plotOptions: {
                 bar: {
                   horizontal: false,

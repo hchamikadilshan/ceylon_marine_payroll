@@ -75,6 +75,9 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
             employees = Employee.objects.filter(emp_type=0)
             employees_list = list(employees)
             total_net_salary = 0
+            total_salary_advance = 0
+            total_epf = 0
+            total_allowance = 0
             for employee in employees_list:
                 emp_id = employee.emp_id
                 try :
@@ -91,14 +94,23 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
                         pass
                     else:    
                         total_net_salary += response[12]
+                        total_salary_advance  += response[6]
+                        total_epf += response[5]
+                        total_allowance += response[7]
                         employees_count += 1
                 except (ValueError,IndexError):
                     pass
-            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees_count])
+            monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees_count,total_salary_advance,total_epf,total_allowance])
         last_month_total = monthly_net_salary_payed_record[4][2]
-        last_month_total_formatted = "{:>9,.2f}".format(last_month_total)
+        last_month_total_formatted = "Rs. {:>9,.2f}".format(last_month_total)
+        last_month_salary_advance = monthly_net_salary_payed_record[4][4]
+        last_month_salary_advance_formated =  "Rs. {:>9,.2f}".format(last_month_salary_advance)
+        last_month_allowance = monthly_net_salary_payed_record[4][6]
+        last_month_allowance_formated =  "Rs. {:>9,.2f}".format(last_month_allowance)
+        last_month_epf = monthly_net_salary_payed_record[4][5]
+        last_month_epf_formated =  "Rs. {:>9,.2f}".format(last_month_epf)
         
         
-        return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record,"last_month_salary":last_month_total_formatted})
+        return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record,"last_month_salary":last_month_total_formatted,"last_month_salary_advance":last_month_salary_advance_formated,"last_month_allowance":last_month_allowance_formated,"last_month_epf":last_month_epf_formated})
     
 
