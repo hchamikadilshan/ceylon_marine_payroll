@@ -42,11 +42,18 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
         today = datetime.now()
         current_month = today.month
         months = []
-        i = 0
-        while (i < 6):
-            date = today - relativedelta(months=+i)
-            months.append([date.month,date.strftime("%b")])
-            i +=1
+        if today.day > 10:
+            i = 1
+            while (i < 7):
+                date = today - relativedelta(months=+i)
+                months.append([date.month,date.strftime("%b")])
+                i +=1
+        else:
+            i = 2
+            while (i < 8):
+                date = today - relativedelta(months=+i)
+                months.append([date.month,date.strftime("%b")])
+                i +=1
         months.reverse()
 
         monthly_net_salary_payed_record = []
@@ -101,13 +108,13 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
                 except (ValueError,IndexError):
                     pass
             monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees_count,total_salary_advance,total_epf,total_allowance])
-        last_month_total = monthly_net_salary_payed_record[4][2]
+        last_month_total = monthly_net_salary_payed_record[5][2]
         last_month_total_formatted = "Rs. {:>9,.2f}".format(last_month_total)
-        last_month_salary_advance = monthly_net_salary_payed_record[4][4]
+        last_month_salary_advance = monthly_net_salary_payed_record[5][4]
         last_month_salary_advance_formated =  "Rs. {:>9,.2f}".format(last_month_salary_advance)
-        last_month_allowance = monthly_net_salary_payed_record[4][6]
+        last_month_allowance = monthly_net_salary_payed_record[5][6]
         last_month_allowance_formated =  "Rs. {:>9,.2f}".format(last_month_allowance)
-        last_month_epf = monthly_net_salary_payed_record[4][5]
+        last_month_epf = monthly_net_salary_payed_record[5][5]
         last_month_epf_formated =  "Rs. {:>9,.2f}".format(last_month_epf)
         
         
