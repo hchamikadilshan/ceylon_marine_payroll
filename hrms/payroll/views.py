@@ -364,6 +364,7 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         
         return FileResponse(buffer, as_attachment=True, filename=file_name)
 def get_no_of_days_of_the_month(month):
+    days = 0
     if month in ["01","03","05","07","08","10","12"]:
         days = 31
     elif month in ["04","06","09","11"]:
