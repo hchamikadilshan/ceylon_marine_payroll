@@ -363,6 +363,14 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         pdf1= canvas.Canvas(buffer,pagesize = A4)
         
         return FileResponse(buffer, as_attachment=True, filename=file_name)
+def get_no_of_days_of_the_month(month):
+    if month in ["01","03","05","07","08","10","12"]:
+        days = 31
+    elif month in ["04","06","09","11"]:
+        days = 30
+    elif month == "02":
+        days = 28
+    return days
     
 def get_process_salary(request_type,month,emp_id="",emp_type=0):
     employees_list = []
@@ -928,10 +936,12 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             extra_days = 0
             extra_attendance_allowance = 0
             worked_days = len(attendance_record_list) + over_night_days
+            
             if worked_days >= 26:
                 attendance_allowance_26 = 1000
                 attendance_allowance = attendance_allowance + 1000
             if worked_days > 26:
+                
                 extra_days = worked_days-26
                 extra_attendance_allowance = (worked_days-26)*500
                 attendance_allowance = attendance_allowance + (worked_days-26)*500
@@ -958,11 +968,19 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         attendance_allowance_26 = 0
         extra_days = 0
         extra_attendance_allowance = 0
-        worked_days = len(attendance_record_list) + over_night_days
+        actully_worked_days = len(attendance_record_list)
+        worked_days = actully_worked_days + over_night_days
+        days_in_month = get_no_of_days_of_the_month(month)
         if worked_days >= 26:
+            print("have attendance allowance")
+            print(f"normal worked days : {actully_worked_days}")
+            print(f"overnight worked days : {over_night_days}")
             attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
         if worked_days > 26:
+            if worked_days > days_in_month:
+                worked_days =  days_in_month
+            print(f"worked days {worked_days}")
             extra_days = worked_days-26
             extra_attendance_allowance = (worked_days-26)*500
             attendance_allowance = attendance_allowance + (worked_days-26)*500
@@ -983,7 +1001,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance - total_deduction
 
-        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_status,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
+        return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_status,actully_worked_days,over_night_days,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -1613,6 +1631,8 @@ class SalaryReportView(LoginRequiredMixin,View):
             hourly_payment_rate = "{:>9.2f}".format(response[10])
             basic_salary = "{:>9.2f}".format(response[11])
             net_salary = "{:>9.2f}".format(response[12])
+            total_worked_days = response[-12]
+            over_night_days = response[-11]
 
-            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final,'total_deduction':total_deduction}, status=200)
+            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final,'total_deduction':total_deduction,'total_worked_days':total_worked_days,'over_night_worked_days':over_night_days}, status=200)
         
