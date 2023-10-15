@@ -685,7 +685,7 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
 
 
 def get_final_salary_details(emp_id="",month="",emp_type=""):
-    print(emp_id,month)
+    # print(emp_id,month)
 # Getting Details of one employee one month
     if emp_id != "" and month != "":
         emp = Employee.objects.get(emp_id=emp_id)
@@ -973,15 +973,11 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
         worked_days = actully_worked_days + over_night_days
         days_in_month = get_no_of_days_of_the_month(month)
         if worked_days >= 26:
-            print("have attendance allowance")
-            print(f"normal worked days : {actully_worked_days}")
-            print(f"overnight worked days : {over_night_days}")
             attendance_allowance_26 = 1000
             attendance_allowance = attendance_allowance + 1000
         if worked_days > 26:
             if worked_days > days_in_month:
                 worked_days =  days_in_month
-            print(f"worked days {worked_days}")
             extra_days = worked_days-26
             extra_attendance_allowance = (worked_days-26)*500
             attendance_allowance = attendance_allowance + (worked_days-26)*500
@@ -1001,7 +997,8 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
                 fixed_allowance = 0.0
             
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance - total_deduction
-
+        if emp_id == "A01921":
+            print(f"{emp_id}-{worked_days}")
         return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_status,actully_worked_days,over_night_days,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
@@ -1249,10 +1246,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             buffer.seek(0)
             return FileResponse(buffer, as_attachment=True, filename=f"{emp_id}-{employee_name}-{month}-payslip.pdf")
         elif pdf_type == "multiple":
-            print("inside multiple")
-            print(emp_id)
             if emp_id == "":
-                print("inside")
                 employees = Employee.objects.filter(emp_type=0,active_status=True).values()
                 employees_list = list(employees)
                 payslips_record = []
@@ -1262,6 +1256,8 @@ class PayslipPdfView(LoginRequiredMixin,View):
                     try :
                         response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                         if response == "employee_finance_details_error" or response == "Department Empty":
+                            pass
+                        elif response[-1] == 0:
                             pass
                         else:
                             payslips_record.append(response)
@@ -1617,6 +1613,7 @@ class SalaryReportView(LoginRequiredMixin,View):
         elif response == "Department Empty":
             return JsonResponse({'error':"Department"})
         else:
+            print(response)
             attendance_allowance = response[16] + response[18]
             attendance_allowance_final = "{:>9.2f}".format(attendance_allowance)
             other_allowance = "{:>9.2f}".format(response[1])

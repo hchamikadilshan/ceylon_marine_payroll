@@ -16,6 +16,7 @@
 
 
 <form method="POST" action="{% url 'brank_transfer_report_pdf' %}">
+    <input type="hidden" name="emp_ids" id="checked_emp_ids" value="">
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
@@ -45,12 +46,12 @@
             <div class="col-md-1">
                 <label class=" col-form-label" for="bank_report_download_button">Download</label>
                 <div class="">
-                    <button  id="bank_report_download_button" class="btn btn-success" disabled><i class ="bi bi-download"></i> Download PDF</button>
+                    <button  id="bank_report_download_button" class="btn btn-success" onclick="collectCheckedEmpIds();" disabled><i class ="bi bi-download"></i> Download PDF</button>
                 </div>
             </div>
         </div>
     </div>
-</form>
+
 <div class="card formss">
     <div class="card-body ">
         <h5 class="card-title">Bank Transfer View Table</h5>
@@ -74,7 +75,27 @@
 
     </div>
 </div>
+</form>
 <script>
+    function collectCheckedEmpIds() {
+
+        var checkedEmpIds = [];
+
+        // Find all the checkboxes with the class 'custom-control-input'
+        var checkboxes = document.querySelectorAll('.emp-checkbox');
+
+
+        checkboxes.forEach(function (checkbox, index) {
+            if (checkbox.checked) {
+                // Find the corresponding emp_id in the response data
+                var empId = checkbox.dataset.id
+                checkedEmpIds.push(empId);
+            }
+        });
+
+        // Add the collected emp_id values to a hidden input field in the form
+        document.querySelector('#checked_emp_ids').value = checkedEmpIds.join(',');
+    }
     document.getElementById("bank_report_view_button").addEventListener("click", function(event){
             event.preventDefault()});
     // Click View Button 
@@ -99,7 +120,7 @@
                             $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }else if(response["data"][i]["status"] === 0){
                             console.log(response["data"][i]["bank"])
-                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
+                            $("#bank_transfer_details_table").append('<tr><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input emp-checkbox" id="customCheck1" data-id=' + response["data"][i]["emp_id"] + ' checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }
                         i++
                     }

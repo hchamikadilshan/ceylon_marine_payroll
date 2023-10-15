@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %} New Employee {% endblock%}
+{% block title %} Employee Summary {% endblock%}
 
 {% block top_heading %}Employee Management{% endblock %}
-{% block sub_heading %} New Employee{% endblock %}
-{% block sub_heading2 %} New Employee{% endblock %}
+{% block sub_heading %} Employee Summary{% endblock %}
+{% block sub_heading2 %} Employee Summary{% endblock %}
 
 {% block user_first_name1 %}{{user.first_name}} {% endblock %} 
 {% block user_first_name2 %}{{user.first_name}} {% endblock %} 
@@ -14,23 +14,23 @@
 {% block content %}
 <div class="card formss" >
     <div class="card-body">
-        <form method="POST" class="row g-3 ">
+        <form method="POST" class="row g-3 "> 
             {% csrf_token %}
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <label class="col-form-label" for="emp_id">Employee ID</label>
                 <div class="">
-                    <input class="form-control" type="text" name="emp_id" id="emp_id" required onchange="checkEmpIdAvailablity();">
+                    <input class="form-control" type="text" name="emp_id" id="emp_id" value="{{employee.emp_id}}" readonly>
                 </div>
                 
             </div>
             
-            <!-- <div class="col-md-4">
+            <!-- <div class="col-md-3">
                 <label class=" col-form-label" for="department">Department</label>
                 <div class="">
-                    <input class="form-control " type="text" name="department" id="department" >
+                    <input class="form-control " type="text" name="department" id="department" value="{{employee.dprtmnt}}" >
                 </div>
             </div> -->
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
                 <label class=" col-form-label" for="department">Department</label>
                 <div class="">
                     <select class="form-control" name="department" id="department">
@@ -40,25 +40,35 @@
                         
                     </select>
                 </div>
-            </div>
-            <div class="col-md-4">
+            </div> -->
+            <!-- <div class="col-md-3">
                 <label class=" col-form-label" for="emp_type">Employee Type</label>
                 <div class="">
-                    <select class="form-control" name="emp_type" id="emp_type">
-                        <option value=0>Normal Employee</option>
-                        <option value=1>Shift Employee</option>
-                    </select>
+                    <input class="form-control " type="text" name="department" id="department" {% if employee.emp_type == 0 %} value="Normal Employee" {% else %} value="Shift Employee" {% endif %}>
                 </div>
-            </div>
-            <div class="col-md-12">
+            </div> -->
+            <div class="col-md-6">
                 <label class=" col-form-label" for="name">Name</label>
                 <div class="">
-                    <input class="form-control " type="text" name="name" id="name" required>
+                    <input class="form-control " type="text" name="name" id="name" value="{{employee.name}}" readonly>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label class=" col-form-label" for="name">Joined Date</label>
+                <div class="">
+                    <input class="form-control " type="text" name="name" id="name" value="{{employee.appoinment_date}}" readonly> 
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class=" col-form-label" for="name">Resigned Date</label>
+                <div class="">
+                    <input class="form-control " type="text" name="name" id="name" value="{{employee.termination_date}}" readonly> 
                 </div>
             </div>
             
             
-            <div class="col-md-4">
+            <!-- <div class="col-md-6">
                             <label class=" col-form-label" for="epf-no">EPF No</label>
                             <div class="">
                                 <input class="form-control" type="text" name="epf_no" id="epf_no" value="{{epf_no}}">
@@ -66,20 +76,13 @@
                         
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6">
                             <label class=" col-form-label" for="nic_no">NIC No</label>
                             <div class="">
                                 <input class="form-control" type="text" name="nic_no" id="nic_no">
                             </div>
                             
-            </div>
-            <div class="col-md-4">
-                <label class=" col-form-label" for="joined_date">Joined Date</label>
-                <div class="">
-                    <input class="form-control" type="date" name="joined_date" id="joined_date" required>
-                </div>
-                
-            </div>
+            </div> -->
 
             <!-- <div class="col-md-6">
                             <label class=" col-form-label" for="appoinment_date">Appoinment Date</label>
@@ -97,7 +100,7 @@
                             
             </div> -->
 
-            <div class="col-md-12">
+            <!-- <div class="col-md-12">
                             <label class=" col-form-label" for="address">Address</label>
                             <div class="">
                                 <input class="form-control" type="text" name="address" id="address">
@@ -119,13 +122,11 @@
                                 <input class="form-control" type="text" name="email" id="email">
                             </div>
                             
-            </div>
+            </div> -->
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
                             <label class=" col-form-label" for="bank_name">Bank Name</label>
-                            <!-- <div class="">
-                                <input class="form-control" type="text" name="bank_name" id="bank_name">
-                            </div> -->
+
                             <div class="">
                                 <select class="form-control" name="bank_name" id="bank_name" onchange="bank_branch_select();">
                                     {% for bank in banks %}
@@ -155,57 +156,86 @@
                     <input class="form-control" type="text" name="bank_acc_no" id="bank_acc_no">
                 </div>
             
-            </div>
-            <div class="text-center">
+            </div> -->
+            <!-- <div class="text-center">
                             <button class="btn btn-primary">Create Employee</button>
-            </div>
+            </div> -->
         </form>
     </div>
 </div>
 
+<div class="card formss">
+    <div class="card-body">
+        <h5 class="card-title">Attendence Summary Chart</h5>
+
+        <!-- Column Chart -->
+        <div id="attendenceSumamryChart"></div>
+        <!-- End Column Chart -->
+
+    </div>
+</div>
+
+
 <script>
-    function checkEmpIdAvailablity(){
-        var emp_id = document.getElementById("emp_id").value
-
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'check_emp_id_availability' %}",
-            data: {
-                emp_id: emp_id,
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-            },
-            success: function (response) {
-                if (response.status == 1){
-                    $("#messeges_container").empty()
-                    $("#messeges_container").append('<div class="alert alert-danger alert-dismissible fade show formss" role="alert"><strong>Employee Exists ! </strong>An employee already exists for entered employee ID <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
-                }else{
-
-                }
-            }
-        });
-    }
-    
-    function bank_branch_select(){
-        var bank_select = document.getElementById("bank_name")
-        var branch_select = document.getElementById("bank_branch");
-        bank = bank_select.value
-
+    $( document ).ready(function() {
+        var employee_id = document.getElementById("emp_id").value
         $.ajax({
         type: 'POST',
-        url: "{% url 'get_bank_branches' %}",
+        url: "{% url 'get_attendence_summary_data' %}",
         data: {
-            bank: bank,
+            employee_id: employee_id,
             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
         },
         success: function (response) {
-            branch_select.innerHTML = "";
-            for (var i = 0; i < response["branches"].length; i++) {
-                let newOption = new Option(response["branches"][i][1],response["branches"][i][0]);
-                branch_select.add(newOption,undefined);
-            }
+            console.log(response["yearly_attendance_record"]) 
+            new ApexCharts(document.querySelector("#attendenceSumamryChart"), {
+                        series: [{
+                          name: 'Days',
+                        //   data: [31, 40, 28, 51, 42, 82],
+                          data: [response["yearly_attendance_record"][0][1], response["yearly_attendance_record"][1][1], response["yearly_attendance_record"][2][1], response["yearly_attendance_record"][3][1], response["yearly_attendance_record"][4][1], response["yearly_attendance_record"][5][1],response["yearly_attendance_record"][6][1], response["yearly_attendance_record"][7][1], response["yearly_attendance_record"][8][1], response["yearly_attendance_record"][9][1], response["yearly_attendance_record"][10][1], response["yearly_attendance_record"][11][1]],
+                        }],
+                        chart: {
+                          height: 350,
+                          type: 'area',
+                          toolbar: {
+                            show: false
+                          },
+                        },
+                        markers: {
+                          size: 4
+                        },
+                        colors: ['#4154f1'],
+                        fill: {
+                          type: "gradient",
+                          gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.3,
+                            opacityTo: 0.4,
+                            stops: [0, 90, 100]
+                          }
+                        },
+                        dataLabels: {
+                          enabled: false
+                        },
+                        stroke: {
+                          curve: 'smooth',
+                          width: 2
+                        },
+                        xaxis: {
+                          type: 'text',
+                          categories: [response["yearly_attendance_record"][0][0], response["yearly_attendance_record"][1][0], response["yearly_attendance_record"][2][0], response["yearly_attendance_record"][3][0], response["yearly_attendance_record"][4][0], response["yearly_attendance_record"][5][0],response["yearly_attendance_record"][6][0], response["yearly_attendance_record"][7][0], response["yearly_attendance_record"][8][0], response["yearly_attendance_record"][9][0], response["yearly_attendance_record"][10][0], response["yearly_attendance_record"][11][0]]
+                        },
+                        // tooltip: {
+                        //   x: {
+                        //     format: 'dd/MM/yy HH:mm'
+                        //   },
+                        // }
+                      }).render();
         }
+            // console.log(response["monthly_net_salary_payed_record"][0], response["monthly_net_salary_payed_record"][1], response["monthly_net_salary_payed_record"][2], response["monthly_net_salary_payed_record"][3][1], response["monthly_net_salary_payed_record"][4][3], response["monthly_net_salary_payed_record"][5][3])
     });
-    }
+});
+    
 </script>
 
 

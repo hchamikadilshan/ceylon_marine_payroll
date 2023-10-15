@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddNewEmployeeView, EmployeesMainView, GetEmpNameView, EmployeeSalaryDetailsView, GetEmployeeSalaryDetails,EditEmployee,CheckEmployeeAvailability,GetBankBranches,EditEmployeeSalaryDetails
+from .views import AddNewEmployeeView, EmployeesMainView, GetEmpNameView, EmployeeSalaryDetailsView, GetEmployeeSalaryDetails,EditEmployee,CheckEmployeeAvailability,GetBankBranches,EditEmployeeSalaryDetails,EmployeeSummary,GetAttendenceSummaryChartDetails
 
 
 urlpatterns = [
@@ -13,4 +13,6 @@ urlpatterns = [
     path('check_emp_id_availability', CheckEmployeeAvailability.as_view(), name="check_emp_id_availability"),
     path('get_bank_branches', GetBankBranches.as_view(), name="get_bank_branches"),               
     path('edit_employee_finance', EditEmployeeSalaryDetails.as_view(), name="edit_employee_finance"),               
+    path('employee_summary/<str:employee_id>', EmployeeSummary.as_view(), name="employee_summary"),               
+    path('employee_summary_chart_data', GetAttendenceSummaryChartDetails.as_view(), name="get_attendence_summary_data"),               
 ]

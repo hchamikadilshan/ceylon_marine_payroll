@@ -57,6 +57,8 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
         months.reverse()
 
         monthly_net_salary_payed_record = []
+        employees = Employee.objects.filter(emp_type=0)
+        employees_list = list(employees)
         for month in months:
             response_list = []
             total_net_salary = 0
@@ -78,28 +80,33 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
             #     except (ValueError,IndexError):
             #         pass
             # monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees])
-
-            employees = Employee.objects.filter(emp_type=0)
-            employees_list = list(employees)
             total_net_salary = 0
             total_salary_advance = 0
             total_epf = 0
             total_allowance = 0
+            count = 0
             for employee in employees_list:
                 emp_id = employee.emp_id
                 try :
-                    
+                    # print(month[0])
                     response = get_final_salary_details(emp_id=emp_id,month=month[0])
                     net_salary = "{:>9,.2f}".format(response[12])
                     if response == "employee_finance_details_error":
+                        # print(f"Found {emp_id} out in employee_finance_details_error")
                         pass
                     elif response == "Department Empty":
+                        # print(f"Found {emp_id} out in Department Empty error")
                         pass
                     elif response[-1] == 0:
+                        if emp_id == "A01921":
+                            print(f"Found {emp_id} out in days 0 {response}")
                         pass
                     elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
+                        # print(f"Found {emp_id} out in bank details ")
                         pass
                     else:    
+                        count += 1
+                        # print(emp_id,month)
                         total_net_salary += response[12]
                         total_salary_advance  += response[6]
                         total_epf += response[5]
@@ -107,6 +114,7 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
                         employees_count += 1
                 except (ValueError,IndexError):
                     pass
+            print(f"No of employees{count}")
             monthly_net_salary_payed_record.append([month[0],month[1],total_net_salary,employees_count,total_salary_advance,total_epf,total_allowance])
         last_month_total = monthly_net_salary_payed_record[5][2]
         last_month_total_formatted = "Rs. {:>9,.2f}".format(last_month_total)
@@ -116,6 +124,8 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
         last_month_allowance_formated =  "Rs. {:>9,.2f}".format(last_month_allowance)
         last_month_epf = monthly_net_salary_payed_record[5][5]
         last_month_epf_formated =  "Rs. {:>9,.2f}".format(last_month_epf)
+
+        
         
         
         return JsonResponse({'monthly_net_salary_payed_record':monthly_net_salary_payed_record,"last_month_salary":last_month_total_formatted,"last_month_salary_advance":last_month_salary_advance_formated,"last_month_allowance":last_month_allowance_formated,"last_month_epf":last_month_epf_formated})

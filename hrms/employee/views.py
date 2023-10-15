@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView
-from .forms import EmployeeForm
 from .models import Employee, EmployeeFinance,Bank,BankBranch
+from attendance.models import Attendance
 from django.http import JsonResponse
-from datetime import datetime
+from datetime import datetime,date
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.mixins import LoginRequiredMixin
 from adminapp.models import Department
@@ -50,6 +50,8 @@ class EditEmployee(LoginRequiredMixin,View):
         mobile_no = request.POST.get('edit_employee_mobile_no',"")
         email = request.POST.get('edit_employee_email',"")
         address = request.POST.get('edit_employee_address',"")
+        joined_date =  request.POST.get('edit_employee_joined_date',"")
+        resigned_date = request.POST.get('edit_employee_resigned_date',"")
         bank = request.POST.get('bank_name',"")
         branch = request.POST.get('bank_branch',"")
         bank_name = request.POST.get('bank_name',"")
@@ -57,11 +59,32 @@ class EditEmployee(LoginRequiredMixin,View):
         bank_acc_name = request.POST.get('bank_acc_name',"")
         bank_acc_no = request.POST.get('bank_acc_no',"")
 
+
         employee = Employee.objects.get(emp_id=emp_id)
         if department == "":
             department = None
         else:
             department = Department.objects.get(id=department)
+        
+        if joined_date == "":
+            pass
+        else:
+            employee.appoinment_date =  joined_date
+
+
+        
+
+        if resigned_date == "":
+            employee.termination_date =  None
+            employee.active_status = 1
+        else:
+            if emp_active == "1":
+                employee.termination_date =  None
+                employee.active_status = 1
+            else:
+                employee.termination_date =  resigned_date
+                employee.active_status = 0
+        
 
         if bank == "":
             bank_obj = None
@@ -76,7 +99,6 @@ class EditEmployee(LoginRequiredMixin,View):
         if emp_id[0] == "a":
             emp_id = emp_id[0].upper() + emp_id[1:]
             employee.emp_id = emp_id
-        print(emp_id)
         employee.name = emp_name
         employee.dprtmnt = department
         employee.epf_no = epf_no
@@ -89,7 +111,7 @@ class EditEmployee(LoginRequiredMixin,View):
         employee.bank_acc_no = bank_acc_no
         employee.bank_name = bank_name
         employee.bank_branch = bank_branch
-        employee.active_status = emp_active
+
         employee.save()
         return redirect('employees_main_view')
 
@@ -100,7 +122,8 @@ class AddEmployeeInAttendance(LoginRequiredMixin,View):
         name = request.POST['name']
         next_epf_no = get_largest_epf_no()
         emp_id = emp_id[0].upper() + emp_id[1:]
-        employee = Employee(emp_id=emp_id, name=name,epf_no = next_epf_no,dprtmnt=None)
+        today = date.today()
+        employee = Employee(emp_id=emp_id, name=name,epf_no = next_epf_no,dprtmnt=None,appoinment_date =today)
         employee.save()
         return JsonResponse({})
     
@@ -134,7 +157,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         department = request.POST.get('department',"")
         epf_no = request.POST.get('epf_no',"")
         nic_no = request.POST.get('nic_no',"")
-        appoinment_date = request.POST.get('appoinment_date',"")
+        joined_date = request.POST.get('joined_date',"")
         termination_date = request.POST.get('termination_date',"")
         address = request.POST.get('address',"")
         mobile_no = request.POST.get('mobile_no',"")
@@ -164,7 +187,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         
 
         employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,bank = bank_obj,branch = branch_obj,
-                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if appoinment_date == "" else appoinment_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=joined_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")
@@ -310,3 +333,24 @@ class GetBankBranches(LoginRequiredMixin,View):
         for branch in branches:
             branches_list.append([branch.branch_id,branch.branch_name])
         return JsonResponse({'branches':branches_list})
+
+class EmployeeSummary(LoginRequiredMixin,View):
+    def get(self,request,employee_id):
+        employee =  Employee.objects.get(emp_id = employee_id)
+        return render(request,"employee_summary.html",context={"employee":employee})
+
+class GetAttendenceSummaryChartDetails(LoginRequiredMixin,View):
+    def post(self,request):
+        employee_id = request.POST["employee_id"]
+        employee =  Employee.objects.get(emp_id = employee_id)
+        months = ["01","02","03","04","05","06","07","08","09","10","11","12"]
+        yearly_attendance_record = []
+        current_year = datetime.now().year
+        for month in months:
+            date_obj = datetime.strptime(month, "%m")
+            month_name = date_obj.strftime("%B")
+            attendance_record = Attendance.objects.filter(
+                    employee=employee,date__month=month,date__year=current_year).order_by('date').values()
+            attendance_record_list = list(attendance_record)
+            yearly_attendance_record.append([month_name,len(attendance_record)])
+        return JsonResponse({'yearly_attendance_record':yearly_attendance_record})

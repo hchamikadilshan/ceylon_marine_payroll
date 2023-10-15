@@ -91,6 +91,14 @@
                                 <label for="inputAddress" class="form-label">Address</label>
                                 <input type="text" class="form-control" id="edit_employee_address" name="edit_employee_address">
                             </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Joined Date</label>
+                                <input type="date" class="form-control" id="edit_employee_joined_date" name="edit_employee_joined_date">
+                            </div>
+                            <div class="col-6">
+                                <label for="inputAddress" class="form-label">Resigned Date</label>
+                                <input type="date" onchange="makeEmployeeInactive();" class="form-control" id="edit_employee_resigned_date" name="edit_employee_resigned_date">
+                            </div>
                             <div class="col-md-6">
                                 <label class=" col-form-label" for="bank_name">Bank Name</label>
                               
@@ -150,12 +158,12 @@
                     <th scope="col">Emp ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Type</th>
-                    <th scope="col">Active/Inactive</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Department</th>
                     <th scope="col">EPF No</th>
                     <th scope="col">NIC No</th>
-                    <!-- <th scope="col">Appoinment Date</th>
-                    <th scope="col">Termination Date</th> -->
+                    <th scope="col">Joined Date</th>
+                    <th scope="col">Resigned Date</th>
                     <th scope="col">Address</th>
                     <th scope="col">Mobile No</th>
                     <th scope="col">Email</th>
@@ -171,22 +179,22 @@
                 <tr>
                     <th scope="row"></th>
                     <td>{{ employee.emp_id }}</td>
-                    <td>{{ employee.name }}</td>
+                    <td><a href="{% url 'employee_summary' employee_id=employee.emp_id %}">{{ employee.name }}</a></td>
                     {% if employee.emp_type == 0 %}
                     <td>Normal Employee</td>
                     {% elif employee.emp_type == 1 %}
                     <td>Shift Employee</td>
                     {% endif %}
                     {% if employee.active_status == 0 %}
-                    <td>Inactive</td>
+                    <td><span class="badge bg-secondary">Inactive</span></td>
                     {% elif employee.active_status == 1 %}
-                    <td>Active</td>
+                    <td><span class="badge bg-success">Active</span></td>
                     {% endif %}
                     <td>{{ employee.dprtmnt.department }}</td>
                     <td>{{ employee.epf_no }}</td>
                     <td>{{ employee.nic_no }}</td>
-                    <!-- <td>{{ employee.appoinement_date }}</td>
-                    <td>{{ employee.termination_date }}</td> -->
+                    <td>{{ employee.appoinment_date }}</td>
+                    <td>{{ employee.termination_date }}</td>
                     <td>{{ employee.address}}</td>
                     <td>{{ employee.mobile_no }}</td>
                     <td>{{ employee.email }}</td>
@@ -194,7 +202,7 @@
                     <td>{{ employee.branch.branch_name}}</td>
                     <td>{{ employee.bank_acc_name }}</td>
                     <td>{{ employee.bank_acc_no }}</td>
-                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}" data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}" data-active="{{ employee.active_status }}" >Edit</button></td>
+                    <td><button class="btn btn-primary" data-id="{{ employee.emp_id }}" data-bs-toggle="modal" data-bs-target="#edit_employee_data_model" data-empID="{{ employee.emp_id }}" data-empName="{{ employee.name }}" data-empType="{{ employee.emp_type }}" data-department="{{ employee.dprtmnt.id }}" data-epfNo="{{ employee.epf_no }}" data-nicNo="{{ employee.nic_no }}" data-address="{{ employee.address}}"  data-mobileNo="{{ employee.mobile_no }}" data-email="{{ employee.email }}" data-bankName="{{ employee.bank.bank_id }}" data-bankBranch="{{ employee.branch.branch_id }}" data-accName="{{ employee.bank_acc_name }}" data-accNo="{{ employee.bank_acc_no }}" data-active="{{ employee.active_status }}" data-joinedDate="{{employee.appoinment_date}}" data-resignedDate="{{employee.termination_date}}">Edit</button></td>
                     
                 </tr>
                 {% endfor %}
@@ -222,8 +230,11 @@
         var bank_name = button.data('bankname') 
         var bank_branch = button.data('bankbranch') 
         var active_status  = button.data('active') 
+        var joined_date =  button.data('joineddate')
+        var resigned_date =  button.data('resigneddate')
         var modal = $(this)
 
+        
 
         modal.find('#bank_name').val(bank_name)
         bank_branch_select(bank_branch)
@@ -237,10 +248,26 @@
         modal.find('#edit_employee_mobile_no').val(mobile_no)
         modal.find('#edit_employee_email').val(email)
         modal.find('#edit_employee_address').val(address)
+        if(joined_date == "None"){
+
+        }else{
+            var formatted_joined_date = new Date(joined_date).toISOString().split('T')[0];
+            modal.find('#edit_employee_joined_date').val(formatted_joined_date)
+        }
+        if(resigned_date == "None"){
+
+        }else{
+            var formatted_resigned_date = new Date(resigned_date).toISOString().split('T')[0];
+            modal.find('#edit_employee_resigned_date').val(formatted_resigned_date)
+        }
         // modal.find('#bank_branch').val(bank_branch)
         modal.find('#bank_acc_name').val(bank_acc_name)
         modal.find('#bank_acc_no').val(bank_acc_no)
         })
+
+function makeEmployeeInactive(){
+    document.getElementById("edit_emp_active").value = 0
+}
 
 function editEmployee(){
         var emp_id = document.getElementById("edit_employee_emp_id").value;
@@ -252,6 +279,8 @@ function editEmployee(){
         var mobile_no = document.getElementById("edit_employee_mobile_no").value;
         var email = document.getElementById("edit_employee_email").value;
         var address =  document.getElementById("edit_employee_address").value;
+        var joined_date = document.getElementById("edit_employee_joined_date").value;
+        var resigned_date =  document.getElementById("edit_employee_resigned_date").value;
         var bank_acc_name = document.getElementById("bank_acc_name").value;
         var bank_acc_no = document.getElementById("bank_acc_no").value;
         var bank_name = document.getElementById("bank_name").value;
@@ -271,6 +300,8 @@ function editEmployee(){
                 email: email,
                 mobile_no:mobile_no,
                 address :address,
+                joined_date:joined_date,
+                resigned_date:resigned_date,
                 bank_acc_name:bank_acc_name,
                 bank_acc_no:bank_acc_no,
                 bank_name:bank_name,

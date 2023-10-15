@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Employee Report {% endblock%}
+
+{% block top_heading %}Reports{% endblock %}
+{% block sub_heading %} Employee Report{% endblock %}
+{% block sub_heading2 %} Employee Report{% endblock %}
+
+{% block user_first_name1 %}{{user.first_name}} {% endblock %} 
+{% block user_first_name2 %}{{user.first_name}} {% endblock %} 
+{% block user_last_name %}{{user.last_name}} {% endblock %}
+{% block username %}{{user.username}} {% endblock %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'employee_report' %}">
+    {% csrf_token %}
+    <div class="card formss">
+        <div class="card-body row g-3">
+            <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type">Employee Type</label>
+                <div class="">
+                    <select class="form-control" name="emp_type" id="emp_type">
+                        <option value=0>Normal Employee</option>
+                        <option value=1>Shift Employee</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- <div class="col-md-4">
+                <label class=" col-form-label" for="month_year">Month/Year</label>
+                <div class="">
+                    <input required class="form-control" type="month" name="month_year"
+                        id="month_year">
+                </div>
+            </div> -->
+            <div class="col-md-1">
+                <label class=" col-form-label" for="payslip_emp_name">Download</label>
+                <div class="">
+                    <button  id="reports_employee_report_download_button" class="btn btn-success"><i class ="bi bi-download"></i> Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    
+</script>
+
+
+{% endblock %}

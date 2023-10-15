@@ -61,7 +61,6 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                     ot = employee_response[8]
                     total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
                     other = employee_response[7] + employee_response[16] + employee_response[18] + employee_response[1]
-                    print(other)
                     net_salary = employee_response[12]
                     response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(other):9.2f}",f"{net_salary:9.2f}"])
             except (ValueError,IndexError):
@@ -165,7 +164,9 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
     def post(self,request):
         year_month = request.POST["month_year"]
         year_month_split = year_month.split('-')
-        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        emp_ids = request.POST["emp_ids"]
+        print(f"Selected IDs {emp_ids}")
+        employees = Employee.objects.filter(emp_type=0)
         employees_list = list(employees)
         employee_records = []
         toatl_salary = 0
@@ -298,7 +299,7 @@ class EpfCForm(LoginRequiredMixin,View):
         month = year_month_split[1]
         buffer = io.BytesIO()
 
-        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        employees = Employee.objects.filter(emp_type=0)
         employees_list = list(employees)
         employee_records = []
         for employee in employees_list:
@@ -719,6 +720,7 @@ Earnings"""]
  
         
 class EtfReport(LoginRequiredMixin,View):
+
     def get(self,request):
         return render(request,"etf_report.html")
     def post(self,request):
@@ -740,7 +742,7 @@ class EtfReport(LoginRequiredMixin,View):
             months = ["01","02","03","04","05","06"]
         else :
             months = ["07","08","09","10","11","12"]
-        employees = Employee.objects.filter(emp_type=0,active_status=True)
+        employees = Employee.objects.filter(emp_type=0)
         employees_list = list(employees)
         employee_records = []
         for month in months:
@@ -1275,3 +1277,51 @@ cash)""","""Date of Payment"""]
 
 
         return FileResponse(merged_buffer, as_attachment=True, filename=f"etf_report.pdf")
+    
+class EmployeeReport(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,"employee_report.html")
+    def post(self,request):
+        emp_type =  request.POST["emp_type"]
+        employees_list = Employee.objects.values("emp_id","name","appoinment_date","termination_date").filter(emp_type=emp_type)
+        for employee in employees_list:
+            print(employee)
+
+        file_name = f"Employee Report.pdf"
+        title = f"Employee Report"
+        buffer = io.BytesIO() 
+        pdf = SimpleDocTemplate(buffer,pagesize = A4, title=title,showBoundary=1,leftMargin=0, rightMargin=0, topMargin=0, bottomMargin=0,)
+        
+        table_data = []
+        document_heading = [f"Employee Report"]
+        empty_row_heading =[""]
+        table_data.append(document_heading)
+        table_data.append(empty_row_heading)
+        table_heading = ["""Employee ID""", 'Name','Joined Date',"""Resigned Date"""]
+        
+        table_data.append(table_heading)
+        for emp in employees_list:
+            table_row = [emp["emp_id"], emp["name"], emp["appoinment_date"],emp["termination_date"]]
+            table_data.append(table_row)
+        elements = []
+        
+        attendance_table = Table(table_data,colWidths=[1.0*inch,2.5*inch,1.3*inch,1.3*inch],rowHeights=[0.3*inch for i in range(len(employees_list)+3)])
+        attendance_table_styles = TableStyle(
+    [
+        ('GRID', (0, 2), (-1, -1), 1, colors.black),
+        ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
+        ('FONT', (0, 2), (-1, -1), 'Helvetica',9),
+        ('SPAN', (0, 0), (0, 0)),
+        ('SPAN', (0, 0), (-1, 0)),
+
+        ('ALIGN', (0, 0), (0,0),'CENTER'),
+        ('ALIGN', (0, 2), (-1,2),'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1),'MIDDLE'),
+        ]
+    
+)
+        attendance_table.setStyle(attendance_table_styles)
+        elements.append(attendance_table)
+        pdf.build(elements)
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename=file_name)
