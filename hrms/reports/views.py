@@ -22,15 +22,16 @@ from django.http import HttpResponse
 from PyPDF2 import PdfReader, PdfWriter
 
 def add_data_to_dashboard_model(year,month,total_salary,total_salary_advance,total_allowance,total_epf,employees_count):
-    record =  MonthSummary.objects.get(year=year,month=month)
+    record =  MonthSummary.objects.filter(year=year,month=month)
     if record:
-        if(record.total_salary != total_salary):
-            record.total_salary = total_salary
-            record.total_allowance = total_allowance
-            record.total_epf = total_epf
-            record.total_salary_advance = total_salary_advance
-            record.no_of_employees = employees_count
-            record.save()
+        monthly_record_obj = MonthSummary.objects.get(year=year,month=month)
+        if(monthly_record_obj.total_salary != total_salary):
+            monthly_record_obj.total_salary = total_salary
+            monthly_record_obj.total_allowance = total_allowance
+            monthly_record_obj.total_epf = total_epf
+            monthly_record_obj.total_salary_advance = total_salary_advance
+            monthly_record_obj.no_of_employees = employees_count
+            monthly_record_obj.save()
     else:
         month_summary =  MonthSummary(month=month,year=year,total_salary=total_salary,total_salary_advance=total_salary_advance,total_allowance=total_allowance,total_epf=total_epf,no_of_employees=employees_count)
         month_summary.save()
