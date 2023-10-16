@@ -13,7 +13,8 @@
 {% block username %}{{user.username}} {% endblock %}
 
 {% block content %}
-<form method="POST">
+<form method="POST" action="{% url 'pay_slip_pdf_view' %}">
+    <input type="hidden" name="emp_ids" id="checked_emp_ids" value="">
     {% csrf_token %}
     <div class="card formss">
         <div class="card-body row g-3">
@@ -58,13 +59,13 @@
             <div class="col-md-1">
                 <label class=" col-form-label" for="payslip_emp_name">Download</label>
                 <div class="">
-                    <button onclick="downloadMuliplePaylips();" id="payroll_employee_salary_pdf_generate_button" class="btn btn-success">Download Payslips</button>
+                    <button onclick="collectCheckedEmpIds();" id="payroll_employee_salary_pdf_generate_button" class="btn btn-success">Download Payslips</button>
                     <!-- <a href="{% url 'employee_salary_pdf_view' %}" target="_blank" class="btn btn-primary">Download Pdf</a> -->
                 </div>
             </div>
         </div>
     </div>
-</form>
+
 
 <div class="card formss">
     <div class="card-body ">
@@ -74,6 +75,8 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Select</th>
                     <th scope="col">Employee ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Month</th>
@@ -89,15 +92,33 @@
 
     </div>
 </div>
+</form>
 
 
 <script>
+    function collectCheckedEmpIds() {
+        var checkedEmpIds = [];
+        // Find all the checkboxes with the class 'custom-control-input'
+        var checkboxes = document.querySelectorAll('.emp-checkbox');
+        checkboxes.forEach(function (checkbox, index) {
+            if (checkbox.checked) {
+                // Find the corresponding emp_id in the response data
+                var empId = checkbox.dataset.id
+                checkedEmpIds.push(empId);
+
+            }
+
+        });
+
+// Add the collected emp_id values to a hidden input field in the form
+        document.querySelector('#checked_emp_ids').value = checkedEmpIds.join(',');
+    }
     document.getElementById("payroll_filter_button").addEventListener("click", function(event){
             event.preventDefault()
-            });
-    document.getElementById("payroll_employee_salary_pdf_generate_button").addEventListener("click", function(event){
-    event.preventDefault()
     });
+    // document.getElementById("payroll_employee_salary_pdf_generate_button").addEventListener("click", function(event){
+    //     event.preventDefault()
+    // });
     // Click Filter Button 
     function cliclFilterButton(){
         document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = false;
@@ -121,13 +142,13 @@
                         var i = 0;
                         while (i < response["data"].length) {
                             if (response["data"][i]["status"] === 1){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 0){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="downloadOnePayslip(this);" >Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input emp-checkbox" id="customCheck1" data-id=' + response["data"][i]["emp_id"] + ' checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][i]["emp_id"] +'" data-month="' + response["data"][i]["month"] +'" onclick="collectCheckedEmpIds();" >Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 2){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Finance Details</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Finance Details</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             }else if(response["data"][i]["status"] === 3){
-                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')}
+                                $("#payslip_info_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')}
                             i++
                         }
                         
@@ -149,15 +170,19 @@
                     success: function (response) {
                         $("#payslip_info_table").empty()
                         if (response["data"][0]["status"] === 1){
-                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            // $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>1</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Attendance Record</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
-                        }else if(response["data"][0]["status"] === 0){
-                            $("#payslip_info_table").append('<tr><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td><td>' + response["data"][0]["month"] + '</td><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="downloadOnePayslip(this);">Download</button></td></tr> ')
+                        }else if(response["data"][0]["status"] === 0){  
+                            // $("#payslip_info_table").append('<tr><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td><td>' + response["data"][0]["month"] + '</td><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="downloadOnePayslip(this);">Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>1</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input emp-checkbox" id="customCheck1" data-id=' + response["data"][0]["emp_id"] + ' checked></div></td><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-success">Ready</span></td><td></td><td><button class="btn btn-sm btn-success" data-empID="' + response["data"][0]["emp_id"] +'" data-month="' + response["data"][0]["month"] +'" onclick="collectCheckedEmpIds();" >Download</button></td></tr> ')
                         }else if(response["data"][0]["status"] === 2){
-                            $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Employee Finance</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            // $("#payslip_info_table").append('<tr><td>' + emp_id + '</td><td>' + emp_name + '</td>><td>' + month + '</td><td><span class="badge bg-danger">Error</span></td><td>Employee Finance</td><td><button class="btn btn-sm btn-success" disabled>Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>1</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Finance Details</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
                         }else if(response["data"][i]["status"] === 3){
-                            $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                            // $("#payslip_info_table").append('<tr><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
+                            $("#payslip_info_table").append('<tr><td>1</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][0]["emp_id"] + '</td><td>' + response["data"][0]["name"] + '</td>><td>' + month + '</td>><td><span class="badge bg-danger">Not Ready</span></td><td>Department Empty</td><td><button class="btn btn-sm btn-success  " disabled>Download</button></td></tr> ')
                             document.getElementById("payroll_employee_salary_pdf_generate_button").disabled = true;
                         }
                         

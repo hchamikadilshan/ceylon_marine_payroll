@@ -164,7 +164,8 @@ class BankTranferReport(LoginRequiredMixin,View):
                 response = get_final_salary_details(emp_id=employee.emp_id,month=year_month_split[1])
                 # response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
-                
+                if employee.emp_id in ["A01701","A01704","A01715"]:
+                    print(f"{employee.emp_id}-{response[-1]}")
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
@@ -1340,7 +1341,22 @@ class EmployeeReport(LoginRequiredMixin,View):
         emp_type =  request.POST["emp_type"]
         employees_list = Employee.objects.values("emp_id","name","appoinment_date","termination_date").filter(emp_type=emp_type)
         for employee in employees_list:
-            print(employee)
+            joined_date = employee["appoinment_date"]
+            resigned_date = employee["termination_date"]
+            if joined_date and resigned_date:
+                time_difference = (resigned_date.year - joined_date.year) * 12 + resigned_date.month - joined_date.month
+                if time_difference > 12:
+                    years = time_difference // 12
+                    months = time_difference % 12
+                    worked_time = (f"{years} years and {months} months") if years > 1 else (f"{years} year and {months} months")
+                elif time_difference == 12:
+                    worked_time = f"1 year"
+                else:
+                    worked_time = f"{time_difference} months"
+            else:
+                worked_time = ""
+            employee["worked_time"] = worked_time
+
 
         file_name = f"Employee Report.pdf"
         title = f"Employee Report"
@@ -1352,15 +1368,15 @@ class EmployeeReport(LoginRequiredMixin,View):
         empty_row_heading =[""]
         table_data.append(document_heading)
         table_data.append(empty_row_heading)
-        table_heading = ["""Employee ID""", 'Name','Joined Date',"""Resigned Date"""]
+        table_heading = ["""Employee ID""", 'Name','Joined Date',"""Resigned Date""","Worked Time"]
         
         table_data.append(table_heading)
         for emp in employees_list:
-            table_row = [emp["emp_id"], emp["name"], emp["appoinment_date"],emp["termination_date"]]
+            table_row = [emp["emp_id"], emp["name"], emp["appoinment_date"],emp["termination_date"],emp["worked_time"]]
             table_data.append(table_row)
         elements = []
         
-        attendance_table = Table(table_data,colWidths=[1.0*inch,2.5*inch,1.3*inch,1.3*inch],rowHeights=[0.3*inch for i in range(len(employees_list)+3)])
+        attendance_table = Table(table_data,colWidths=[1.0*inch,2.5*inch,1.3*inch,1.3*inch,1.5*inch],rowHeights=[0.3*inch for i in range(len(employees_list)+3)])
         attendance_table_styles = TableStyle(
     [
         ('GRID', (0, 2), (-1, -1), 1, colors.black),

@@ -118,7 +118,7 @@
                     var i = 0;
                     while (i < response["data"].length) {
                         if (response["data"][i]["status"] === 4){
-                            $("#bank_transfer_details_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1"></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
+                            $("#bank_transfer_details_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="customCheck1" disabled></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-danger">In-Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }else if(response["data"][i]["status"] === 0){
                             $("#bank_transfer_details_table").append('<tr><td>' + response["data"][i]["no"] + '</td><td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input emp-checkbox" id="customCheck1" data-id=' + response["data"][i]["emp_id"] + ' checked></div></td><td>' + response["data"][i]["emp_id"] + '</td><td>' + response["data"][i]["name"] + '</td>><td>' + month + '</td><td><span class="badge bg-success">Complete</span></td><td>' + response["data"][i]["net_salary"] + '</td></tr> ')
                         }
