@@ -1018,14 +1018,14 @@ class PayslipInfo(LoginRequiredMixin,View):
             try :
                 response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
                 if response == "employee_finance_details_error":
-                    payslips_record.append({'no':no,'emp_id':emp_id,"name":emp.name,"month":year_month,"status":2})
+                    payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":2})
                 elif response == "Department Empty":
-                    payslips_record.append({'no':no,'emp_id':emp_id,"name":emp.name,"month":year_month,"status":3})
+                    payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":3})
                 else:
-                        payslips_record.append({'no':no,'emp_id':emp_id,"name":emp.name,"month":year_month,"status":0})
+                        payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":0})
                 return JsonResponse({"data":payslips_record})
             except (ValueError,IndexError):
-                payslips_record.append({'no':no,'emp_id':emp_id,"name":emp.name,"month":year_month,"status":1})
+                payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":1})
             return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "month":
             print("inside")
@@ -1060,18 +1060,18 @@ class PayslipInfo(LoginRequiredMixin,View):
                     if employee.active_status == 0 and (response == "employee_finance_details_error" or response == "Department Empty"): # Ignoring Employees Who haven't worked for atleast 1 day
                         pass
                     elif response == "employee_finance_details_error" and employee.active_status == 1:
-                        payslips_record.append({'no':no,'emp_id':emp_id,"name":employee.name,"month":year_month,"status":2})
+                        payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":employee.name,"month":year_month,"status":2})
                         no += 1
                     elif response == "Department Empty" and employee.active_status == 1:
-                        payslips_record.append({'no':no,'emp_id':emp_id,"name":employee.name,"month":year_month,"status":3})
+                        payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":employee.name,"month":year_month,"status":3})
                         no += 1
                     elif response[-1] == 0: # Ignoring Employees Who haven't worked for atleast 1 day
                         pass
                     else:
-                        payslips_record.append({'no':no,'emp_id':emp_id,"name":employee.name,"month":year_month,"status":0})
+                        payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":employee.name,"month":year_month,"status":0})
                         no += 1
                 except (ValueError,IndexError):
-                    payslips_record.append({'no':no,'emp_id':emp_id,"name":employee.name,"month":year_month,"status":1})
+                    payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":employee.name,"month":year_month,"status":1})
                     no += 1
             return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "id":
@@ -1126,7 +1126,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
             else:
                 font_size = 6.0
             epf_no = response[-3]
-            employee_no =response[-6]
+            employee_no =response[-6] if (response[-6])[0] == "A" else f"A{(response[-6])[1::-1]}"
             basic_salary =response[3]
             br_payment=response[2]
             fixed_allowance = response[1]
@@ -1314,7 +1314,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
                 else:
                     font_size = 6.0
                 epf_no = response[-3]
-                employee_no =response[-6]
+                employee_no =response[-6] if (response[-6])[0] == "A" else f"A{(response[-6])[1::]}"
                 basic_salary =response[3]
                 br_payment=response[2]
                 fixed_allowance = response[1]

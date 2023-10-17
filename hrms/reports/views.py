@@ -164,8 +164,6 @@ class BankTranferReport(LoginRequiredMixin,View):
                 response = get_final_salary_details(emp_id=employee.emp_id,month=year_month_split[1])
                 # response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
-                if employee.emp_id in ["A01701","A01704","A01715"]:
-                    print(f"{employee.emp_id}-{response[-1]}")
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
@@ -174,12 +172,12 @@ class BankTranferReport(LoginRequiredMixin,View):
                     pass
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     no += 1
-                    payslips_record.append({'no':no,'emp_id':employee.emp_id,"name":employee.name,"month":year_month,'net_salary':net_salary,"status":4})
+                    payslips_record.append({'no':no,'emp_id':employee.emp_id if (employee.emp_id)[0]=="A" else f"A{(employee.emp_id[1::])}","name":employee.name,"month":year_month,'net_salary':net_salary,"status":4})
                 else:
                     no += 1
-                    payslips_record.append({'no':no,'emp_id':employee.emp_id,"name":employee.name,"month":year_month,'net_salary':net_salary,"status":0})
+                    payslips_record.append({'no':no,'emp_id':employee.emp_id if (employee.emp_id)[0]=="A" else f"A{(employee.emp_id[1::])}","name":employee.name,"month":year_month,'net_salary':net_salary,"status":0})
             except (ValueError,IndexError):
-                payslips_record.append({'emp_id':employee.emp_id,"name":employee.name,"month":year_month,"status":1})
+                payslips_record.append({'emp_id':employee.emp_id if (employee.emp_id)[0]=="A" else f"A{(employee.emp_id[1::])}","name":employee.name,"month":year_month,"status":1})
         return JsonResponse({"data":payslips_record})
     
 class BankTranferReportPDF(LoginRequiredMixin,View):
@@ -218,7 +216,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     total_epf += response[5]
                     total_allowance += response[7]
                     employees_count += 1
-                    employee_records.append([employee.emp_id,employee.bank_acc_name,employee.bank_acc_no,employee.bank.bank_name,employee.branch.branch_name,net_salary])
+                    employee_records.append([employee.emp_id if (employee.emp_id)[0]=="A" else f"A{(employee.emp_id[1::])}",employee.bank_acc_name,employee.bank_acc_no,employee.bank.bank_name,employee.branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
         add_data_to_dashboard_model(year,month,total_salary,total_salary_advance,total_allowance,total_epf,employees_count)
