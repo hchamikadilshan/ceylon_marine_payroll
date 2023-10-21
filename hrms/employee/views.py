@@ -222,9 +222,11 @@ class GetEmpNameView(LoginRequiredMixin,View):
         try:
             employee = Employee.objects.get(emp_id=emp_id)
             employee_name = employee.name
+            employee_type = employee.emp_type
         except Employee.DoesNotExist:
             employee_name = "None"
-        return JsonResponse({"name": employee_name}, status=200)
+            employee_type = "None"
+        return JsonResponse({"name": employee_name,"type":employee_type}, status=200)
 
 
 class GetEmployeeSalaryDetails(LoginRequiredMixin,View):

@@ -113,6 +113,12 @@
                 </div>
             </div>
             <div class="col-md-2">
+                <label class=" col-form-label" for="emp_type_salary">Employee Type</label>
+                <div class="">
+                    <input class="form-control " type="text" name="emp_type_salary" id="emp_type_salary" disabled>
+                </div>
+            </div>
+            <!-- <div class="col-md-2">
                 <label class=" col-form-label" for="epf_type">EPF Type</label>
                 <div class="">
                     <select class="form-control" name="epf_type" id="epf_type">
@@ -121,7 +127,7 @@
             
                     </select>
                 </div>
-            </div>
+            </div> -->
             <div class="col-md-2">
                 <label class=" col-form-label" for="emp_name_salary">Effective From</label>
                 <div class="">
@@ -402,6 +408,7 @@ function editEmployeeFinanceData(){
     // Get Employee Name and Data
     var emp_salary_id_input = document.getElementById("emp_id_salary");
     var emp_salary_name_input = document.getElementById("emp_name_salary");
+    var emp_salary_type_input = document.getElementById("emp_type_salary");
     emp_salary_id_input.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -418,7 +425,13 @@ function editEmployeeFinanceData(){
                     if (response.name === "None"){
                         emp_salary_name_input.value = ""
                     }else{
+                        if (response.type == 0) {
+                            emp_salary_type_input.value = "Normal"
+                        }else{
+                            emp_salary_type_input.value = "Shift"
+                        }
                         emp_salary_name_input.value = response.name
+                        
                     }
                     
                 }
