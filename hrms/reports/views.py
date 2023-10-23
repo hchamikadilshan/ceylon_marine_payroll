@@ -49,14 +49,14 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         month_year_split = month_year.split('-')
         response_employees = []
         if emp_type == 2:
-            employees = Employee.objects.filter(active_status=True).values()
+            employees = Employee.objects.filter(active_status=True)
         else:
-            employees = Employee.objects.filter(emp_type=emp_type,active_status=True).values()
+            employees = Employee.objects.filter(emp_type=emp_type,active_status=True)
         employees_list = list(employees)
         i = 0
-        for employee in employees_list:
+        for employee in employees:
             try:
-                employee_response = get_final_salary_details(emp_id=employee["emp_id"],month=month_year_split[1])
+                employee_response = get_final_salary_details(employee,month=month_year_split[1])
                 if employee_response == "employee_finance_details_error":
                     pass
                 elif employee_response[-1] == 0:
@@ -155,13 +155,13 @@ class BankTranferReport(LoginRequiredMixin,View):
         # employees_list = list(employees)
         payslips_record = []
         
-        employees_data = get_process_salary("multiple",year_month_split[1])
+        # employees_data = get_process_salary("multiple",year_month_split[1])
         employees =  Employee.objects.filter(emp_type=0)
         employee_list =  list(employees)
         no = 0
-        for employee in employee_list:
+        for employee in employees:
             try :
-                response = get_final_salary_details(emp_id=employee.emp_id,month=year_month_split[1])
+                response = get_final_salary_details(employee,month=year_month_split[1])
                 # response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
@@ -190,17 +190,17 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         year = year_month_split[0]
         emp_ids = request.POST["emp_ids"]
         emp_ids_list = emp_ids.split(',')
+        employees = Employee.objects.filter(emp_id__in=emp_ids_list)
         employee_records = []
         total_salary = 0
         total_salary_advance = 0
         total_epf = 0
         total_allowance = 0
         employees_count = 0
-        for emp_id in emp_ids_list:
-            employee = Employee.objects.get(emp_id=emp_id)
+        for employee in employees:
             emp_id = employee.emp_id
             try :
-                response = get_final_salary_details(emp_id=emp_id,month=month)
+                response = get_final_salary_details(employee,month=month)
                 net_salary = "{:>9,.2f}".format(response[12])
                 if response == "employee_finance_details_error":
                     pass
@@ -356,10 +356,10 @@ class EpfCForm(LoginRequiredMixin,View):
         employees = Employee.objects.filter(emp_type=0)
         employees_list = list(employees)
         employee_records = []
-        for employee in employees_list:
+        for employee in employees:
             emp_id = employee.emp_id
             try :
-                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                response = get_final_salary_details(employee,month=year_month_split[1])
                 if response == "employee_finance_details_error":
                     pass
                 elif response == "Department Empty":
@@ -800,10 +800,10 @@ class EtfReport(LoginRequiredMixin,View):
         employees_list = list(employees)
         employee_records = []
         for month in months:
-            for employee in employees_list:
+            for employee in employees:
                 emp_id = employee.emp_id
                 try :
-                    response = get_final_salary_details(emp_id=emp_id,month=month)
+                    response = get_final_salary_details(employee,month=month)
                     if response == "employee_finance_details_error":
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
                     elif response == "Department Empty":

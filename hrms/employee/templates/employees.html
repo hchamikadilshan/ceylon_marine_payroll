@@ -181,9 +181,9 @@
                     <td>{{ employee.emp_id }}</td>
                     <td><a href="{% url 'employee_summary' employee_id=employee.emp_id %}">{{ employee.name }}</a></td>
                     {% if employee.emp_type == 0 %}
-                    <td>Normal Employee</td>
+                    <td><span class="badge bg-primary">Normal</span></td>
                     {% elif employee.emp_type == 1 %}
-                    <td>Shift Employee</td>
+                    <td><span class="badge bg-dark">Shift</span></td>
                     {% endif %}
                     {% if employee.active_status == 0 %}
                     <td><span class="badge bg-secondary">Inactive</span></td>

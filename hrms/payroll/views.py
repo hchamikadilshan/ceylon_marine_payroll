@@ -4,7 +4,7 @@ from django.http import JsonResponse,FileResponse
 from employee.models import Employee, EmployeeFinance
 from attendance.models import Attendance
 from django.db.models import Avg, Case, Count, F,Subquery
-from datetime import  datetime
+from datetime import  datetime,timedelta
 from .models import SalaryAdvance,Alllowance,Deduction
 from django.db.models.functions import Coalesce
 import locale
@@ -684,13 +684,13 @@ def calculate_salary(employee,attendance_record,finance_record,advance_payemnt,a
     return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
 
 
-def get_final_salary_details(emp_id="",month="",emp_type=""):
-    # print(emp_id,month)
-# Getting Details of one employee one month
-    if emp_id != "" and month != "":
-        emp = Employee.objects.get(emp_id=emp_id)
+def get_final_salary_details(emp,month="",emp_type=""):
+    emp = emp
+# Calculating Salary of Normal Employee
+    if emp.emp_type == 0:
+        
         attendance_record = Attendance.objects.filter(
-                employee=emp,date__month=month).order_by('date').values()
+                            employee=emp,date__month=month).order_by('date').values()
         attendance_record_list = list(attendance_record)
         min_salary_amount = 16600.0
         total_working_hours = 0
@@ -982,7 +982,7 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             extra_attendance_allowance = (worked_days-26)*500
             attendance_allowance = attendance_allowance + (worked_days-26)*500
 # Adding Employee Basic Details
-        employee = Employee.objects.get(emp_id=emp_id)
+        employee = emp
 
         # Calculate salary if attendance payment is less than fixed payment   
         calculated_fixed_basic_salary =  br_payment + fixed_basic_salary 
@@ -1001,6 +1001,78 @@ def get_final_salary_details(emp_id="",month="",emp_type=""):
             return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_status,actully_worked_days,over_night_days,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
         else: 
             return[0]
+# Salary Calculation for Shift Employees
+    elif emp.emp_type == 1:
+        attendance_record = Attendance.objects.filter(
+                            employee=emp,date__month=month).order_by('date')
+        attendance_record_list = list(attendance_record.values())
+        employee_finance_record = EmployeeFinance.objects.filter(
+                employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
+    # Checking wether there is a Employee Finance Record    
+        if employee_finance_record == None: 
+            return "employee_finance_details_error"
+        else:
+            daily_payment_rate = employee_finance_record.daily_payment
+            ot_rate = employee_finance_record.ot_payment_rate
+            basic_salary =  employee_finance_record.basic_salary
+            br_payment = employee_finance_record.br_payment
+            special_allowance = 0.0
+            total_ot_hours = 0.0
+
+            no_of_worked_days = len(attendance_record)
+
+            attendance_allowance =  no_of_worked_days * daily_payment_rate
+            if no_of_worked_days >= 18:
+                special_allowance = 10000.0
+        # Calculating OT
+            i = 0
+            for record in attendance_record:
+                normal_working_hours = 9.0
+                
+                
+                date =  record.date
+                day = record.day
+                date_split = str(date).split('-')
+                in_time =  record.in_time
+                out_time = record.out_time
+                in_time_split = str(in_time).split('.')
+                out_time_split = str(out_time).split('.')
+
+                in_time_obj = datetime(int(date_split[0]), int(date_split[1]), int(date_split[2]), int(in_time_split[0]), int(in_time_split[1]))
+                out_time_obj = datetime(int(date_split[0]), int(date_split[1]), int(date_split[2]), int(out_time_split[0]), int(out_time_split[1])) 
+                attendance_out_time_noon = datetime(int(date_split[0]), int(date_split[1]), int(date_split[2]), 12, 00)
+                attendance_out_time_mid_night = datetime(int(date_split[0]), int(date_split[1]), int(date_split[2]), 00, 00)
+                
+                if record.next_day == True: #In and out in 2 days
+                    out_time_obj += + timedelta(days=1)
+                    worked_hours = (out_time_obj - in_time_obj).total_seconds()/(60*60)
+                else: # In and out in one day
+                    worked_hours = (out_time_obj - in_time_obj).total_seconds()/(60*60)
+                worked_hours -= 1 #Deducting the lunch hour
+            # 1)Calculating OT Hours
+                if day == "Sunday":
+                    ot_hours = worked_hours
+                    total_ot_hours += ot_hours
+                elif day == "Saturday":
+                    ot_hours = (worked_hours - 5) if (worked_hours > 5) else 0
+                    total_ot_hours += ot_hours
+                else:
+                    ot_hours = (worked_hours - 8) if (worked_hours > 8) else 0
+                    total_ot_hours += ot_hours
+                attendance_record_list[i]["working_hours"] = worked_hours
+                attendance_record_list[i]["ot_hours"] = ot_hours
+                i += 1
+            # 2)Calculating OT Amount
+            ot_payment =  ot_rate * total_ot_hours
+
+            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary]
+                
+
+
+
+
+
+
 class PayslipInfo(LoginRequiredMixin,View):
     login_url = '/accounts/login'
     def get(self,request):
@@ -1016,7 +1088,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             payslips_record = []
             no = 0
             try :
-                response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                response = get_final_salary_details(emp,month=year_month_split[1])
                 if response == "employee_finance_details_error":
                     payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":2})
                 elif response == "Department Empty":
@@ -1028,7 +1100,6 @@ class PayslipInfo(LoginRequiredMixin,View):
                 payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":1})
             return JsonResponse({"data":payslips_record})
         elif request.POST["type"] == "month":
-            print("inside")
             year_month = request.POST["month"]
             year_month_split = year_month.split('-')
             employees = Employee.objects.filter(emp_type=0)
@@ -1054,9 +1125,7 @@ class PayslipInfo(LoginRequiredMixin,View):
                 emp_id = employee.emp_id
                 try :
 
-                    response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
-                    if emp_id in ["A01701"]:
-                        print(response)
+                    response = get_final_salary_details(employee,month=year_month_split[1])
                     if employee.active_status == 0 and (response == "employee_finance_details_error" or response == "Department Empty"): # Ignoring Employees Who haven't worked for atleast 1 day
                         pass
                     elif response == "employee_finance_details_error" and employee.active_status == 1:
@@ -1107,7 +1176,7 @@ class PayslipPdfView(LoginRequiredMixin,View):
 
         if len(emp_ids_list) == 1:
             emp = Employee.objects.get(emp_id=emp_ids_list[0])
-            response = get_final_salary_details(emp_id=emp.emp_id,month=year_month_split[1])
+            response = get_final_salary_details(emp,month=year_month_split[1])
 
             buffer = io.BytesIO()
 
@@ -1255,9 +1324,10 @@ class PayslipPdfView(LoginRequiredMixin,View):
             # employees = Employee.objects.filter(emp_type=0,active_status=True).values()
             # employees_list = list(employees)
             payslips_record = []
-            for emp_id in emp_ids_list:
+            employees = Employee.objects.filter(emp_id__in=emp_ids_list)
+            for employee in employees:
                 try :
-                    response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+                    response = get_final_salary_details(employee,month=year_month_split[1])
                     if response == "employee_finance_details_error" or response == "Department Empty":
                         pass
                     elif response[-1] == 0:
@@ -1456,7 +1526,6 @@ class DeductionsView(LoginRequiredMixin,View):
         return render(request,'deductions.html',context={'user':user})
     
     def post(self,request):
-        print("inside deduction payment")
         emp_id = request.POST['emp_id']
         date = request.POST['date']
         amount = request.POST['amount']
@@ -1506,7 +1575,6 @@ class AllowancesView(LoginRequiredMixin,View):
         return render(request,'allowances.html',context={'user':user})
 
     def post(self,request):
-        print("inside allowance payment")
         emp_id = request.POST['emp_id']
         date = request.POST['date']
         amount = request.POST['amount']
@@ -1605,35 +1673,62 @@ class SalaryReportView(LoginRequiredMixin,View):
 
     def post(self, request):
         emp_id = request.POST['emp_id']
+        emp = Employee.objects.get(emp_id = emp_id)
         year_month = request.POST["month"]
         year_month_split = year_month.split('-')
+        month = year_month_split[1]
 
         
 # Formating Values
-        response = get_final_salary_details(emp_id=emp_id,month=year_month_split[1])
+        response = get_final_salary_details(emp,month=month)
         if response == "employee_finance_details_error":
             return JsonResponse({'error':"no employee finance data"})
         elif response == "Department Empty":
             return JsonResponse({'error':"Department"})
         else:
-            print(response)
-            attendance_allowance = response[16] + response[18]
-            attendance_allowance_final = "{:>9.2f}".format(attendance_allowance)
-            other_allowance = "{:>9.2f}".format(response[1])
-            br_payment = "{:>9.2f}".format(response[2])
-            fixed_basic_salary = "{:>9.2f}".format(response[3])
-            room_charge = "{:>9.2f}".format(response[4])
-            epf = "{:>9.2f}".format(response[5])
-            total_advance_amount = "{:>9.2f}".format(response[6])
-            total_allowance = "{:>9.2f}".format(response[7])
-            total_deduction = "{:>9.2f}".format(response[-9])
-            ot_payment = "{:>9.2f}".format(response[8])
-            ot_payment_rate = "{:>9.2f}".format(response[9])
-            hourly_payment_rate = "{:>9.2f}".format(response[10])
-            basic_salary = "{:>9.2f}".format(response[11])
-            net_salary = "{:>9.2f}".format(response[12])
-            total_worked_days = response[-12]
-            over_night_days = response[-11]
+            if emp.emp_type == 0:
+                attendance_record_list = response[13]
+                total_working_hours = response[14]
+                total_ot_hours = response[15]
+                attendance_allowance = response[16] + response[18]
+                attendance_allowance_final = "{:>9,.2f}".format(attendance_allowance)
+                other_allowance = "{:>9,.2f}".format(response[1])
+                br_payment = "{:>9,.2f}".format(response[2])
+                fixed_basic_salary = "{:>9,.2f}".format(response[3])
+                room_charge = "{:>9,.2f}".format(response[4])
+                epf = "{:>9.2f}".format(response[5])
+                total_advance_amount = "{:>9,.2f}".format(response[6])
+                total_allowance = "{:>9,.2f}".format(response[7])
+                total_deduction = "{:>9,.2f}".format(response[-9])
+                ot_payment = "{:>9,.2f}".format(response[8])
+                ot_payment_rate = "{:>9,.2f}".format(response[9])
+                hourly_payment_rate = "{:>9,.2f}".format(response[10])
+                basic_salary = "{:>9,.2f}".format(response[11])
+                net_salary = "{:>9,.2f}".format(response[12])
+                total_worked_days = response[-12]
+                over_night_days = response[-11]
 
-            return JsonResponse({'attendance_list': response[13], 'total_working_hours': response[14], 'total_ot_hours': response[15], 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final,'total_deduction':total_deduction,'total_worked_days':total_worked_days,'over_night_worked_days':over_night_days}, status=200)
+            elif emp.emp_type == 1:
+                attendance_record_list = response[0]
+                total_worked_days = response[1]
+                total_ot_hours = response[2]
+                attendance_allowance = 0
+                attendance_allowance_final = 0
+                other_allowance = 0
+                br_payment = 0
+                fixed_basic_salary = "{:>9,.2f}".format(response[5])
+                room_charge = 0
+                epf = 0
+                total_advance_amount = 0
+                total_allowance = 0
+                total_deduction = 0
+                ot_payment = "{:>9,.2f}".format(response[4])
+                ot_payment_rate = response[3]
+                hourly_payment_rate = 0
+                basic_salary = 0
+                net_salary = 0
+                total_working_hours = 0
+                over_night_days = 0
+
+            return JsonResponse({'attendance_list': attendance_record_list, 'total_working_hours': total_working_hours, 'total_ot_hours':total_ot_hours, 'basic_salary': basic_salary, 'ot_payment': ot_payment, 'hourly_payment_rate': hourly_payment_rate, 'ot_payment_rate': ot_payment_rate, 'net_salary': net_salary, 'total_advance_amount': total_advance_amount, 'epf': epf, 'total_allowance': total_allowance, 'room_charge':room_charge,"fixed_basic_salary":fixed_basic_salary,'br_payment':br_payment,'other_allowance':other_allowance,'attendance_allowance':attendance_allowance_final,'total_deduction':total_deduction,'total_worked_days':total_worked_days,'over_night_worked_days':over_night_days}, status=200)
         
