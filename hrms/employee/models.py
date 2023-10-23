@@ -54,6 +54,7 @@ class EmployeeFinance(models.Model):
     effective_from = models.DateField(default=datetime.date(2023, 1, 1))
     reason = models.CharField(max_length=100,default="")
     morning_ot = models.CharField(max_length=2,default="0")
+    production_allowance =  models.FloatField(default=0)
 
 
 

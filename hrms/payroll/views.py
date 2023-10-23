@@ -1016,8 +1016,14 @@ def get_final_salary_details(emp,month="",emp_type=""):
             ot_rate = employee_finance_record.ot_payment_rate
             basic_salary =  employee_finance_record.basic_salary
             br_payment = employee_finance_record.br_payment
+            room_charge = employee_finance_record.room_charge
             special_allowance = 0.0
             total_ot_hours = 0.0
+            total_advance_amount = 0.0 
+            total_deduction = 0.0
+            deductions = []
+            total_allowance = 0.0
+            allowances = []
 
             no_of_worked_days = len(attendance_record)
 
@@ -1050,11 +1056,14 @@ def get_final_salary_details(emp,month="",emp_type=""):
                     worked_hours = (out_time_obj - in_time_obj).total_seconds()/(60*60)
                 worked_hours -= 1 #Deducting the lunch hour
             # 1)Calculating OT Hours
-                if day == "Sunday":
+                if day == "Sunday" and record.special_holiday == False:
                     ot_hours = worked_hours
                     total_ot_hours += ot_hours
-                elif day == "Saturday":
+                elif day == "Saturday" and record.special_holiday == False:
                     ot_hours = (worked_hours - 5) if (worked_hours > 5) else 0
+                    total_ot_hours += ot_hours
+                elif record.special_holiday == True:
+                    ot_hours = worked_hours
                     total_ot_hours += ot_hours
                 else:
                     ot_hours = (worked_hours - 8) if (worked_hours > 8) else 0
@@ -1064,8 +1073,47 @@ def get_final_salary_details(emp,month="",emp_type=""):
                 i += 1
             # 2)Calculating OT Amount
             ot_payment =  ot_rate * total_ot_hours
+        # Calculating Salary Advance
+            try:
+                advance_payment_data = SalaryAdvance.objects.filter(
+                    employee=emp, date__month=month).order_by('date').values()
+                advance_payment_data_list = list(advance_payment_data)
+                total_advance_amount = 0
+                for advance in advance_payment_data_list:
+                    total_advance_amount +=  advance["amount"]
+                
+            except SalaryAdvance.DoesNotExist:
+                print("Salary Advances does not exists")
+        # Calculating Deductions    
+            try:
+                deduction_data = Deduction.objects.filter(
+                    employee=emp, date__month=month,status =True).order_by('date').values()
+                deduction_data_list = list(deduction_data)
+                
+                
+                for deduction in deduction_data_list:
+                    deductions.append([deduction["description"],deduction["amount"]])
+                    total_deduction +=  deduction["amount"]
+            except Deduction.DoesNotExist:
+                print("No Deductions")
+        # Calculating Allowances     
+            try:
+                allowance_data = Alllowance.objects.filter(
+                    employee=emp, date__month=month,status =True).order_by('date').values()
+                allowance_data_list = list(allowance_data)
+                
+                
+                for allowance in allowance_data_list:
+                    allowances.append([allowance["description"],allowance["amount"]])
+                    total_allowance = total_allowance + allowance["amount"]
+            except Alllowance.DoesNotExist:
+                print("No Allowance")
+        # Calculating EPF 
+            total_basic_salary =  basic_salary + br_payment
+            epf = total_basic_salary * 0.08
 
-            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary]
+
+            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary, br_payment , attendance_allowance ,total_advance_amount ,total_deduction , deductions , epf , room_charge ,total_allowance , allowances]
                 
 
 
@@ -1713,15 +1761,15 @@ class SalaryReportView(LoginRequiredMixin,View):
                 total_worked_days = response[1]
                 total_ot_hours = response[2]
                 attendance_allowance = 0
-                attendance_allowance_final = 0
+                attendance_allowance_final = "{:>9,.2f}".format(response[7])
                 other_allowance = 0
-                br_payment = 0
+                br_payment = "{:>9,.2f}".format(response[6])
                 fixed_basic_salary = "{:>9,.2f}".format(response[5])
-                room_charge = 0
-                epf = 0
-                total_advance_amount = 0
-                total_allowance = 0
-                total_deduction = 0
+                room_charge ="{:>9,.2f}".format(response[12])
+                epf = "{:>9,.2f}".format(response[11])
+                total_advance_amount = "{:>9,.2f}".format(response[8])
+                total_allowance = "{:>9,.2f}".format(response[13])
+                total_deduction = "{:>9,.2f}".format(response[9])
                 ot_payment = "{:>9,.2f}".format(response[4])
                 ot_payment_rate = response[3]
                 hourly_payment_rate = 0
