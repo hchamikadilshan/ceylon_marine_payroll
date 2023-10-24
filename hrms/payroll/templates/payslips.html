@@ -127,13 +127,14 @@
         var month = document.getElementById("payslip_month").value;
         var emp_type = document.getElementById("payslip_emp_type").value;
         var emp_name = document.getElementById("payslip_emp_name").value;
-        if (emp_id === "" && month != "" && emp_type === "0"){
+        if (emp_id === "" && month != ""){
             console.log("inside filter button month")
             $.ajax({
                     type: 'POST',
                     url: "{% url 'get_payslip_info' %}",
                     data: {
                         month:month,
+                        emp_type:emp_type,
                         type:"month",
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
@@ -155,7 +156,7 @@
                         
                     }
                 });
-        }else if (emp_id !== "" && month !== "" && emp_type === "0"){
+        }else if (emp_id !== "" && month !== ""){
             console.log("inside filter button empID_month")
             $.ajax({
                     type: 'POST',
@@ -164,6 +165,7 @@
                         
                         emp_id: emp_id,
                         month:month,
+                        emp_type:emp_type,
                         type:"id_month",
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
@@ -196,6 +198,7 @@
                     data: {
                         
                         emp_id: emp_id,
+                        emp_type:emp_type,
                         type:"id",
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                     },
