@@ -279,6 +279,7 @@
                     <th scope="col">B/R Payment</th>
                     <th scope="col">EPF</th>
                     <th scope="col">Room Charges</th>
+                    <th scope="col">Production Allowance</th>
                     <th scope="col">Edit</th>
                 </tr>
             </thead>
@@ -306,6 +307,7 @@
     var br_payment = button.data('brpayment')
     var epf = button.data('epf') 
     var room_charge = button.data('roomcharge') 
+    var production_allowance = button.data('productionallowance') 
     var reason = button.data('reason') 
     var record_id = button.data('recordid') 
     var emp_id = button.data('empid')
@@ -321,6 +323,7 @@
     modal.find('#edit_br_payment').val(br_payment)
     modal.find('#edit_epf').val(epf)
     modal.find('#edit_room_charge').val(room_charge)
+    modal.find('#edit_production_allowance').val(production_allowance)
     modal.find('#edit_reason').val(reason)
     modal.find('#edit_effective_from_date').attr('data-recordid', record_id)
     modal.find('#edit_effective_from_date').attr('data-empid', emp_id)
@@ -337,6 +340,7 @@ function editEmployeeFinanceData(){
         var epf = document.getElementById("edit_epf").value;
         var room_charge = document.getElementById("edit_room_charge").value;
         var reason =  document.getElementById("edit_reason").value;
+        var production_allowance =  document.getElementById("edit_production_allowance").value;
         var record_id= document.getElementById("edit_effective_from_date").getAttribute("data-recordid")
         var emp_id= document.getElementById("edit_effective_from_date").getAttribute("data-empid")
 
@@ -357,6 +361,7 @@ function editEmployeeFinanceData(){
                 reason:reason,
                 record_id:record_id,
                 morning_ot:morning_ot,
+                production_allowance:production_allowance,
                 csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
             },
             success: function (response) {
@@ -389,6 +394,7 @@ function editEmployeeFinanceData(){
                         document.getElementById("emp_room_charges").value = response['room_charge']
                         document.getElementById("emp_staff_welf_contribution").value = response['staff_welf']
                         document.getElementById("effective_from").value = response['effective_from']
+                        document.getElementById("emp_production_allowance").value = response['production_allowance']
                         document.getElementById("reason").value = response['reason']
 
                         $("#employee_salary_details_data_table").empty()
@@ -406,7 +412,7 @@ function editEmployeeFinanceData(){
                                 morning_ot = "No"
                             }
                             console.log(response['employee_data_list'][i])
-                            $("#employee_salary_details_data_table").append('<tr><td>' + response['employee_data_list'][i]['submit_date'].slice(0,10) + '</td ><td>' + response['employee_data_list'][i]['effective_from'] + '</td ><td>' + epf_type + '</td><td>' + response['employee_data_list'][i]['daily_payment'] + '</td><td>' + response['employee_data_list'][i]['ot_payment_rate'] + '</td><td>' + response['employee_data_list'][i]['basic_salary'] + '</td><td>' + morning_ot + '</td><td>' + response['employee_data_list'][i]['br_payment'] + '</td><td>' + response['employee_data_list'][i]['epf'] + '</td><td>' + response['employee_data_list'][i]['room_charge'] + '</td><td><button class="btn btn-primary" data-id="' + response['employee_data_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_salary_data_model" data-modifiedDate="' + response['employee_data_list'][i]['submit_date'] + '" data-effectiveFromDate="' + response['employee_data_list'][i]['effective_from'] + '" data-epfType="' + response['employee_data_list'][i]['epf_type'] + '" data-dailyPayment="' + response['employee_data_list'][i]['daily_payment'] + '" data-otRate="' + response['employee_data_list'][i]['ot_payment_rate'] + '" data-basicSalary="' + response['employee_data_list'][i]['basic_salary'] + '"  data-brPayment="' + response['employee_data_list'][i]['br_payment'] + '" data-epf="' + response['employee_data_list'][i]['epf'] + '" data-roomCharge="' + response['employee_data_list'][i]['room_charge'] + '"data-recordId="' + response['employee_data_list'][i]['id'] + '"data-empId="' + response['employee_data_list'][i]['employee_id'] + '"data-morningOt="'+  response['employee_data_list'][i]['morning_ot'] +'">Edit</button></td></tr> ')
+                            $("#employee_salary_details_data_table").append('<tr><td>' + response['employee_data_list'][i]['submit_date'].slice(0,10) + '</td ><td>' + response['employee_data_list'][i]['effective_from'] + '</td ><td>' + epf_type + '</td><td>' + response['employee_data_list'][i]['daily_payment'] + '</td><td>' + response['employee_data_list'][i]['ot_payment_rate'] + '</td><td>' + response['employee_data_list'][i]['basic_salary'] + '</td><td>' + morning_ot + '</td><td>' + response['employee_data_list'][i]['br_payment'] + '</td><td>' + response['employee_data_list'][i]['epf'] + '</td><td>' + response['employee_data_list'][i]['room_charge'] + '</td><td>' + response['employee_data_list'][i]['production_allowance'] + '</td><td><button class="btn btn-primary" data-id="' + response['employee_data_list'][i]['employee_id'] + '"data-bs-toggle="modal" data-bs-target="#edit_employee_salary_data_model" data-modifiedDate="' + response['employee_data_list'][i]['submit_date'] + '" data-effectiveFromDate="' + response['employee_data_list'][i]['effective_from'] + '" data-epfType="' + response['employee_data_list'][i]['epf_type'] + '" data-dailyPayment="' + response['employee_data_list'][i]['daily_payment'] + '" data-otRate="' + response['employee_data_list'][i]['ot_payment_rate'] + '" data-basicSalary="' + response['employee_data_list'][i]['basic_salary'] + '"  data-brPayment="' + response['employee_data_list'][i]['br_payment'] + '" data-epf="' + response['employee_data_list'][i]['epf'] + '" data-roomCharge="' + response['employee_data_list'][i]['room_charge'] + '" data-productionAllowance="' + response['employee_data_list'][i]['production_allowance'] + '"data-recordId="' + response['employee_data_list'][i]['id'] + '"data-empId="' + response['employee_data_list'][i]['employee_id'] + '"data-morningOt="'+  response['employee_data_list'][i]['morning_ot'] +'">Edit</button></td></tr> ')
 
                             i++
                         

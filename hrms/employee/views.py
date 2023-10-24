@@ -239,7 +239,7 @@ class GetEmployeeSalaryDetails(LoginRequiredMixin,View):
                 employee_finance = EmployeeFinance.objects.filter(employee=employee).order_by('-effective_from', '-submit_date').first()
                 employee_finance_records = EmployeeFinance.objects.filter(employee=employee).order_by("-effective_from",'-submit_date').values()
                 employee_finance_records_list = list(employee_finance_records)
-                return JsonResponse({'status': 1,'employee_data_list':employee_finance_records_list, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'basic_salary': employee_finance.basic_salary, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution,'epf':employee_finance.epf_type,'reason':employee_finance.reason,'effective_from':employee_finance.effective_from,'record_id':employee_finance.id,'morning_ot':employee_finance.morning_ot})
+                return JsonResponse({'status': 1,'employee_data_list':employee_finance_records_list, 'daily_payment': employee_finance.daily_payment, 'ot_payment': employee_finance.ot_payment_rate, 'basic_salary': employee_finance.basic_salary, 'br_payment': employee_finance.br_payment, 'room_charge': employee_finance.room_charge, 'staff_welf': employee_finance.staff_welf_contribution,'epf':employee_finance.epf_type,'reason':employee_finance.reason,'effective_from':employee_finance.effective_from,'record_id':employee_finance.id,'morning_ot':employee_finance.morning_ot,"production_allowance":employee_finance.production_allowance})
             except EmployeeFinance.DoesNotExist:
                 return JsonResponse({'status': 0})
         except Employee.DoesNotExist:
@@ -257,6 +257,7 @@ class EditEmployeeSalaryDetails(LoginRequiredMixin,View):
         room_charge = request.POST["room_charge"]
         morning_ot = request.POST["morning_ot"]
         reason = request.POST["reason"]
+        attendance_allowance =  request.POST["production_allowance"]
 
         employee_finance_record = EmployeeFinance.objects.get(id=record_id)
         employee_finance_record.daily_payment = daily_payment
@@ -270,6 +271,7 @@ class EditEmployeeSalaryDetails(LoginRequiredMixin,View):
         employee_finance_record.room_charge = room_charge
         employee_finance_record.morning_ot = morning_ot
         employee_finance_record.submit_date=datetime.now()
+        employee_finance_record.production_allowance = attendance_allowance
 
         employee_finance_record.save()
         return JsonResponse({})
@@ -294,6 +296,7 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         effective_from = request.POST["effective_from"]
         morning_ot = request.POST["morning_ot"]
         reason = request.POST["reason"]
+        production_allowance = request.POST["emp_production_allowance"]
 
         employee = Employee.objects.get(emp_id=emp_id)
 
@@ -319,7 +322,7 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         
 
         emplyee_finance_record = EmployeeFinance(
-            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now(),effective_from=effective_from,reason=reason,morning_ot = morning_ot)
+            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now(),effective_from=effective_from,reason=reason,morning_ot = morning_ot, production_allowance=production_allowance)
 
         emplyee_finance_record.save()
 

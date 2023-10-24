@@ -1017,19 +1017,22 @@ def get_final_salary_details(emp,month="",emp_type=""):
             basic_salary =  employee_finance_record.basic_salary
             br_payment = employee_finance_record.br_payment
             room_charge = employee_finance_record.room_charge
+            production_allowance = employee_finance_record.production_allowance
             special_allowance = 0.0
             total_ot_hours = 0.0
             total_advance_amount = 0.0 
             total_deduction = 0.0
             deductions = []
-            total_allowance = 0.0
+            total_allowance = 0.0 + production_allowance 
             allowances = []
+            net_salary = 0.0
 
             no_of_worked_days = len(attendance_record)
 
             attendance_allowance =  no_of_worked_days * daily_payment_rate
             if no_of_worked_days >= 18:
-                special_allowance = 10000.0
+                special_allowance += 10000.0
+                total_allowance += special_allowance
         # Calculating OT
             i = 0
             for record in attendance_record:
@@ -1111,9 +1114,13 @@ def get_final_salary_details(emp,month="",emp_type=""):
         # Calculating EPF 
             total_basic_salary =  basic_salary + br_payment
             epf = total_basic_salary * 0.08
+        
+
+        # Calculating Net Salary
+            net_salary = basic_salary + br_payment + ot_payment + attendance_allowance  - total_deduction - total_advance_amount - epf - room_charge + total_allowance
 
 
-            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary, br_payment , attendance_allowance ,total_advance_amount ,total_deduction , deductions , epf , room_charge ,total_allowance , allowances]
+            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary, br_payment , attendance_allowance ,total_advance_amount ,total_deduction , deductions , epf , room_charge ,total_allowance , allowances , net_salary]
                 
 
 
@@ -1774,7 +1781,7 @@ class SalaryReportView(LoginRequiredMixin,View):
                 ot_payment_rate = response[3]
                 hourly_payment_rate = 0
                 basic_salary = 0
-                net_salary = 0
+                net_salary = "{:>9,.2f}".format(response[15])
                 total_working_hours = 0
                 over_night_days = 0
 
