@@ -156,19 +156,23 @@ class BankTranferReport(LoginRequiredMixin,View):
         payslips_record = []
         
         # employees_data = get_process_salary("multiple",year_month_split[1])
-        employees =  Employee.objects.filter(emp_type=0)
+        employees =  Employee.objects.filter()
         employee_list =  list(employees)
         no = 0
         for employee in employees:
             try :
+                net_salary = "{:>9,.2f}".format(0.0)
                 response = get_final_salary_details(employee,month=year_month_split[1])
                 # response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
-                net_salary = "{:>9,.2f}".format(response[12])
+                if employee.emp_type == 0:
+                    net_salary = "{:>9,.2f}".format(response[12])
+                elif employee.emp_type == 1:
+                    net_salary = "{:>9,.2f}".format(response[15])
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
                     payslips_record.append({"status":3})
-                elif response[-1] == 0:
+                elif response[-1] == 0 or response[1] == 0:
                     pass
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     no += 1
@@ -201,7 +205,10 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
             emp_id = employee.emp_id
             try :
                 response = get_final_salary_details(employee,month=month)
-                net_salary = "{:>9,.2f}".format(response[12])
+                if employee.emp_type == 0:
+                    net_salary = "{:>9,.2f}".format(response[12])
+                elif employee.emp_type == 1:
+                    net_salary = "{:>9,.2f}".format(response[15])
                 if response == "employee_finance_details_error":
                     pass
                 elif response == "Department Empty":
@@ -210,12 +217,19 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
                     pass
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     pass
-                else:    
-                    total_salary += response[12]
-                    total_salary_advance  += response[6]
-                    total_epf += response[5]
-                    total_allowance += response[7]
-                    employees_count += 1
+                else:
+                    if employee.emp_type == 0:    
+                        total_salary += response[12]
+                        total_salary_advance  += response[6]
+                        total_epf += response[5]
+                        total_allowance += response[7]
+                        employees_count += 1
+                    elif employee.emp_type == 1:
+                        total_salary += response[15]
+                        total_salary_advance  += response[8]
+                        total_epf += response[11]
+                        total_allowance += response[13]
+                        employees_count += 1
                     employee_records.append([employee.emp_id if (employee.emp_id)[0]=="A" else f"A{(employee.emp_id[1::])}",employee.bank_acc_name,employee.bank_acc_no,employee.bank.bank_name,employee.branch.branch_name,net_salary])
             except (ValueError,IndexError):
                 pass
