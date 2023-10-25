@@ -367,51 +367,55 @@ class EpfCForm(LoginRequiredMixin,View):
         month = year_month_split[1]
         buffer = io.BytesIO()
 
-        employees = Employee.objects.filter(emp_type=0)
+        employees = Employee.objects.filter()
         employees_list = list(employees)
         employee_records = []
         for employee in employees:
             emp_id = employee.emp_id
             try :
-                response = get_final_salary_details(employee,month=year_month_split[1])
+                response = get_final_salary_details(employee,month=month)
                 if response == "employee_finance_details_error":
                     pass
                 elif response == "Department Empty":
                     pass
-                elif response[-1] == 0:
+                elif (employee.emp_type ==0 and response[-1] == 0) or (employee.emp_type == 1 and response[1] == 0) :
                     pass
-                elif response[-3]=="":
+                elif employee.emp_type == 0 and response[-3]=="":
                     pass
                 else:   
-                    employee_records.append(response)
+                    employee_records.append([employee,response])
             except (ValueError,IndexError):
                 pass
         
         total_contribution = 0
         data_list = []
-        for response in employee_records:
-            net_salary = "{:>9,.2f}".format(response[12])
-            fixed_basic_salary = response[2] + response[3]
-            total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+        for record in employee_records:
+            if record[0].emp_type == 0:
+                net_salary = "{:>9,.2f}".format(record[1][12])
+                fixed_basic_salary = record[1][2] + record[1][3]
+                total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+            elif record[0].emp_type == 1:
+                fixed_basic_salary = record[1][5] + record[1][6]
+                total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
             employees = fixed_basic_salary * 0.08
-            employees_string = "{:>9.2f}".format(fixed_basic_salary * 0.08)
+            employees_string = "{:>9,.2f}".format(fixed_basic_salary * 0.08)
             employees_int = int(fixed_basic_salary * 0.08)
             employees_float = employees_string[-2:]
 
             employers = fixed_basic_salary * 0.12
-            employers_string = "{:>9.2f}".format(employers)
+            employers_string = "{:>9,.2f}".format(employers)
             employers_int = int(employers)
             employers_float = employers_string[-2:]
 
             total_epf =  employers + employees
-            total_epf_string = "{:>9.2f}".format(total_epf)
+            total_epf_string = "{:>9,.2f}".format(total_epf)
             total_epf_int = int(total_epf)
             total_rpf_float = total_epf_string[-2:]
             total_contribution += total_epf    
-            name = response[-5]
-            epf_no = response[-3]
-            nic_no = response[-7]
+            name = record[0].name
+            epf_no = record[0].epf_no
+            nic_no = record[0].nic_no
             data_list.append([name,nic_no,epf_no,total_epf_int,total_rpf_float,employers_int,employers_float,employees_int,employees_float,total_earning])
 
         # Employee Data Table Frame
@@ -745,6 +749,10 @@ Earnings"""]
                     ('SPAN', (3, 1), (4, 1)), 
                     ('SPAN', (5, 1), (6, 1)), #Member No
                     ('SPAN', (7, 1), (8, 1)), #Member No
+                    ('ALIGN', (2, 2), (2, -1),'CENTER'),#Member No
+                    ('ALIGN', (3, 2), (3, -1),'CENTER'), # Contibution Total
+                    ('ALIGN', (5, 2), (5, -1),'CENTER'), # Employer Total
+                    ('ALIGN', (7, 2), (7, -1),'CENTER'), # Employee Total
                     ('SPAN', (3, 0), (8, 0)), #Contributon
                     ('SPAN', (9, 0), (9, 1)), #Total Earning
                     ]
