@@ -56,7 +56,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         i = 0
         for employee in employees:
             try:
-                employee_response = get_final_salary_details(employee,month=month_year_split[1])
+                employee_response = get_final_salary_details(employee,month=month_year_split[1],year=month_year_split[0])
                 if employee_response == "employee_finance_details_error":
                     pass
                 elif employee_response[-1] == 0:
@@ -162,7 +162,7 @@ class BankTranferReport(LoginRequiredMixin,View):
         for employee in employees:
             try :
                 net_salary = "{:>9,.2f}".format(0.0)
-                response = get_final_salary_details(employee,month=year_month_split[1])
+                response = get_final_salary_details(employee,month=year_month_split[1],year= year_month_split[0])
                 # response = calculate_salary(employee[0],employee[1],employee[2],employee[3],employee[4],year_month_split[1])
                 if employee.emp_type == 0:
                     net_salary = "{:>9,.2f}".format(response[12])
@@ -204,7 +204,7 @@ class BankTranferReportPDF(LoginRequiredMixin,View):
         for employee in employees:
             emp_id = employee.emp_id
             try :
-                response = get_final_salary_details(employee,month=month)
+                response = get_final_salary_details(employee,month=month,year=year)
                 if employee.emp_type == 0:
                     net_salary = "{:>9,.2f}".format(response[12])
                 elif employee.emp_type == 1:
@@ -373,7 +373,7 @@ class EpfCForm(LoginRequiredMixin,View):
         for employee in employees:
             emp_id = employee.emp_id
             try :
-                response = get_final_salary_details(employee,month=month)
+                response = get_final_salary_details(employee,month=month,year=year_month_split[0])
                 if response == "employee_finance_details_error":
                     pass
                 elif response == "Department Empty":
