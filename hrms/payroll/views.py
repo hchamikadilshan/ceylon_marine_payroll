@@ -899,7 +899,7 @@ def get_final_salary_details(emp,month="",year=""):
             fixed_allowance = basic_salary - fixed_basic_salary - br_payment
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
-                    employee=emp, date__month=month).order_by('date').values()
+                    employee=emp, date__month=month,date__year=year).order_by('date').values()
                 advance_payment_data_list = list(advance_payment_data)
                 total_advance_amount = 0
                 for advance in advance_payment_data_list:
@@ -911,7 +911,7 @@ def get_final_salary_details(emp,month="",year=""):
 # Allowances Calculation 
             try:
                 allowance_data = Alllowance.objects.filter(
-                    employee=emp, date__month=month,status =True).order_by('date').values()
+                    employee=emp, date__month=month,status =True,date__year=year).order_by('date').values()
                 allowance_data_list = list(allowance_data)
                 total_allowance = 0
                 allowances = []
@@ -923,7 +923,7 @@ def get_final_salary_details(emp,month="",year=""):
 #  Deduction Calculation 
             try:
                 deduction_data = Deduction.objects.filter(
-                    employee=emp, date__month=month,status =True).order_by('date').values()
+                    employee=emp, date__month=month,status =True,date__year=year).order_by('date').values()
                 deduction_data_list = list(deduction_data)
                 total_deduction = 0
                 deductions = []
@@ -1004,7 +1004,7 @@ def get_final_salary_details(emp,month="",year=""):
 # Salary Calculation for Shift Employees
     elif emp.emp_type == 1:
         attendance_record = Attendance.objects.filter(
-                            employee=emp,date__month=month).order_by('date')
+                            employee=emp,date__month=month,date__year=year).order_by('date')
         attendance_record_list = list(attendance_record.values())
         employee_finance_record = EmployeeFinance.objects.filter(
                 employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
@@ -1079,7 +1079,7 @@ def get_final_salary_details(emp,month="",year=""):
         # Calculating Salary Advance
             try:
                 advance_payment_data = SalaryAdvance.objects.filter(
-                    employee=emp, date__month=month).order_by('date').values()
+                    employee=emp, date__month=month,date__year=year).order_by('date').values()
                 advance_payment_data_list = list(advance_payment_data)
                 total_advance_amount = 0
                 for advance in advance_payment_data_list:
@@ -1090,7 +1090,7 @@ def get_final_salary_details(emp,month="",year=""):
         # Calculating Deductions    
             try:
                 deduction_data = Deduction.objects.filter(
-                    employee=emp, date__month=month,status =True).order_by('date').values()
+                    employee=emp, date__month=month,status =True,date__year=year).order_by('date').values()
                 deduction_data_list = list(deduction_data)
                 
                 
@@ -1102,7 +1102,7 @@ def get_final_salary_details(emp,month="",year=""):
         # Calculating Allowances     
             try:
                 allowance_data = Alllowance.objects.filter(
-                    employee=emp, date__month=month,status =True).order_by('date').values()
+                    employee=emp, date__month=month,status =True,date__year=year).order_by('date').values()
                 allowance_data_list = list(allowance_data)
                 
                 
