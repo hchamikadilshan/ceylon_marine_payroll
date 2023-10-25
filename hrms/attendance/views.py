@@ -108,7 +108,7 @@ class ViewAttendanceByEmployeeView(LoginRequiredMixin,View):
         year_month_split = year_month.split('-')
         emp = Employee.objects.get(emp_id=emp_id)
         attendance_record = Attendance.objects.filter(
-            employee=emp, date__month=year_month_split[1]).order_by('date').values()
+            employee=emp, date__month=year_month_split[1] ,date__year =year_month_split[0]).order_by('date').values()
         attendance_record_list = list(attendance_record)
 
         return JsonResponse({'attendance_list': attendance_record_list}, status=200)
