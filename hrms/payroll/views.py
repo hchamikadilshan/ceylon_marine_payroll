@@ -874,8 +874,7 @@ def get_final_salary_details(emp,month="",year=""):
 # Advance Payment Calculation
         try:
             employee_finance = EmployeeFinance.objects.filter(
-                employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
-            
+                employee=emp,effective_from__month__lte = month,effective_from__year__lte = year).order_by("-effective_from",'-submit_date').first()
             if (employee_finance is not None) and (employee_finance.daily_payment != 0.0 and employee_finance.ot_payment_rate != 0.0 and employee_finance.basic_salary != 0.0):
                 daily_payment_rate = employee_finance.daily_payment
                 ot_payment_rate = employee_finance.ot_payment_rate
@@ -1007,7 +1006,7 @@ def get_final_salary_details(emp,month="",year=""):
                             employee=emp,date__month=month,date__year=year).order_by('date')
         attendance_record_list = list(attendance_record.values())
         employee_finance_record = EmployeeFinance.objects.filter(
-                employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
+                employee=emp,effective_from__month__lte = month,effective_from__year__lte = year).order_by("-effective_from",'-submit_date').first()
     # Checking wether there is a Employee Finance Record    
         if employee_finance_record == None: 
             return "employee_finance_details_error"
