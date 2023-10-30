@@ -59,27 +59,41 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                 employee_response = get_final_salary_details(employee,month=month_year_split[1],year=month_year_split[0])
                 if employee_response == "employee_finance_details_error":
                     pass
-                elif employee_response[-1] == 0:
+                elif (employee.emp_type==0 and employee_response[-1]== 0) or (employee.emp_type==1 and employee_response[1]== 0):
                     pass
                 else:
-                    epf_no = employee_response[-3]
-                    name = employee_response[-5]
-                    department = employee_response[-4]
-                    basic_salary = employee_response[3]
-                    br_allowance = employee_response[2]
-                   
-                    epf_8 =employee_response[5]
-                    if epf_8 == 0:
-                        epf_12 = 0
-                    else:
-                        #  epf_12 = (basic_salary + br_allowance) * 0.12
-                        epf_12 = employee_response[-8]
-                    advance = employee_response[4] +employee_response[6]
-                    ot = employee_response[8]
-                    total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
-                    other = employee_response[7] + employee_response[16] + employee_response[18] + employee_response[1]
-                    net_salary = employee_response[12]
-                    response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(other):9.2f}",f"{net_salary:9.2f}"])
+                    if employee.emp_type ==  0:
+                        epf_no = employee_response[-3]
+                        name = employee_response[-5]
+                        department = employee_response[-4]
+                        basic_salary = employee_response[3]
+                        br_allowance = employee_response[2]
+                    
+                        epf_8 =employee_response[5]
+                        if epf_8 == 0:
+                            epf_12 = 0
+                        else:
+                            #  epf_12 = (basic_salary + br_allowance) * 0.12
+                            epf_12 = employee_response[-8]
+                        advance = employee_response[4] +employee_response[6]
+                        ot = employee_response[8]
+                        total_deduction = employee_response[5] + employee_response[6] + employee_response[4]
+                        other = employee_response[7] + employee_response[16] + employee_response[18] + employee_response[1]
+                        net_salary = employee_response[12]
+                        response_employees.append([epf_no,name,department,f"{basic_salary:9.2f}",f"{br_allowance:9.2f}",f"{epf_12:9.2f}",f"{epf_8:9.2f}",f"{advance:9.2f}",f"{ot:9.2f}",f"{(other):9.2f}",f"{net_salary:9.2f}"])
+                    elif employee.emp_type == 1:
+                        epf_no =  employee.epf_no
+                        name = employee.name
+                        department = employee.dprtmnt.department
+                        basic_salary = employee_response[5]
+                        br_allowance = employee_response[6]
+                        epf_12 =  (basic_salary + br_allowance) * 0.12
+                        epf_8 = employee_response[11]
+                        advance = employee_response[8]
+                        ot = employee_response[4]
+                        other = employee_response[13]
+                        net_salary = employee_response[15]
+                        response_employees.append([epf_no,name,department,f"{basic_salary:9,.2f}",f"{br_allowance:9,.2f}",f"{epf_12:9,.2f}",f"{epf_8:9,.2f}",f"{advance:9,.2f}",f"{ot:9,.2f}",f"{(other):9,.2f}",f"{net_salary:9,.2f}"])
             except (ValueError,IndexError):
                 pass
         file_name = f"{month_year}_Salary_Signature Sheet.pdf"
