@@ -187,7 +187,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         
 
         employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,bank = bank_obj,branch = branch_obj,
-                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=joined_date, termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if joined_date == "" else joined_date , termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")
@@ -322,7 +322,7 @@ class EmployeeSalaryDetailsView(LoginRequiredMixin,View):
         
 
         emplyee_finance_record = EmployeeFinance(
-            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now(),effective_from=effective_from,reason=reason,morning_ot = morning_ot, production_allowance=production_allowance)
+            employee=employee, epf_type=epf_type, daily_payment=daily_payment, ot_payment_rate=ot_payment_rate, basic_salary=0 if basic_salary == "" else basic_salary, br_payment=0 if br_payment == "" else br_payment, epf=epf,  room_charge=0 if room_charge == "" else room_charge, staff_welf_contribution=0 if staff_welf_contribution == "" else staff_welf_contribution, submit_date=datetime.now(),effective_from=effective_from,reason=reason,morning_ot = morning_ot, production_allowance=0 if production_allowance == "" else production_allowance)
 
         emplyee_finance_record.save()
 
