@@ -688,7 +688,7 @@ def get_final_salary_details(emp,month="",year=""):
     emp = emp
 # Calculating Salary of Normal Employee
     if emp.emp_type == 0:
-        
+        print(emp.emp_id)
         attendance_record = Attendance.objects.filter(
                             employee=emp,date__month=month,date__year=year).order_by('date').values()
         attendance_record_list = list(attendance_record)
@@ -702,6 +702,8 @@ def get_final_salary_details(emp,month="",year=""):
         try :
             employee_finance = EmployeeFinance.objects.filter(
                 employee=emp,effective_from__month__lte = month).order_by("-effective_from",'-submit_date').first()
+            if employee_finance ==  None:
+                return "employee_finance_details_error"
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
 
@@ -997,6 +999,7 @@ def get_final_salary_details(emp,month="",year=""):
             
             net_salary = basic_salary + ot_payment - room_charge - total_advance_amount - epf + total_allowance + attendance_allowance - total_deduction
         if worked_days >= 1:
+
             return [attendance_allowance,fixed_allowance,br_payment,fixed_basic_salary,room_charge,epf,total_advance_amount,total_allowance,ot_payment,ot_payment_rate,hourly_payment_rate,basic_salary,net_salary,attendance_record_list,total_working_hours,total_ot_hours,attendance_allowance_26,extra_days,extra_attendance_allowance,epf_status,actully_worked_days,over_night_days,deductions,total_deduction,epf_12,employee.nic_no,employee.emp_id,employee.name,employee.dprtmnt.department,employee.epf_no,allowances,worked_days]
         else: 
             return[0]
@@ -1144,6 +1147,7 @@ class PayslipInfo(LoginRequiredMixin,View):
             if emp.emp_type == 0:
                 try :
                     response = get_final_salary_details(emp,month=year_month_split[1],year=year_month_split[0])
+                    print(f"response {response}")
                     if response == "employee_finance_details_error":
                         payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":2})
                     elif response == "Department Empty":
@@ -1153,6 +1157,9 @@ class PayslipInfo(LoginRequiredMixin,View):
                     return JsonResponse({"data":payslips_record})
                 except (ValueError,IndexError):
                     payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":1})
+                except(AttributeError):
+                    print("cought")
+                    payslips_record.append({'no':no,'emp_id':emp_id if emp_id[0] == "A" else f"A{emp_id[1::]}","name":emp.name,"month":year_month,"status":4})
             elif emp.emp_type == 1:
                 try :
                     response = get_final_salary_details(emp,month=year_month_split[1],year=year_month_split[0])
