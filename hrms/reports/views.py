@@ -186,7 +186,7 @@ class BankTranferReport(LoginRequiredMixin,View):
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
                     payslips_record.append({"status":3})
-                elif response[-1] == 0 or response[1] == 0:
+                elif (employee.emp_type == 0 and response[-1]) == 0 or (employee.emp_type == 1 and response[1] == 0):
                     pass
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     no += 1
