@@ -91,7 +91,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
                         epf_8 = employee_response[11]
                         advance = employee_response[8]
                         ot = employee_response[4]
-                        other = employee_response[13]
+                        other = employee_response[13] + employee_response[7]
                         net_salary = employee_response[15]
                         response_employees.append([epf_no,name,department,f"{basic_salary:9,.2f}",f"{br_allowance:9,.2f}",f"{epf_12:9,.2f}",f"{epf_8:9,.2f}",f"{advance:9,.2f}",f"{ot:9,.2f}",f"{(other):9,.2f}",f"{net_salary:9,.2f}"])
             except (ValueError,IndexError):
