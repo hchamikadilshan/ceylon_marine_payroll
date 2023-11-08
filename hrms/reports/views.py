@@ -182,11 +182,13 @@ class BankTranferReport(LoginRequiredMixin,View):
                     net_salary = "{:>9,.2f}".format(response[12])
                 elif employee.emp_type == 1:
                     net_salary = "{:>9,.2f}".format(response[15])
+                    
                 if response == "employee_finance_details_error":
                     payslips_record.append({"status":2})
                 elif response == "Department Empty":
                     payslips_record.append({"status":3})
-                elif (employee.emp_type == 0 and response[-1]) == 0 or (employee.emp_type == 1 and response[1] == 0):
+                elif (employee.emp_type == 0 and response[-1] == 0)  or (employee.emp_type == 1 and response[1] == 0):
+                    print(f"{employee.emp_id} {employee.emp_type}")
                     pass
                 elif (employee.bank == None or employee.branch == None or employee.bank_acc_no == "" or employee.bank_acc_name == "" ):
                     no += 1

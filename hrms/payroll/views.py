@@ -683,7 +683,7 @@ def get_final_salary_details(emp,month="",year=""):
     emp = emp
 # Calculating Salary of Normal Employee
     if emp.emp_type == 0:
-        print(emp.emp_id)
+        # print(emp.emp_id)
         attendance_record = Attendance.objects.filter(
                             employee=emp,date__month=month,date__year=year).order_by('date').values()
         attendance_record_list = list(attendance_record)
