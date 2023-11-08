@@ -227,9 +227,6 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                     total_allowance = total_allowance + allowance["amount"]
             except Alllowance.DoesNotExist:
                 print("No Allowance")
-
-
-
 # EPF Calculation
             if employee_finance.epf_type == "1":
                 epf = epf + (min_salary_amount * 0.08)
@@ -237,7 +234,6 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
                 pass
             net_salary = net_salary - epf + total_allowance
 
-            
         except EmployeeFinance.DoesNotExist:
             print("Employee Finance Does not exists")
 # Calculating Attendance Allowance
@@ -264,7 +260,6 @@ class EmployeeSalaryPdfView(LoginRequiredMixin,View):
         hourly_payment_rate = "{:>9.2f}".format(hourly_payment_rate)
         basic_salary = "{:>9.2f}".format(basic_salary)
         net_salary = "{:>9.2f}".format(net_salary) 
-
 
 # -------------------------------------------------------------------------------------
         empty_row = ["","","","","","",""]
@@ -1035,12 +1030,15 @@ def get_final_salary_details(emp,month="",year=""):
             if no_of_worked_days >= 18:
                 special_allowance += 10000.0
                 total_allowance += special_allowance
+            else:
+                basic_salary_rate =  (basic_salary + br_payment)/18
+                basic_salary_total_worked_days =  basic_salary_rate * no_of_worked_days
+                br_payment =  140 * no_of_worked_days
+                basic_salary = basic_salary_total_worked_days - br_payment
         # Calculating OT
             i = 0
             for record in attendance_record:
                 normal_working_hours = 9.0
-                
-                
                 date =  record.date
                 day = record.day
                 date_split = str(date).split('-')
