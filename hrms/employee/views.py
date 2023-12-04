@@ -123,7 +123,7 @@ class AddEmployeeInAttendance(LoginRequiredMixin,View):
         next_epf_no = get_largest_epf_no()
         emp_id = emp_id[0].upper() + emp_id[1:]
         today = date.today()
-        employee = Employee(emp_id=emp_id, name=name,epf_no = next_epf_no,dprtmnt=None,appoinment_date =today)
+        employee = Employee(emp_id=emp_id, name=name,dprtmnt=None,appoinment_date =today)
         employee.save()
         return JsonResponse({})
     
@@ -187,7 +187,7 @@ class AddNewEmployeeView(LoginRequiredMixin,View):
         
 
         employee = Employee(emp_id=emp_id, name=name,dprtmnt=department,emp_type=emp_type,active_status=emp_active,bank = bank_obj,branch = branch_obj,
-                            epf_no=next_epf_no, nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if joined_date == "" else joined_date , termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
+                             nic_no=nic_no, address=address, mobile_no=mobile_no, email=email, appoinment_date=None if joined_date == "" else joined_date , termination_date=None if termination_date == "" else termination_date, bank_name=bank_name, bank_branch=bank_branch, bank_acc_name=bank_acc_name, bank_acc_no=bank_acc_no)
         employee.save()
 
         return redirect("add_new_emp_view")
