@@ -51,7 +51,7 @@ class SalarySignatureReport(LoginRequiredMixin,View):
         if emp_type == 2:
             employees = Employee.objects.filter(active_status=True)
         else:
-            employees = Employee.objects.filter(emp_type=emp_type,active_status=True)
+            employees = Employee.objects.filter(emp_type=emp_type)
         employees_list = list(employees)
         i = 0
         for employee in employees:
@@ -834,23 +834,23 @@ class EtfReport(LoginRequiredMixin,View):
             months = ["01","02","03","04","05","06"]
         else :
             months = ["07","08","09","10","11","12"]
-        employees = Employee.objects.filter(emp_type=0)
+        employees = Employee.objects.filter()
         employees_list = list(employees)
         employee_records = []
         for month in months:
             for employee in employees:
                 emp_id = employee.emp_id
                 try :
-                    response = get_final_salary_details(employee,month=month)
+                    response = get_final_salary_details(employee,month=month,year=year)
                     if response == "employee_finance_details_error":
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
                     elif response == "Department Empty":
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-                    elif response[-1] == 0:
+                    elif (employee.emp_type ==0 and response[-1] == 0) or (employee.emp_type == 1 and response[1] == 0):
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-                    elif response[-3]=="":
+                    elif employee.emp_type == 0 and response[-3]=="":
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
-                    elif response[-11] == None or response[-11] == "2":
+                    elif employee.emp_type == 0 and (response[-11] == None or response[-11] == "2"):
                         employee_records.append([employee.name,employee.epf_no,employee.nic_no,month,0.0,"no_record"])
                     else:  
                         response.append(month) 
@@ -860,13 +860,13 @@ class EtfReport(LoginRequiredMixin,View):
         data_list = {}
         total_contribution = 0
         for response in employee_records:
-            if response[-1] == "no_record":
+            if response[5] == "no_record":
                 epf_no = response[1]
                 name = response[0]
                 nic_no = response[2]
                 etf = 0.0
                 total_earning = 0.0
-                month = response[-3]
+                month = response[4]
                 if epf_no in data_list:
         
                     new_records = []
@@ -879,30 +879,56 @@ class EtfReport(LoginRequiredMixin,View):
                 else:
                     data_list[epf_no] = [[name,nic_no,epf_no,etf,month,total_earning]]
             else:
-                net_salary = "{:>9,.2f}".format(response[12])
-                fixed_basic_salary = response[2] + response[3]
-                total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+                if not(isinstance(response[-2],Employee)) :
+                    net_salary = "{:>9,.2f}".format(response[12])
+                    fixed_basic_salary = response[2] + response[3]
+                    total_earning = "{:>9,.2f}".format(fixed_basic_salary)
 
-                etf = fixed_basic_salary * 0.03
-                etf_string = "{:>9.2f}".format(fixed_basic_salary * 0.03)
-                etf_int = int(fixed_basic_salary * 0.08)
-                etf_float = etf_string[-2:]
+                    etf = fixed_basic_salary * 0.03
+                    etf_string = "{:>9.2f}".format(fixed_basic_salary * 0.03)
+                    etf_int = int(fixed_basic_salary * 0.08)
+                    etf_float = etf_string[-2:]
 
-                name = response[-6]
-                epf_no = response[-4]
-                nic_no = response[-8]
+                    name = response[-6]
+                    epf_no = response[-4]
+                    nic_no = response[-8]
 
-                if epf_no in data_list:
-                    new_records = []
-                    records = data_list[epf_no]
-                    for record in records:
-                        new_records.append(record)
-                    new_records.append([name,nic_no,epf_no,etf,response[-1],fixed_basic_salary])
-                    data_list[epf_no] = new_records
+                    if epf_no in data_list:
+                        new_records = []
+                        records = data_list[epf_no]
+                        for record in records:
+                            new_records.append(record)
+                        new_records.append([name,nic_no,epf_no,etf,response[-1],fixed_basic_salary])
+                        data_list[epf_no] = new_records
 
-                    
+                        
+                    else:
+                        data_list[epf_no] = [[name,nic_no,epf_no,etf,response[-1],fixed_basic_salary]]
                 else:
-                    data_list[epf_no] = [[name,nic_no,epf_no,etf,response[-1],fixed_basic_salary]]
+
+                    employee = response[-2]
+                    name = employee.name
+                    epf_no = employee.epf_no
+                    nic_no = employee.nic_no
+                    fixed_basic_salary = response[5] + response[6]
+                    total_earning = "{:>9,.2f}".format(fixed_basic_salary)
+
+                    etf = fixed_basic_salary * 0.03
+                    etf_string = "{:>9.2f}".format(fixed_basic_salary * 0.03)
+
+                    if epf_no in data_list:
+                        new_records = []
+                        records = data_list[epf_no]
+                        for record in records:
+                            new_records.append(record)
+                        new_records.append([name,nic_no,epf_no,etf,response[-2],fixed_basic_salary])
+                        data_list[epf_no] = new_records
+
+                        
+                    else:
+                        data_list[epf_no] = [[name,nic_no,epf_no,etf,response[-2],fixed_basic_salary]]
+
+
         
         data  = []
         all_total_contribution = 0
@@ -922,7 +948,9 @@ class EtfReport(LoginRequiredMixin,View):
             name = data_list[emp][0][0]
             epf_no =  data_list[emp][0][2]
             nic_no = data_list[emp][0][1]
-            total_contribution = data_list[emp][0][3] + data_list[emp][1][3] + data_list[emp][2][3]+ data_list[emp][3][3] + data_list[emp][5][3] 
+            # print("last emp:", epf_no)
+            # print(data_list[emp])
+            total_contribution = data_list[emp][0][3] + data_list[emp][1][3] + data_list[emp][2][3]+ data_list[emp][3][3] + data_list[emp][4][3] + data_list[emp][5][3] 
             all_total_contribution += total_contribution
             all_total_contribution_formated = "{:>9,.2f}".format(all_total_contribution)
             total_contribution_formated = "{:>9,.2f}".format(total_contribution)
@@ -1023,13 +1051,12 @@ BUTIONS"""]
         table_bottom_row4 = ["TELEPHONE","","0772594469","","","","Date","","","Signature of the Employer"]
         table_bottom_empty_row = [""]
 
-        no_of_pages = (len(data)//22) + 1
-        print(len(data),no_of_pages)
+        no_of_pages = (len(data)//22)
+        print(f"data length - {len(data)},no_of_pages - {no_of_pages}")
         
 
         if no_of_pages == 1:
             table_data = []
-            print("inside")
             table_data.append(document_heading)
             table_data.append(empty_row_heading)
             table_data.append(table_row_heading2)
@@ -1045,7 +1072,7 @@ BUTIONS"""]
             table_data.append(table_bottom_row2)
             table_data.append(table_bottom_row3)
             table_data.append(table_bottom_row4)
-            attendance_table = Table(table_data,colWidths=[1.8*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
+            attendance_table = Table(table_data,colWidths=[1.7*inch,0.7*inch,0.9*inch,0.7*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch,0.75*inch])
             attendance_table_styles = TableStyle(
                 [
                     ('GRID', (0, 3), (-1, -6), 1, colors.black),
@@ -1117,7 +1144,7 @@ BUTIONS"""]
                         ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
                         ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
                         ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
-                        ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
+                        ('FONT', (0, 3), (-1, -1), 'Helvetica',8),
                         ('FONT', (2, 4), (2, -1), 'Helvetica',8),
                         ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
                         ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"
@@ -1165,7 +1192,7 @@ BUTIONS"""]
                     ('GRID', (2,-4), (2, -4), 1, colors.black), # Employer No
                     ('FONT', (0, 0), (0, 0), 'Helvetica-Bold',15),
                     ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold',11),
-                    ('FONT', (0, 3), (-1, -1), 'Helvetica',9),
+                    ('FONT', (0, 3), (-1, -1), 'Helvetica',8),
                     ('FONT', (2, 4), (2, -7), 'Helvetica',8),
                     ('SPAN', (1, 2), (11, 2)), # Horozontal Span "Return for period January to June 2023"
                     ('SPAN', (0, 0), (-1, 0)), # Horozontal Span "Heading"

@@ -950,9 +950,13 @@ def get_final_salary_details(emp,month="",year=""):
                 if calculated_fixed_basic_salary > basic_salary:
                     epf = epf + (basic_salary * 0.08)
                     epf_12 = epf_12 + (basic_salary * 0.12)
+                    if emp.emp_id == "A09985":
+                        print("1",calculated_fixed_basic_salary,basic_salary,epf,epf_12)
                 else:
                     epf = epf + (min_salary_amount * 0.08)
                     epf_12 = epf_12 + (min_salary_amount * 0.12)
+                    if emp.emp_id == "A09985":
+                        print("2",epf,epf_12)
             elif employee_finance.epf_type == "2":
                 pass
             net_salary = net_salary - epf + total_allowance + attendance_allowance - total_deduction
@@ -1120,7 +1124,7 @@ def get_final_salary_details(emp,month="",year=""):
             net_salary = basic_salary + br_payment + ot_payment + attendance_allowance  - total_deduction - total_advance_amount - epf - room_charge + total_allowance
 
 
-            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary, br_payment , attendance_allowance ,total_advance_amount ,total_deduction , deductions , epf , room_charge ,total_allowance , allowances , net_salary , special_allowance , production_allowance , daily_payment_rate]
+            return [attendance_record_list , no_of_worked_days , total_ot_hours , ot_rate , ot_payment , basic_salary, br_payment , attendance_allowance ,total_advance_amount ,total_deduction , deductions , epf , room_charge ,total_allowance , allowances , net_salary , special_allowance , production_allowance , daily_payment_rate,emp]
                 
 
 
