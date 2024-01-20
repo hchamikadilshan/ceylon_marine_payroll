@@ -1022,14 +1022,17 @@ class EtfReport(LoginRequiredMixin,View):
         cell_style = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
         document_heading = [f"EMPLOYEE TRUST FUND BOARD"]
         empty_row_heading =[""]
-        table_row_heading2 = ["FORM 11 RETURN","Return for period January to June 2023","","","","","","","","","","","",f"Total No of Employees:{no_of_employees}"]
+        table_row_heading2 = ["FORM 11 RETURN","Return for period January to June 2023" if year_quater == "0" else "Return for period July to December 2023","","","","","","","","","","","",f"Total No of Employees:{no_of_employees}"]
         table_heading1 = ["""NAME
 OF 
 MEMBER""", """MEMBER
 NUMBER""",'NIC',"""TOTAL 
 CONTRI
 BUTIONS""","""TOTAL GROSS WAGES AND CONTRIBUTION""","","","","","","","","","","",""]
-        table_heading2 = ["","","","","JAN","","FEB","","MARCH","","APRIL","","MAY","","JUNE",""]
+        if year_quater == "0":
+            table_heading2 = ["","","","","JAN","","FEB","","MARCH","","APRIL","","MAY","","JUNE",""]
+        else:
+            table_heading2 = ["","","","","JULY","","AUG","","SEP","","OCT","","NOV","","DEC",""]
         table_row_empty = ["","","","","""TOTAL
 EARNINGS""","""CONTRI
 BUTIONS""","""TOTAL
@@ -1250,7 +1253,7 @@ BUTIONS"""]
         table_data2 = []
         cell_style2 = ParagraphStyle(name='my_cell_style', wordWrap='WORDWRAP')
         document_heading1 = [f"EMPLOYEE TRUST FUND BOARD"]
-        document_heading2 =["RETURN OF THE HALF - YEAR BEGINNING 31st June 2023"]
+        document_heading2 =[f"RETURN OF THE HALF - YEAR BEGINNING 31st June {year}"]
         document_heading3 =["CONTRIBUTOR'S RECONCILATION STATEMENT"]
         document_sub_heading1 =["1. DETAILS OF PAYMENTS"]
         table_data2.append(document_heading)
@@ -1286,7 +1289,7 @@ cash)""","""Date of Payment"""]
         # table_row = ["A.B.C.D.E. Hapuarachchi","200","200113902674","3500.00","15,000.00"]
         table_total_row = ["2.SUMMARY OF RETURN"]
         table_bottom_row1 = ["Employer Registratrion No","","A/56108"]
-        table_bottom_row2 = ["Half Year Period","","Jan to Dec 2023",""]
+        table_bottom_row2 = ["Half Year Period","","Jan to Jun 2023" if year_quater == "0" else "July to Dec 2023",""]
         table_bottom_row3 = ["No of Members","",no_of_employees,""]
         table_bottom_row4 = ["""Total Contribution 
         of Six Months""","",all_total_contribution_formated]

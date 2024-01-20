@@ -63,7 +63,7 @@ class SalarySummaryChartData(LoginRequiredMixin,View):
         # monthly_net_salary_payed_record = []
         monthly_record = []
         for month in months:
-            monthly_summary_record = MonthSummary.objects.get(year=current_year,month=month[0] if int(month[0]) >= 10 else f"0{month[0]}")
+            monthly_summary_record = MonthSummary.objects.get(year="2023",month=month[0] if int(month[0]) >= 10 else f"0{month[0]}")
             monthly_record.append([month[0],month[1],monthly_summary_record.total_salary,monthly_summary_record.no_of_employees,monthly_summary_record.total_salary_advance,monthly_summary_record.total_epf,monthly_summary_record.total_allowance])
         # employees = Employee.objects.filter(emp_type=0)
         # employees_list = list(employees)

@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-t5un1#*j*gszoi-osk-rpeca%(q0==+r1pe0ebu%p0p+0%h5^v
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'https://payroll-test-dixpex.herokuapp.com/',
-                 'https://dixpex-payroll-master.herokuapp.com/']
+                 '*']
 
 
 # Application definition
@@ -99,16 +99,28 @@ WSGI_APPLICATION = 'hrms.wsgi.application'
 # }
 
 
+# DATABASES = {
+# 	'default': {
+# 		'ENGINE': 'django.db.backends.mysql',
+# 		'NAME': 'heroku_224badc376eea21',
+# 		'USER': 'bff5e7e4628e19',
+# 		'PASSWORD': '01625560',
+# 		'HOST': 'us-cdbr-east-06.cleardb.net',
+# 		'PORT':'3306',
+# 	}
+# }
+
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'heroku_224badc376eea21',
-		'USER': 'bff5e7e4628e19',
-		'PASSWORD': '01625560',
-		'HOST': 'us-cdbr-east-06.cleardb.net',
+		'NAME': 'axxiomte_ceylon_marine_payroll',
+		'USER': 'axxiomte_admin',
+		'PASSWORD': '[Axxiom.tech@2674]',
+		'HOST': 'cpanel.axxiom.tech',
 		'PORT':'3306',
 	}
 }
+
 
 # DATABASES = {
 # 	'default': {
