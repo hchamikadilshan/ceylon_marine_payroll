@@ -99,27 +99,27 @@ WSGI_APPLICATION = 'hrms.wsgi.application'
 # }
 
 
-# DATABASES = {
-# 	'default': {
-# 		'ENGINE': 'django.db.backends.mysql',
-# 		'NAME': 'heroku_224badc376eea21',
-# 		'USER': 'bff5e7e4628e19',
-# 		'PASSWORD': '01625560',
-# 		'HOST': 'us-cdbr-east-06.cleardb.net',
-# 		'PORT':'3306',
-# 	}
-# }
-
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.mysql',
-		'NAME': 'axxiomte_ceylon_marine_payroll',
-		'USER': 'axxiomte_admin',
-		'PASSWORD': '[Axxiom.tech@2674]',
-		'HOST': 'cpanel.axxiom.tech',
+		'NAME': 'heroku_224badc376eea21',
+		'USER': 'bff5e7e4628e19',
+		'PASSWORD': '01625560',
+		'HOST': 'us-cdbr-east-06.cleardb.net',
 		'PORT':'3306',
 	}
 }
+
+# DATABASES = {
+# 	'default': {
+# 		'ENGINE': 'django.db.backends.mysql',
+# 		'NAME': 'axxiomte_ceylon_marine_payroll',
+# 		'USER': 'axxiomte_admin',
+# 		'PASSWORD': '[Axxiom.tech@2674]',
+# 		'HOST': 'cpanel.axxiom.tech',
+# 		'PORT':'3306',
+# 	}
+# }
 
 
 # DATABASES = {
